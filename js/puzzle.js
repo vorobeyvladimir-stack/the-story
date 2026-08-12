@@ -10,13 +10,7 @@ const PuzzleGame = (function() {
   function updateCounter() {
     if (!hbCanvas || !hbCanvas.pieces) return;
     const total = hbCanvas.pieces.length;
-    let solved = 0;
-
-    hbCanvas.pieces.forEach(p => {
-      if (p.fixed || (p.connectionCount && p.connectionCount() > 0)) {
-        solved++;
-      }
-    });
+    const solved = hbCanvas.pieces.filter(p => p.fixed || p.connected).length;
 
     const counter = document.getElementById('puz-counter');
     if (counter) {
@@ -24,7 +18,9 @@ const PuzzleGame = (function() {
     }
   }
 
-  function opp(s) { return s === 'T' ? 'S' : 'T'; }
+  function oppInsert(ins) {
+    return ins === headbreaker.Tab ? headbreaker.Slot : headbreaker.Tab;
+  }
 
   return {
     start: function(ch) {
@@ -92,34 +88,36 @@ const PuzzleGame = (function() {
             maxPiecesCount: { x: cols, y: rows }
           });
 
-          // Activate image scaling according to Headbreaker documentation
-          hbCanvas.adjustImagesToPuzzle();
+          // CRITICAL: Lock connected pieces permanently while dragging so they NEVER detach!
+          hbCanvas.puzzle.forceConnectionWhileDragging();
 
-          // Generate complementary structures & targetPositions
+          // Activate image scaling according to Headbreaker documentation
+          hbCanvas.adjustImagesToPuzzleHeight();
+
+          // Generate 100% guaranteed complementary Tab & Slot objects for all inside edges
           const horiz = [], vert = [];
           for (let r = 0; r < rows - 1; r++) {
-            horiz.push(Array.from({length: cols}, () => Math.random() < 0.5 ? 'T' : 'S'));
+            horiz.push(Array.from({length: cols}, () => Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot));
           }
           for (let r = 0; r < rows; r++) {
-            vert.push(Array.from({length: cols - 1}, () => Math.random() < 0.5 ? 'T' : 'S'));
+            vert.push(Array.from({length: cols - 1}, () => Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot));
           }
 
           for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-              const up = (r === 0) ? '-' : opp(horiz[r - 1][c]);
-              const down = (r === rows - 1) ? '-' : horiz[r][c];
-              const left = (c === 0) ? '-' : opp(vert[r][c - 1]);
-              const right = (c === cols - 1) ? '-' : vert[r][c];
+              const structObj = {};
+              if (r > 0) structObj.up = oppInsert(horiz[r - 1][c]);
+              if (r < rows - 1) structObj.down = horiz[r][c];
+              if (c > 0) structObj.left = oppInsert(vert[r][c - 1]);
+              if (c < cols - 1) structObj.right = vert[r][c];
 
-              // HEADBREAKER STRING ORDER: [RIGHT, DOWN, LEFT, UP]
-              const struct = right + down + left + up;
               const id = `p_${r}_${c}`;
               // CRITICAL: Target position MUST start at (0,0) to prevent texture wrapping from opposite sides
               const posX = c * pieceW;
               const posY = r * pieceH;
 
               hbCanvas.sketchPiece({
-                structure: struct,
+                structure: structObj,
                 metadata: {
                   id: id,
                   targetPosition: { x: posX, y: posY },
@@ -132,19 +130,20 @@ const PuzzleGame = (function() {
           // Shuffle pieces across the board
           hbCanvas.shuffle(0.7);
 
-          // Audio triggers
+          // Audio triggers & deferred counter updates
           hbCanvas.onConnect(() => {
             SoundEngine.playCorrect();
-            updateCounter();
+            setTimeout(updateCounter, 20);
           });
 
           hbCanvas.onDisconnect(() => {
             SoundEngine.playClick();
-            updateCounter();
+            setTimeout(updateCounter, 20);
           });
 
           // Solved trigger
-          hbCanvas.onValidating(() => {
+          hbCanvas.attachSolvedValidator();
+          hbCanvas.onValid(() => {
             SoundEngine.playFanfare();
             notify('🧩 Interlocking Jigsaw Solved!');
             setTimeout(() => {

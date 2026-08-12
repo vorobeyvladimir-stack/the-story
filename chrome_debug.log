@@ -1,0 +1,11 @@
+[30120:30232:0812/021033.307:INFO:components\enterprise\browser\controller\chrome_browser_cloud_management_controller.cc:241] No machine level policy manager exists.
+[30340:28772:0812/021033.351:ERROR:ui\gl\direct_composition_support.cc:254] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[30120:30232:0812/021033.528:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_set_header_color [object Object]", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.528:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_set_bottom_bar_color [object Object]", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.528:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_request_theme ", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.528:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_request_viewport ", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.528:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_request_safe_area ", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.528:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_request_content_safe_area ", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.633:INFO:CONSOLE:135] "[Telegram.WebView] > postEvent web_app_expand ", source: https://telegram.org/js/telegram-web-app.js (135)
+[30120:30232:0812/021033.633:INFO:CONSOLE:608] "[Telegram.WebApp] Changing swipes behavior is not supported in version 6.0", source: https://telegram.org/js/telegram-web-app.js (608)
+[30120:30304:0812/021035.725:ERROR:google_apis\gcm\engine\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
