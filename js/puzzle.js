@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════
    HEADBREAKER.JS JIGSAW PUZZLE ENGINE
-   Official "Background Code" Implementation
+   Rounded Lines Implementation (16 Pieces - 4x4)
 ═══════════════════════════════════════ */
 
 const PuzzleGame = (function() {
@@ -24,6 +24,8 @@ const PuzzleGame = (function() {
     }
   }
 
+  function opp(s) { return s === 'T' ? 'S' : 'T'; }
+
   return {
     start: function(ch) {
       currentCh = ch;
@@ -32,23 +34,38 @@ const PuzzleGame = (function() {
       document.getElementById('puz-title-text').textContent = `🧩 ${ch.title}`;
       document.getElementById('puz-preview-img').src = ch.image;
 
-      // 1. Show screen FIRST so DOM container is visible before rendering
+      // 1. Show screen FIRST so DOM container is visible
       show('s-puzzle');
 
       const boardEl = document.getElementById('puzzle-board');
       if (!boardEl) return;
       boardEl.innerHTML = '';
 
-      const cols = ch.grid ? ch.grid.cols : 6;
+      // Default 4x4 grid (16 pieces)
+      const cols = ch.grid ? ch.grid.cols : 4;
       const rows = ch.grid ? ch.grid.rows : 4;
 
+      const counterEl = document.getElementById('puz-counter');
+      if (counterEl) {
+        counterEl.textContent = `0 / ${cols * rows}`;
+      }
+
       const img = new Image();
-      img.onload = () => {
+      let hasLoaded = false;
+
+      const initHeadbreaker = () => {
+        if (hasLoaded) return;
+        hasLoaded = true;
+
+        const imgW = (img.naturalWidth && img.naturalWidth > 0) ? img.naturalWidth : 600;
+        const imgH = (img.naturalHeight && img.naturalHeight > 0) ? img.naturalHeight : 400;
+
         const maxW = Math.min(window.innerWidth * 0.92, 540);
         const pieceW = Math.floor(maxW / cols);
-        const aspect = (img.naturalHeight / rows) / (img.naturalWidth / cols);
+        const aspect = (imgH / rows) / (imgW / cols);
         const pieceH = Math.floor(pieceW * aspect);
 
+        // Playfield dimensions match exact grid bounds
         const boardW = pieceW * cols;
         const boardH = pieceH * rows;
 
@@ -57,31 +74,60 @@ const PuzzleGame = (function() {
         boardEl.innerHTML = '';
 
         try {
-          // Official Headbreaker Background Configuration with 0 borderFill for 100% seamless image matching
+          // Initialize Headbreaker Canvas with Rounded Lines outline
           hbCanvas = new headbreaker.Canvas('puzzle-board', {
             width: boardW,
             height: boardH,
             pieceSize: {
-              width: pieceW,
-              height: pieceH
+              x: pieceW,
+              y: pieceH
             },
             proximity: 20,
-            borderFill: 0, // CRITICAL: 0 borderFill prevents texture offsets between adjacent pieces
+            borderFill: 0, // CRITICAL: 0 borderFill for 100% seamless image texture alignment
             strokeWidth: 2,
             strokeColor: '#e8457a',
-            lineSoftness: 0.18,
+            outline: new headbreaker.outline.Rounded(),
             image: img,
+            preventOffstageDrag: false, // CRITICAL: Allows connected piece clusters to drag smoothly without detaching
             maxPiecesCount: { x: cols, y: rows }
           });
 
           // Activate image scaling according to Headbreaker documentation
           hbCanvas.adjustImagesToPuzzle();
 
-          // Autogenerate 6x4 interlocking jigsaw pieces
-          hbCanvas.autogenerate({
-            horizontalPiecesCount: cols,
-            verticalPiecesCount: rows
-          });
+          // Generate complementary structures & targetPositions
+          const horiz = [], vert = [];
+          for (let r = 0; r < rows - 1; r++) {
+            horiz.push(Array.from({length: cols}, () => Math.random() < 0.5 ? 'T' : 'S'));
+          }
+          for (let r = 0; r < rows; r++) {
+            vert.push(Array.from({length: cols - 1}, () => Math.random() < 0.5 ? 'T' : 'S'));
+          }
+
+          for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+              const up = (r === 0) ? '-' : opp(horiz[r - 1][c]);
+              const down = (r === rows - 1) ? '-' : horiz[r][c];
+              const left = (c === 0) ? '-' : opp(vert[r][c - 1]);
+              const right = (c === cols - 1) ? '-' : vert[r][c];
+
+              // HEADBREAKER STRING ORDER: [RIGHT, DOWN, LEFT, UP]
+              const struct = right + down + left + up;
+              const id = `p_${r}_${c}`;
+              // CRITICAL: Target position MUST start at (0,0) to prevent texture wrapping from opposite sides
+              const posX = c * pieceW;
+              const posY = r * pieceH;
+
+              hbCanvas.sketchPiece({
+                structure: struct,
+                metadata: {
+                  id: id,
+                  targetPosition: { x: posX, y: posY },
+                  currentPosition: { x: posX, y: posY }
+                }
+              });
+            }
+          }
 
           // Shuffle pieces across the board
           hbCanvas.shuffle(0.7);
@@ -106,24 +152,36 @@ const PuzzleGame = (function() {
             }, 1500);
           });
 
-          // Force immediate render on next frame so pieces appear without needing a click
-          requestAnimationFrame(() => {
-            if (hbCanvas) {
-              hbCanvas.draw();
-              updateCounter();
-            }
+          // Initial draw
+          hbCanvas.draw();
+          updateCounter();
+
+          // Scheduled redraws to force paint after CSS transitions settle
+          [30, 100, 250, 500].forEach(delay => {
             setTimeout(() => {
               if (hbCanvas) {
-                hbCanvas.draw();
+                hbCanvas.redraw();
               }
-            }, 60);
+            }, delay);
+          });
+
+          requestAnimationFrame(() => {
+            if (hbCanvas) {
+              hbCanvas.redraw();
+            }
           });
 
         } catch(err) {
           console.error("Headbreaker initialization error:", err);
         }
       };
+
+      img.onload = initHeadbreaker;
       img.src = ch.image;
+
+      if (img.complete && img.naturalWidth > 0) {
+        initHeadbreaker();
+      }
     },
 
     togglePreview: function() {
