@@ -8,9 +8,9 @@ const PuzzleGame = (function() {
   let hbCanvas = null;
 
   function updateCounter() {
-    if (!hbCanvas || !hbCanvas.pieces) return;
-    const total = hbCanvas.pieces.length;
-    const solved = hbCanvas.pieces.filter(p => p.fixed || p.connected).length;
+    if (!hbCanvas || !hbCanvas.puzzle) return;
+    const total = hbCanvas.puzzle.pieces.length;
+    const solved = hbCanvas.puzzle.pieces.filter(p => p.fixed || p.connected).length;
 
     const counter = document.getElementById('puz-counter');
     if (counter) {
@@ -20,6 +20,28 @@ const PuzzleGame = (function() {
 
   function oppInsert(ins) {
     return ins === headbreaker.Tab ? headbreaker.Slot : headbreaker.Tab;
+  }
+
+  // Piece ids are 'p_{row}_{col}' (see sketchPiece below). Parsing them lets
+  // the connection requirement verify TRUE photo-adjacency, independent of
+  // whatever Tab/Slot shape randomly ended up on that edge.
+  function gridPos(piece) {
+    const m = /^p_(\d+)_(\d+)$/.exec(piece.metadata && piece.metadata.id);
+    return m ? { r: +m[1], c: +m[2] } : null;
+  }
+
+  // headbreaker only checks shape (Tab<->Slot) + on-canvas proximity before
+  // connecting two pieces — it has no idea which pieces are supposed to be
+  // neighbours in the source photo. With only two possible edge shapes,
+  // unrelated edges will randomly match, so without this check pieces that
+  // aren't adjacent in the photo could snap together. This requirement adds
+  // that missing check: connection is only allowed between grid cells that
+  // are exactly one step apart (i.e. real neighbours).
+  function isPhotoAdjacent(one, other) {
+    const a = gridPos(one);
+    const b = gridPos(other);
+    if (!a || !b) return false;
+    return Math.abs(a.r - b.r) + Math.abs(a.c - b.c) === 1;
   }
 
   return {
@@ -56,14 +78,23 @@ const PuzzleGame = (function() {
         const imgW = (img.naturalWidth && img.naturalWidth > 0) ? img.naturalWidth : 600;
         const imgH = (img.naturalHeight && img.naturalHeight > 0) ? img.naturalHeight : 400;
 
+        // Reserve room for one extra piece-width/height (half a piece of margin on
+        // each side) within the same on-screen budget. During normal play, pieces
+        // are shuffled and reconnected freehand — the final assembled picture ends
+        // up wherever the player happened to build it, not pinned to the board's
+        // top-left corner. Without this margin, a cluster built even slightly off
+        // from that corner runs past the board edge and gets clipped by its
+        // overflow:hidden, showing "missing" half-pieces on the far side(s).
         const maxW = Math.min(window.innerWidth * 0.92, 540);
-        const pieceW = Math.floor(maxW / cols);
+        const pieceW = Math.floor(maxW / (cols + 1));
         const aspect = (imgH / rows) / (imgW / cols);
         const pieceH = Math.floor(pieceW * aspect);
+        const marginX = pieceW / 2;
+        const marginY = pieceH / 2;
 
-        // Playfield dimensions match exact grid bounds
-        const boardW = pieceW * cols;
-        const boardH = pieceH * rows;
+        // Playfield is the grid plus that margin on every side
+        const boardW = pieceW * cols + marginX * 2;
+        const boardH = pieceH * rows + marginY * 2;
 
         boardEl.style.width = `${boardW}px`;
         boardEl.style.height = `${boardH}px`;
@@ -87,6 +118,10 @@ const PuzzleGame = (function() {
             preventOffstageDrag: false, // CRITICAL: Allows connected piece clusters to drag smoothly without detaching
             maxPiecesCount: { x: cols, y: rows }
           });
+
+          // Reject connections between pieces that aren't real photo-neighbours,
+          // even when their Tab/Slot shapes happen to match (see isPhotoAdjacent above).
+          hbCanvas.puzzle.attachConnectionRequirement(isPhotoAdjacent);
 
           // CRITICAL: Lock connected pieces permanently while dragging so they NEVER detach!
           hbCanvas.puzzle.forceConnectionWhileDragging();
@@ -112,9 +147,12 @@ const PuzzleGame = (function() {
               if (c < cols - 1) structObj.right = vert[r][c];
 
               const id = `p_${r}_${c}`;
-              // CRITICAL: Target position MUST start at (0,0) to prevent texture wrapping from opposite sides
-              const posX = c * pieceW;
-              const posY = r * pieceH;
+              // headbreaker positions a piece by its CENTER (central anchor), not its
+              // top-left corner, so the +pieceW/2,+pieceH/2 below is needed on top of
+              // the cell's own top-left. marginX/marginY shift the whole grid so it
+              // sits centered within the larger, margin-padded board (see boardW/H).
+              const posX = marginX + c * pieceW + pieceW / 2;
+              const posY = marginY + r * pieceH + pieceH / 2;
 
               hbCanvas.sketchPiece({
                 structure: structObj,
@@ -126,6 +164,23 @@ const PuzzleGame = (function() {
               });
             }
           }
+
+          // headbreaker's own piece.drop() only auto-connects the ONE piece you
+          // physically dragged (puzzle.autoconnectWith(that piece)). When you drag
+          // an already-connected cluster of pieces next to another cluster, several
+          // OTHER pairs along that shared seam become truly adjacent too, but they
+          // never get tested — only the pair right under the cursor does. Those
+          // other pairs have perfectly valid, matching Tab/Slot connectors; they just
+          // never get a chance to connect. Patch drop() on these pieces (instance-only,
+          // not the shared prototype) to sweep the whole board afterwards, so every
+          // pair that's now genuinely touching actually gets linked.
+          hbCanvas.puzzle.pieces.forEach(piece => {
+            const originalDrop = piece.drop.bind(piece);
+            piece.drop = () => {
+              originalDrop();
+              hbCanvas.puzzle.autoconnect();
+            };
+          });
 
           // Shuffle pieces across the board
           hbCanvas.shuffle(0.7);
