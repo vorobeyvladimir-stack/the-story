@@ -1,6 +1,12 @@
 /* ═══════════════════════════════════════
    8-BIT WEB AUDIO API SYNTHESIZER
-   Retro chiptune SFX and BGM generator
+   Retro chiptune SFX and BGM generator.
+   Exports (globals): SoundEngine (playClick, playTypewriter, playCorrect,
+   playWrong, playFanfare, startBGM, stopBGM, toggleMute, isMuted,
+   updateHudIcon, init)
+   Depends on: nothing (self-initializes at the bottom of this file)
+   Used by: core.js, quest.js, chat.js, puzzle.js — every module that plays
+   a sound or touches the mute button goes through this one.
 ═══════════════════════════════════════ */
 
 const SoundEngine = (function() {

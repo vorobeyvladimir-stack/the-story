@@ -1,6 +1,13 @@
 /* ═══════════════════════════════════════
-   HEADBREAKER.JS JIGSAW PUZZLE ENGINE
-   Rounded Lines Implementation (16 Pieces - 4x4)
+   PUZZLE MINIGAME (headbreaker.js + konva.min.js)
+   Owns: the whole jigsaw screen — grid/piece generation, connection rules,
+   image scaling, and completion.
+   Exports (globals): PuzzleGame (start, togglePreview)
+   Depends on: show, completeChapter, notify (core.js), SoundEngine
+   (audio.js), headbreaker/konva (js/lib)
+   Used by: core.js (buildMap, for chapters with type:'puzzle')
+   Self-contained: this is the one module that can be edited, replaced, or
+   have its whole minigame swapped out without touching quest.js or chat.js.
 ═══════════════════════════════════════ */
 
 const PuzzleGame = (function() {

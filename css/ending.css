@@ -1,0 +1,20 @@
+/* ═══════════════════════════════════════
+   ENDING SCREEN (#s-end)
+   Depends on: base.css (:root vars, .screen, .btn)
+═══════════════════════════════════════ */
+
+#s-end{gap:22px;text-align:center}
+.e-title{font-size:clamp(13px,2.8vw,22px);color:var(--gold);text-shadow:2px 2px 0 #7a5500;animation:glow 2s infinite}
+@keyframes glow{0%,100%{text-shadow:2px 2px 0 #7a5500}50%{text-shadow:2px 2px 0 #7a5500,0 0 20px #ffd166}}
+.e-msg{font-family:'VT323',monospace;font-size:clamp(19px,3.2vw,28px);color:var(--white);max-width:600px;line-height:1.7;background:var(--panel2);border:2px solid var(--pink);padding:22px 26px}
+.e-stats{font-size:8px;color:var(--pink2);line-height:2.4}
+.e-stars{font-size:32px;display:flex;gap:10px;justify-content:center}
+.spin{animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+  .e-title{font-size:14px!important}
+  .e-msg{font-size:18px!important;padding:14px 16px!important}
+  .e-stats{font-size:7px!important}
+  #s-end{gap:14px!important;padding:16px!important}
+}

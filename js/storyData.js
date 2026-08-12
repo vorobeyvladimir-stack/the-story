@@ -1,4 +1,14 @@
-/* Game Story & Background Data */
+/* ═══════════════════════════════════════
+   STORY DATA
+   Owns: BG (per-chapter background gradient/decor/label) and CHAPTERS
+   (the whole chapter list — dialogue lines, choices, chat minigame lines,
+   or type:'puzzle' + grid/image for a puzzle chapter).
+   Exports (globals): BG, CHAPTERS
+   Depends on: nothing — pure content, no logic
+   Used by: core.js (buildMap), quest.js (startChapter), puzzle.js (start)
+   Editing the STORY (text/branching/which chapters exist) only ever
+   touches this file — it never needs the engine files below to change.
+═══════════════════════════════════════ */
 const BG = {
   zoe:{bg:'linear-gradient(160deg,#080d20,#0d1f40)',deco:'📱💫🌙',lbl:'📱 ZOE APP — Where It Started'},
   heidelberg:{bg:'linear-gradient(160deg,#150a25,#2a1550)',deco:'🏰🌸🌃',lbl:'🏰 Heidelberg, Germany'},

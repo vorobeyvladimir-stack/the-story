@@ -1,0 +1,17 @@
+/* ═══════════════════════════════════════
+   TITLE SCREEN (#s-title)
+   Depends on: base.css (:root vars, .screen, .btn)
+═══════════════════════════════════════ */
+
+#s-title{gap:22px;text-align:center}
+.big-heart{font-size:48px;animation:hb 1.4s infinite;display:block;line-height:1}
+.t-title{font-size:clamp(16px,4vw,30px);color:var(--pink);text-shadow:3px 3px 0 #7a1535,-1px -1px 0 #ff8fb3;line-height:1.7;animation:glitch 5s infinite}
+@keyframes glitch{0%,85%,100%{text-shadow:3px 3px 0 #7a1535,-1px -1px 0 #ff8fb3}87%{text-shadow:-3px 3px 0 cyan,3px -3px 0 magenta}91%{text-shadow:3px -2px 0 #7a1535}}
+.t-sub{font-size:clamp(7px,1.4vw,10px);color:var(--pink2);line-height:2.4;letter-spacing:1px}
+
+@media(max-width:600px){
+  .t-title{font-size:18px!important}
+  .t-sub{font-size:9px!important;line-height:2!important}
+  #s-title{gap:16px!important}
+  .big-heart{font-size:36px!important}
+}

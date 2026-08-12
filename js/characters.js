@@ -1,4 +1,14 @@
-/* Pixel Art Characters Data */
+/* ═══════════════════════════════════════
+   CHARACTER SPRITES
+   Owns: the SVG object mapping character key ('man'/'gala'/'lydia') to its
+   markup (man is a raster <img>, gala/lydia are inline SVG).
+   Exports (globals): SVG
+   Depends on: nothing
+   Used by: quest.js (buildChars)
+   Data-only file — if you're chasing a rendering/animation bug, the CSS
+   classes applied to these elements (.char-svg, .char-svg.talking/.happy)
+   live in css/scene.css, not here.
+═══════════════════════════════════════ */
 const SVG = {
 man:`<img src='assets/man.png' class='char-svg' style='width:auto;height:160px;image-rendering:pixelated;display:block' alt='Man'/>`,
 

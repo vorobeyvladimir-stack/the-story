@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════
+   CHAPTER MAP SCREEN (#s-map)
+   Depends on: base.css (:root vars, .screen)
+═══════════════════════════════════════ */
+
+#s-map{gap:18px}
+.map-title{font-size:clamp(9px,1.8vw,14px);color:var(--gold);text-shadow:2px 2px 0 #7a5500;letter-spacing:3px}
+.prog-wrap{width:min(320px,90vw);height:14px;background:var(--panel2);border:2px solid var(--gray)}
+.prog-fill{height:100%;background:var(--pink);transition:width .7s ease}
+.prog-lbl{font-size:8px;color:var(--pink2);margin-top:4px;text-align:center}
+.ch-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:680px}
+.ch-card{font-family:'Press Start 2P',monospace;font-size:8px;padding:12px 10px;background:var(--panel2);border:2px solid var(--gray);cursor:pointer;text-align:center;width:118px;line-height:1.9;transition:all .15s;box-shadow:3px 3px 0 #000;touch-action:manipulation;-webkit-tap-highlight-color:rgba(232,69,122,0.3);user-select:none;-webkit-user-select:none}
+.ch-card:hover:not(.locked){border-color:var(--pink);color:var(--pink2);transform:translate(-2px,-2px);box-shadow:5px 5px 0 #7a1535}
+.ch-card.done{border-color:var(--teal);color:var(--teal)}
+.ch-card.locked{opacity:.3;cursor:not-allowed}
+.ch-ico{font-size:24px;display:block;margin-bottom:6px}
+.ch-loc{font-size:7px;color:var(--blue);display:block;margin-top:4px}
+
+@media(max-width:600px){
+  .map-title{font-size:10px!important;letter-spacing:1px!important}
+  .ch-card{width:calc(50% - 8px)!important;font-size:7px!important;padding:10px 6px!important}
+  .ch-ico{font-size:20px!important}
+  .ch-grid{gap:8px!important;padding:0 4px!important}
+  .prog-wrap{width:90vw!important}
+  #s-map{gap:12px!important}
+}
+
+@media(max-width:480px){
+  .ch-card{width:calc(50% - 8px)}
+}
