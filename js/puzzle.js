@@ -41,14 +41,29 @@ const PuzzleGame = (function() {
   // connecting two pieces — it has no idea which pieces are supposed to be
   // neighbours in the source photo. With only two possible edge shapes,
   // unrelated edges will randomly match, so without this check pieces that
-  // aren't adjacent in the photo could snap together. This requirement adds
-  // that missing check: connection is only allowed between grid cells that
-  // are exactly one step apart (i.e. real neighbours).
-  function isPhotoAdjacent(one, other) {
+  // aren't adjacent in the photo could snap together.
+  //
+  // IMPORTANT: headbreaker's horizontalConnector and verticalConnector both
+  // call whatever requirement function is attached to them — with the SAME
+  // (one, other) pair — regardless of which direction is actually being
+  // tested. A single "are these two cells 1 step apart" check (Manhattan
+  // distance) passes for horizontal *and* vertical neighbours alike, so a
+  // pair that's only meant to connect left-right (e.g. p_2_2 / p_2_3) could
+  // also be forced together top-bottom, since they're still "1 step apart".
+  // Each direction needs its own, direction-specific check:
+  // horizontalConnector tests one.right against other.left, i.e. one must be
+  // immediately LEFT of other; verticalConnector tests one.down against
+  // other.up, i.e. one must be immediately ABOVE other.
+  function isImmediatelyLeftOf(one, other) {
     const a = gridPos(one);
     const b = gridPos(other);
-    if (!a || !b) return false;
-    return Math.abs(a.r - b.r) + Math.abs(a.c - b.c) === 1;
+    return !!a && !!b && a.r === b.r && b.c === a.c + 1;
+  }
+
+  function isImmediatelyAbove(one, other) {
+    const a = gridPos(one);
+    const b = gridPos(other);
+    return !!a && !!b && a.c === b.c && b.r === a.r + 1;
   }
 
   return {
@@ -126,9 +141,12 @@ const PuzzleGame = (function() {
             maxPiecesCount: { x: cols, y: rows }
           });
 
-          // Reject connections between pieces that aren't real photo-neighbours,
-          // even when their Tab/Slot shapes happen to match (see isPhotoAdjacent above).
-          hbCanvas.puzzle.attachConnectionRequirement(isPhotoAdjacent);
+          // Reject connections between pieces that aren't real photo-neighbours in
+          // THAT specific direction, even when their Tab/Slot shapes happen to
+          // match (see isImmediatelyLeftOf/isImmediatelyAbove above — each
+          // connector gets its own directional check, not a shared one).
+          hbCanvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
+          hbCanvas.puzzle.attachVerticalConnectionRequirement(isImmediatelyAbove);
 
           // CRITICAL: Lock connected pieces permanently while dragging so they NEVER detach!
           hbCanvas.puzzle.forceConnectionWhileDragging();
