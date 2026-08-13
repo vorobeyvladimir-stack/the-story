@@ -15,8 +15,7 @@ const BG = {
   stockholm:{bg:'linear-gradient(160deg,#0a1525,#152035)',deco:'🇸🇪❄️🌊',lbl:'🇸🇪 Stockholm, Sweden'},
   kyiv:{bg:'linear-gradient(160deg,#0f1a12,#182a1e)',deco:'🌻🐾🏠',lbl:'🇺🇦 Kyiv — Lydia\'s Apartment'},
   frankfurt:{bg:'linear-gradient(160deg,#15100a,#25180e)',deco:'🌉🏨<ctrl42>',lbl:'🇩🇪 Frankfurt & Stuttgart'},
-  chat:{bg:'linear-gradient(160deg,#0a0a18,#14142a)',deco:'💬💕📲',lbl:'💬 The Three — Group Chat'},
-  puzzle:{bg:'linear-gradient(160deg,#1b0e29,#2d123d)',deco:'🧩✨💕',lbl:'🧩 Photo Puzzle — 24 Pieces'}
+  chat:{bg:'linear-gradient(160deg,#0a0a18,#14142a)',deco:'💬💕📲',lbl:'💬 The Three — Group Chat'}
 };
 
 /* ═══════════════════════════════════════
@@ -125,7 +124,6 @@ const CHAPTERS = [
   id:'kyiv', num:4, title:'Home in Kyiv', ico:'🇺🇦', loc:'Kyiv',
   chars:['gala','lydia'],
   bg:'kyiv',
-  isMinigame:true,
   lines:[
     {who:'NARRATOR',text:'Gala visited Kyiv. Lydia\'s apartment — white walls, blue accents, soft grey light.'},
     {who:'LYDIA',text:'Welcome to my place! *a little dog runs in*'},
@@ -175,7 +173,6 @@ const CHAPTERS = [
   id:'chat', num:6, title:'Daily Magic', ico:'💬', loc:'The Group Chat',
   chars:['man','gala','lydia'],
   bg:'chat',
-  isMinigame:true,
   lines:[
     {who:'NARRATOR',text:'Every single day — morning messages, jokes, photos, good nights...'},
     {who:'NARRATOR',text:'Three people, three cities, one chat window. ❤️'},

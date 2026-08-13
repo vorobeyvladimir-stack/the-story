@@ -160,8 +160,20 @@ const PuzzleGame = (function() {
           // CRITICAL: Lock connected pieces permanently while dragging so they NEVER detach!
           hbCanvas.puzzle.forceConnectionWhileDragging();
 
-          // Activate image scaling according to Headbreaker documentation
-          hbCanvas.adjustImagesToPuzzleHeight();
+          // Scale the photo to COVER the grid, not just fit one axis. headbreaker's
+          // two helpers each scale by a single axis, so picking the wrong one leaves
+          // the other axis short: the far row/column's crop then runs past the
+          // image edge and Konva's fillPatternRepeat:'repeat' wraps it in.
+          // pieceH is Math.floor'd, so the grid is never exactly the photo's aspect
+          // — which side comes up short depends on the photo and the grid, and must
+          // be decided per case rather than assumed.
+          const gridIsWiderThanPhoto =
+            hbCanvas.puzzleDiameter.x / hbCanvas.puzzleDiameter.y > imgW / imgH;
+          if (gridIsWiderThanPhoto) {
+            hbCanvas.adjustImagesToPuzzleWidth();
+          } else {
+            hbCanvas.adjustImagesToPuzzleHeight();
+          }
 
           // headbreaker reuses each piece's targetPosition as the base offset for
           // cropping the source image, not just for placing the piece on the board:

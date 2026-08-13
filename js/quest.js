@@ -54,7 +54,7 @@ function buildChars(charList) {
 }
 
 function setTalking(who) {
-  document.querySelectorAll('.char-svg').forEach(s => s.classList.remove('talking', 'happy'));
+  document.querySelectorAll('.char-svg').forEach(s => s.classList.remove('talking'));
   const key = who.toLowerCase();
   const el = document.querySelector('#char-' + key + ' .char-svg');
   if (el) el.classList.add('talking');

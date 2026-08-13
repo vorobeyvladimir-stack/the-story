@@ -27,11 +27,6 @@ html,body{
   text-size-adjust:100%;
 }
 
-/* STARS */
-#stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;height:100dvh}
-.star{position:absolute;width:2px;height:2px;background:#fff;animation:twinkle var(--d) infinite var(--dl);will-change:opacity}
-@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.9}}
-
 /* SCREENS */
 .screen{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;height:100dvh;max-height:100dvh;box-sizing:border-box}
 .screen.active{display:flex;animation:fadeIn .6s ease;will-change:transform,opacity}

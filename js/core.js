@@ -66,8 +66,7 @@ function buildMap() {
   document.getElementById('prog').style.width = `${(done / CHAPTERS.length) * 100}%`;
   document.getElementById('prog-lbl').textContent = `${done} / ${CHAPTERS.length} complete`;
 
-  CHAPTERS.forEach((ch, i) => {
-    const unlocked = true;
+  CHAPTERS.forEach(ch => {
     const completed = state.completed.has(ch.id);
     const card = document.createElement('div');
     card.className = 'ch-card' + (completed ? ' done' : '');
