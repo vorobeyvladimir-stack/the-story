@@ -112,11 +112,20 @@ const PuzzleGame = (function() {
         const aspect = (imgH / rows) / (imgW / cols);
         const pieceH = Math.floor(pieceW * aspect);
         const marginX = pieceW / 2;
-        const marginY = pieceH / 2;
+
+        // The board also needs to double as a "parking lot" for pieces you're not
+        // working on yet — on a phone there's little room to drag them out of the
+        // way. Add a third more vertical space on top of the base half-piece
+        // margin, without touching pieceH, so the assembled photo stays the same
+        // size and only the empty workspace above/below it grows.
+        const baseMarginY = pieceH / 2;
+        const boardHBeforeExtraSpace = pieceH * rows + baseMarginY * 2;
+        const extraVerticalSpace = boardHBeforeExtraSpace / 3;
+        const marginY = baseMarginY + extraVerticalSpace / 2;
 
         // Playfield is the grid plus that margin on every side
         const boardW = pieceW * cols + marginX * 2;
-        const boardH = pieceH * rows + marginY * 2;
+        const boardH = pieceH * rows + marginY * 2; // = boardHBeforeExtraSpace * 4/3
 
         boardEl.style.width = `${boardW}px`;
         boardEl.style.height = `${boardH}px`;
@@ -153,6 +162,27 @@ const PuzzleGame = (function() {
 
           // Activate image scaling according to Headbreaker documentation
           hbCanvas.adjustImagesToPuzzleHeight();
+
+          // headbreaker reuses each piece's targetPosition as the base offset for
+          // cropping the source image, not just for placing the piece on the board:
+          //   cropOffset = (targetPosition + imageMetadata.offset - pieceDiameter) / scale
+          // (see _baseImageMetadataFor + adjustImagesToPuzzle in the library).
+          //
+          // targetPosition below is `margin + cell + pieceSize/2`, so without a
+          // correction the margin leaks into the crop and shifts which slice of the
+          // photo every piece shows. Push it far enough and the crop starts at a
+          // NEGATIVE image coordinate; Konva's fillPatternRepeat:'repeat' then wraps
+          // it, so the top row renders content from the BOTTOM of the photo.
+          //
+          // Solving that equation for piece (0,0) to crop at exactly image (0,0):
+          //   margin + pieceSize/2 + offset - pieceSize = 0  =>  offset = pieceSize/2 - margin
+          // This holds for ANY margin, so the vertical workspace can grow freely.
+          // (It also explains why margin == pieceSize/2 happened to work with no
+          // correction at all: the two terms cancelled by coincidence.)
+          hbCanvas.imageMetadata.offset = {
+            x: pieceW / 2 - marginX,
+            y: pieceH / 2 - marginY
+          };
 
           // Generate 100% guaranteed complementary Tab & Slot objects for all inside edges
           const horiz = [], vert = [];

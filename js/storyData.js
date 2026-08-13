@@ -54,7 +54,7 @@ const CHAPTERS = [
   id:'ch1_puzzle', num:'1b', title:'The Match Puzzle', ico:'🧩', loc:'Photo Puzzle',
   type:'puzzle',
   image:'assets/ch1_puzzle.jpg',
-  grid:{ cols:4, rows:4 }
+  grid:{ cols:4, rows:3 } // 12 pieces, keeps pieces close to square (photo is ~1008x858)
 },
 {
   id:'heidelberg', num:2, title:'First Meeting', ico:'🏰', loc:'Heidelberg',
