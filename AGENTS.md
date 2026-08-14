@@ -8,19 +8,19 @@ The game is a modular vanilla JS/CSS web game designed for Telegram WebApps and 
 
 ```
 /
-├── assets/          # Static PNG sprites & puzzle photos (man.png, gala.png, lydia.png, ch1_puzzle.jpg)
+├── assets/          # Sprites, puzzle photos & video (man.png, gala.png, lydia.png, ch1_puzzle.jpg, hud_emblem.png, intro-video-resize.mp4)
 ├── css/             # Componentized stylesheets (base, title, map, scene, chat, puzzle, ending)
 ├── js/
-│   ├── audio.js     # SoundEngine: 8-bit Web Audio API synthesizer & sound effects
+│   ├── audio.js     # SoundEngine: 8-bit Web Audio API synthesizer, SFX & haptic sound bindings
 │   ├── characters.js# SVG: Character sprite markup mapping ('man', 'gala', 'lydia')
 │   ├── storyData.js # BG & CHAPTERS data: Pure content (dialogue, choices, chat quiz, puzzle grids)
 │   ├── lib/         # Third-party dependencies: konva.min.js & headbreaker.js
-│   ├── puzzle.js    # PuzzleGame: Headbreaker jigsaw engine with directional adjacency checks
-│   ├── core.js      # CoreEngine & Game: State management, screen transitions, chapter lifecycle
+│   ├── puzzle.js    # PuzzleGame: Headbreaker jigsaw engine, Retina DPR cap, async decode, drag haptics
+│   ├── core.js      # CoreEngine, Game & HapticEngine: State management, screen transitions, Taptic Engine bridge
 │   ├── quest.js     # QuestEngine: Visual novel dialogue engine with typewriter & branching
 │   ├── chat.js      # ChatEngine: Telegram group chat quiz minigame
-│   ├── romanceBg.js # RomanceBg: Sensual falling rose petals, lightning & cocktail particles
-│   └── main.js      # Page bootstrapping and Telegram WebApp integration
+│   ├── romanceBg.js # RomanceBg: Sensual falling petals, lightning & cocktail particle engine (auto-paused during puzzle)
+│   └── main.js      # Page bootstrapping, Page Visibility API deep-sleep lifecycle & Telegram WebApp integration
 ├── index.html       # HTML entry point loading modular CSS and scripts
 └── AGENTS.md        # This AI context file
 ```
@@ -48,8 +48,9 @@ s-title (Title) ──▶ s-map (Chapter Select)
 - `Game.core`: `show(id)`, `buildMap()`, `completeChapter(ch)`, `resetState()`, `replayGame()`
 - `Game.quest`: `startChapter(ch)`, `nextLine()`, `showLine(line)`, `pickChoice(branchId)`
 - `Game.chat`: `startChat(ch)`, `endChat()`
-- `Game.puzzle`: `start(ch)`, `togglePreview()`, `shuffle()`, `hintSnap()`
-- `Game.audio`: `SoundEngine` (`playClick()`, `playTypewriter()`, `playCorrect()`, `playWrong()`, `playFanfare()`, `startBGM()`)
+- `Game.puzzle`: `start(ch)`, `togglePreview()`, `shuffle()`
+- `Game.audio`: `SoundEngine` (`playClick()`, `playTypewriter()`, `playCorrect()`, `playWrong()`, `playFanfare()`, `startBGM()`, `pauseBGM()`, `resumeBGM()`)
+- `Game.haptic`: `HapticEngine` (`impact(style)`, `notification(type)`, `selection()`, `startDrag(x, y)`, `onDragMove(x, y)`, `endDrag()`)
 
 ---
 

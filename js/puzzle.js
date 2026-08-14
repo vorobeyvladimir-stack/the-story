@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════
    PUZZLE MINIGAME (headbreaker.js + konva.min.js)
    Owns: the whole jigsaw screen — grid/piece generation, connection rules,
-   image scaling, magnetic snap sparks, and completion.
-   Exports (globals): PuzzleGame (start, togglePreview, shuffle, hintSnap)
+   image scaling, and completion.
+   Exports (globals): PuzzleGame (start, togglePreview, shuffle)
    Depends on: show, completeChapter, notify (core.js), SoundEngine (audio.js),
    headbreaker/konva (js/lib)
 ═══════════════════════════════════════ */
@@ -334,31 +334,6 @@ const PuzzleGame = (function() {
       hbCanvas.redraw();
       notify('🔄 Pieces shuffled!');
       updateCounter();
-    },
-
-    hintSnap: function() {
-      if (!hbCanvas || !hbCanvas.puzzle) return;
-      SoundEngine.playClick();
-      const loose = hbCanvas.puzzle.pieces.filter(p => !p.fixed && !p.connected);
-      if (loose.length > 0) {
-        const piece = loose[0];
-        const pos = gridPos(piece);
-        if (pos) {
-          const pw = hbCanvas.puzzle.pieceWidth;
-          const ph = hbCanvas.puzzle.pieceHeight;
-          const marginX = Math.floor(pw / 2);
-          const marginY = Math.floor(ph / 2);
-          piece.relocateTo(marginX + pos.c * pw + pw / 2, marginY + pos.r * ph + ph / 2);
-          hbCanvas.puzzle.autoconnect();
-          hbCanvas.redraw();
-          SoundEngine.playCorrect();
-          spawnMagneticSparks(piece);
-          notify('💡 Piece guided home!');
-          setTimeout(updateCounter, 20);
-        }
-      } else {
-        notify('✨ All pieces already assembled!');
-      }
     }
   };
 })();
