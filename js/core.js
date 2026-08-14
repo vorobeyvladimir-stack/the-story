@@ -63,7 +63,8 @@ const CoreEngine = {
       }
     }
 
-    // Battery & CPU Optimization: Freeze particle spawning during puzzle gameplay
+    // Battery & CPU Optimization: Freeze particle spawning & GPU blur during puzzle gameplay
+    document.body.classList.toggle('puzzle-mode', id === 's-puzzle');
     if (window.RomanceFx) {
       if (id === 's-puzzle') {
         window.RomanceFx.pause();
