@@ -52,15 +52,21 @@ const CoreEngine = {
       }
     }
     SoundEngine.updateHudIcon();
+
+    // GPU Optimization: Auto-pause title video on gameplay screens, resume only on s-title
+    const vid = document.querySelector('.hero-intro-video');
+    if (vid) {
+      if (id === 's-title') {
+        if (vid.paused) vid.play().catch(() => {});
+      } else {
+        if (!vid.paused) vid.pause();
+      }
+    }
   },
 
   showTitle: function() {
     SoundEngine.playClick();
     this.show('s-title');
-    const vid = document.querySelector('.hero-intro-video');
-    if (vid && vid.paused) {
-      vid.play().catch(() => {});
-    }
   },
 
   showMap: function() {

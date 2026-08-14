@@ -8,8 +8,8 @@
 ═══════════════════════════════════════ */
 
 (function() {
-  const FLOAT_ICONS = ['🍸', '🍒', '💋', '🫦', '💄', '🍹', '🍾', '✨', '🔥', '⚡'];
-  const PETAL_ICONS = ['🌹', '🌸', '🥀'];
+  const FLOAT_ICONS = ['🍸', '🍒', '💋', '🫦', '💄', '🍹', '🍾', '🔥', '⚡'];
+  const PETAL_ICONS = ['🌹'];
   const MAX_FLOAT_PARTICLES = 16;
   const MAX_PETAL_PARTICLES = 10;
   let container = null;
