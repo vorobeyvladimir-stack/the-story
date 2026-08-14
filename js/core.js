@@ -429,6 +429,26 @@ const HapticEngine = {
   },
 
   /**
+   * Mechanical latch snap feel when two puzzle pieces connect
+   */
+  snap: function() {
+    this.impact('rigid');
+    setTimeout(() => this.impact('medium'), 60);
+  },
+
+  /**
+   * Extended powerful victory celebration pattern on puzzle completion
+   */
+  victory: function() {
+    this.impact('rigid');
+    setTimeout(() => this.impact('heavy'), 120);
+    setTimeout(() => this.notification('success'), 280);
+    setTimeout(() => this.impact('heavy'), 500);
+    setTimeout(() => this.notification('success'), 720);
+    setTimeout(() => this.impact('rigid'), 980);
+  },
+
+  /**
    * Resets drag distance tracking
    */
   endDrag: function() {

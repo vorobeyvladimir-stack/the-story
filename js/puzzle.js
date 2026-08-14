@@ -241,21 +241,22 @@ const PuzzleGame = (function() {
             boardEl.addEventListener('pointercancel', stopDrag, { passive: true });
           }
 
-          // NOTE: haptics for onConnect/onDisconnect/onValid are emitted inside
-          // SoundEngine.playCorrect / playClick / playFanfare, avoiding doubled buzzes.
           hbCanvas.onConnect(() => {
             SoundEngine.playCorrect();
+            if (window.HapticEngine) HapticEngine.snap();
             setTimeout(updateCounter, 20);
           });
 
           hbCanvas.onDisconnect(() => {
             SoundEngine.playClick();
+            if (window.HapticEngine) HapticEngine.impact('light');
             setTimeout(updateCounter, 20);
           });
 
           hbCanvas.attachSolvedValidator();
           hbCanvas.onValid(() => {
             SoundEngine.playFanfare();
+            if (window.HapticEngine) HapticEngine.victory();
             notify('🎉 Puzzle Complete!');
             const counter = document.getElementById('puz-counter');
             if (counter) counter.textContent = `${cols * rows} / ${cols * rows}`;

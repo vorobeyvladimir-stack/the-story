@@ -182,7 +182,7 @@ const SoundEngine = (function() {
     // Chapter / Game complete victory fanfare
     playFanfare: function() {
       if (window.HapticEngine) {
-        try { HapticEngine.notification('success'); } catch(e) {}
+        try { HapticEngine.victory(); } catch(e) {}
       }
       if (muted) return;
       const melody = [
