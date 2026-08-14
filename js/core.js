@@ -218,11 +218,28 @@ const CoreEngine = {
 /* ═══════════════════════════════════════
    HAPTIC FEEDBACK ENGINE (iOS 17+ / Telegram WebApp Taptic Engine & Web Vibration)
 ═══════════════════════════════════════ */
+function postTgEvent(eventType, eventData) {
+  try {
+    if (window.TelegramWebviewProxy && typeof window.TelegramWebviewProxy.postEvent === 'function') {
+      window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(eventData || {}));
+      return true;
+    }
+    if (window.webkit?.messageHandlers?.eventHandler?.postMessage) {
+      window.webkit.messageHandlers.eventHandler.postMessage(JSON.stringify({
+        eventType: eventType,
+        eventData: eventData || {}
+      }));
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
 const HapticEngine = {
   _lastDragX: null,
   _lastDragY: null,
   _dragDistanceAccumulator: 0,
-  _DRAG_STEP_PX: 38, // Distance in pixels between delicate friction ticks
+  _DRAG_STEP_PX: 26, // Distance in pixels between delicate friction ticks
 
   /**
    * Triggers haptic impact (light, medium, heavy, rigid, soft)
@@ -230,11 +247,13 @@ const HapticEngine = {
    */
   impact: function(style = 'light') {
     try {
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred(style);
-        return;
+      const tgHaptic = window.Telegram?.WebApp?.HapticFeedback;
+      if (tgHaptic && typeof tgHaptic.impactOccurred === 'function') {
+        tgHaptic.impactOccurred(style);
       }
-      if (navigator.vibrate) {
+      postTgEvent('haptic_impact_occurred', { style: style });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate(style === 'heavy' ? 24 : style === 'medium' ? 14 : 7);
       }
     } catch(e) {}
@@ -246,11 +265,13 @@ const HapticEngine = {
    */
   notification: function(type = 'success') {
     try {
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.notificationOccurred(type);
-        return;
+      const tgHaptic = window.Telegram?.WebApp?.HapticFeedback;
+      if (tgHaptic && typeof tgHaptic.notificationOccurred === 'function') {
+        tgHaptic.notificationOccurred(type);
       }
-      if (navigator.vibrate) {
+      postTgEvent('haptic_notification_occurred', { type: type });
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate(type === 'success' ? [14, 40, 20] : 30);
       }
     } catch(e) {}
@@ -261,11 +282,13 @@ const HapticEngine = {
    */
   selection: function() {
     try {
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.selectionChanged();
-        return;
+      const tgHaptic = window.Telegram?.WebApp?.HapticFeedback;
+      if (tgHaptic && typeof tgHaptic.selectionChanged === 'function') {
+        tgHaptic.selectionChanged();
       }
-      if (navigator.vibrate) {
+      postTgEvent('haptic_selection_changed', {});
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate(5);
       }
     } catch(e) {}

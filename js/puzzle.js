@@ -213,8 +213,32 @@ const PuzzleGame = (function() {
           hbCanvas.shuffle(0.75);
 
           // iOS 17+ / Telegram WebApp Taptic Engine piece drag tactile sensation
+          let isDraggingPiece = false;
+          if (boardEl) {
+            boardEl.addEventListener('pointerdown', (e) => {
+              isDraggingPiece = true;
+              if (window.HapticEngine) HapticEngine.startDrag(e.clientX, e.clientY);
+            }, { passive: true });
+
+            boardEl.addEventListener('pointermove', (e) => {
+              if (isDraggingPiece && window.HapticEngine) {
+                HapticEngine.onDragMove(e.clientX, e.clientY);
+              }
+            }, { passive: true });
+
+            const stopDrag = () => {
+              if (isDraggingPiece) {
+                isDraggingPiece = false;
+                if (window.HapticEngine) HapticEngine.endDrag();
+              }
+            };
+            boardEl.addEventListener('pointerup', stopDrag, { passive: true });
+            boardEl.addEventListener('pointercancel', stopDrag, { passive: true });
+          }
+
           if (hbCanvas.stage) {
             hbCanvas.stage.on('dragstart', () => {
+              isDraggingPiece = true;
               const pos = hbCanvas.stage.getPointerPosition() || { x: 0, y: 0 };
               if (window.HapticEngine) HapticEngine.startDrag(pos.x, pos.y);
             });
@@ -223,6 +247,7 @@ const PuzzleGame = (function() {
               if (pos && window.HapticEngine) HapticEngine.onDragMove(pos.x, pos.y);
             });
             hbCanvas.stage.on('dragend', () => {
+              isDraggingPiece = false;
               if (window.HapticEngine) HapticEngine.endDrag();
             });
           }

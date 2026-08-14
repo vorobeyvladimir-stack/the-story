@@ -117,6 +117,9 @@ const SoundEngine = (function() {
 
     // Button click tone
     playClick: function() {
+      if (window.HapticEngine) {
+        try { HapticEngine.impact('light'); } catch(e) {}
+      }
       if (muted) return;
       initCtx();
       if (!ctx) return;
@@ -139,6 +142,9 @@ const SoundEngine = (function() {
 
     // Correct answer arpeggio (C5 -> E5 -> G5 -> C6)
     playCorrect: function() {
+      if (window.HapticEngine) {
+        try { HapticEngine.impact('medium'); } catch(e) {}
+      }
       if (muted) return;
       const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
@@ -150,6 +156,9 @@ const SoundEngine = (function() {
 
     // Wrong answer buzzer
     playWrong: function() {
+      if (window.HapticEngine) {
+        try { HapticEngine.notification('error'); } catch(e) {}
+      }
       if (muted) return;
       initCtx();
       if (!ctx) return;
@@ -172,6 +181,9 @@ const SoundEngine = (function() {
 
     // Chapter / Game complete victory fanfare
     playFanfare: function() {
+      if (window.HapticEngine) {
+        try { HapticEngine.notification('success'); } catch(e) {}
+      }
       if (muted) return;
       const melody = [
         { f: 523.25, d: 0.1, t: 0 },
