@@ -53,13 +53,22 @@ const CoreEngine = {
     }
     SoundEngine.updateHudIcon();
 
-    // GPU Optimization: Auto-pause title video on gameplay screens, resume only on s-title
+    // GPU & CPU Optimization: Auto-pause title video on gameplay screens
     const vid = document.querySelector('.hero-intro-video');
     if (vid) {
       if (id === 's-title') {
         if (vid.paused) vid.play().catch(() => {});
       } else {
         if (!vid.paused) vid.pause();
+      }
+    }
+
+    // Battery & CPU Optimization: Freeze particle spawning during puzzle gameplay
+    if (window.RomanceFx) {
+      if (id === 's-puzzle') {
+        window.RomanceFx.pause();
+      } else {
+        window.RomanceFx.resume();
       }
     }
   },

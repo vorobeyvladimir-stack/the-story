@@ -144,9 +144,27 @@
       setTimeout(createRosePetal, j * 500);
     }
 
+    let isPaused = false;
+
     // Continuous spawn timers
-    setInterval(createFloatParticle, 1200);
-    setInterval(createRosePetal, 1800);
+    setInterval(() => {
+      if (!isPaused) createFloatParticle();
+    }, 1400);
+
+    setInterval(() => {
+      if (!isPaused) createRosePetal();
+    }, 2000);
+
+    window.RomanceFx = {
+      pause: function() {
+        isPaused = true;
+        if (container) container.style.opacity = '0';
+      },
+      resume: function() {
+        isPaused = false;
+        if (container) container.style.opacity = '1';
+      }
+    };
   }
 
   if (document.readyState === 'loading') {
