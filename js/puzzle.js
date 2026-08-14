@@ -70,6 +70,17 @@ const PuzzleGame = (function() {
 
       const boardEl = document.getElementById('puzzle-board');
       if (!boardEl) return;
+      
+      // Clean up previous Headbreaker / Konva canvas stage to avoid canvas stacking
+      if (hbCanvas) {
+        try {
+          if (hbCanvas.__konvaLayer__) {
+            const stage = hbCanvas.__konvaLayer__.getStage();
+            if (stage) stage.destroy();
+          }
+        } catch(e) {}
+        hbCanvas = null;
+      }
       boardEl.innerHTML = '';
 
       const cols = ch.grid ? ch.grid.cols : 4;
@@ -84,24 +95,20 @@ const PuzzleGame = (function() {
         barEl.style.width = '0%';
       }
 
-      const img = new Image();
-      let hasLoaded = false;
+      let isInitialized = false;
 
-      const initHeadbreaker = () => {
-        if (hasLoaded) return;
-        hasLoaded = true;
-
-        // Cap DPR to 2x for optimal mobile GPU performance (saves 50%+ video memory on iPhone Retina 3x)
-        const safeDPR = Math.min(window.devicePixelRatio || 1, 2);
-        if (window.Konva) {
-          window.Konva.pixelRatio = safeDPR;
-        }
+      const initHeadbreaker = (img) => {
+        if (isInitialized) return;
+        isInitialized = true;
 
         const imgW = (img.naturalWidth && img.naturalWidth > 0) ? img.naturalWidth : 858;
         const imgH = (img.naturalHeight && img.naturalHeight > 0) ? img.naturalHeight : 854;
 
-        const availW = Math.min(window.innerWidth * 0.94, 540);
-        const availH = Math.max(340, Math.min(window.innerHeight * 0.52, 480));
+        const screenW = window.innerWidth || document.documentElement.clientWidth || 390;
+        const screenH = window.innerHeight || document.documentElement.clientHeight || 844;
+
+        const availW = Math.min(screenW * 0.94, 540);
+        const availH = Math.max(340, Math.min(screenH * 0.52, 480));
 
         const basePieceW = availW / (cols + 0.8);
         const basePieceH = availH / (rows + 0.8);
@@ -212,12 +219,8 @@ const PuzzleGame = (function() {
 
           hbCanvas.shuffle(0.75);
 
-          // iOS 17+ / Telegram WebApp Taptic Engine: Discrete tactile feedback
-          // Bound once per board element to avoid duplicate listeners on replay.
           if (boardEl && !boardEl.dataset.hapticsBound) {
             boardEl.dataset.hapticsBound = '1';
-
-            // Subtle grab response when touching/selecting a piece
             boardEl.addEventListener('pointerdown', () => {
               if (window.HapticEngine) HapticEngine.impact('light');
             }, { passive: true });
@@ -259,34 +262,26 @@ const PuzzleGame = (function() {
               }
             }, delay);
           });
-
-          requestAnimationFrame(() => {
-            if (hbCanvas) {
-              hbCanvas.redraw();
-            }
-          });
-
         } catch(err) {
           console.error("Headbreaker initialization error:", err);
         }
       };
 
-      const runWithAsyncDecode = async () => {
-        if ('decode' in img) {
-          try {
-            await img.decode();
-          } catch (e) {
-            // Graceful fallback if decode is unsupported or image is already cached
-          }
-        }
-        initHeadbreaker();
+      const img = new Image();
+      let loadTriggered = false;
+
+      const onImageReady = () => {
+        if (loadTriggered) return;
+        loadTriggered = true;
+        initHeadbreaker(img);
       };
 
-      img.onload = runWithAsyncDecode;
+      img.onload = onImageReady;
+      img.onerror = onImageReady;
       img.src = ch.image;
 
       if (img.complete && img.naturalWidth > 0) {
-        runWithAsyncDecode();
+        onImageReady();
       }
     },
 

@@ -49,6 +49,17 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+// Preload all puzzle images immediately on app launch for instant opening
+if (window.CHAPTERS) {
+  window.CHAPTERS.forEach(ch => {
+    if (ch.type === 'puzzle' && ch.image) {
+      const pImg = new Image();
+      pImg.src = ch.image;
+      if (pImg.decode) pImg.decode().catch(() => {});
+    }
+  });
+}
+
 // Initialize Map and display Title screen
 buildMap();
 show('s-title');
