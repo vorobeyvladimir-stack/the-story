@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#080815">
+<meta name="theme-color" content="#0b0616">
 <title>Our Story 💕</title>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/title.css">
@@ -35,15 +35,13 @@
   <span class="big-heart">💕</span>
   <div class="t-title">OUR STORY</div>
   <div class="t-sub">A Pixel Love Quest &nbsp;✦&nbsp; Three Hearts &nbsp;✦&nbsp; One Adventure</div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px">
-    <div style="display:flex;gap:14px;font-size:8px;color:var(--gray)">
-      <span style="color:var(--blue)">● Man</span>
-      <span style="color:var(--purple)">● Gala</span>
-      <span style="color:var(--teal)">● Lydia</span>
-    </div>
+  <div class="char-pills">
+    <span class="char-pill" style="color:var(--blue)">● Man</span>
+    <span class="char-pill" style="color:var(--purple)">● Gala</span>
+    <span class="char-pill" style="color:var(--teal)">● Lydia</span>
   </div>
   <button class="btn" onclick="showMap()">▶ &nbsp;PLAY</button>
-  <div style="font-size:7px;color:var(--gray);margin-top:6px">click / tap to advance dialogs</div>
+  <div style="font-size:11px;color:var(--pink-light);margin-top:6px;letter-spacing:0.5px">tap anywhere to advance dialogs</div>
 </div>
 
 <!-- MAP SCREEN -->
@@ -52,7 +50,7 @@
   <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
   <div class="prog-lbl" id="prog-lbl">0 / 7 complete</div>
   <div class="ch-grid" id="ch-grid"></div>
-  <div style="font-size:7px;color:var(--gray);margin-top:6px">complete chapters in order to unlock next</div>
+  <div style="font-size:11px;color:var(--pink-light);margin-top:6px;letter-spacing:0.5px">complete chapters in order to unlock next</div>
 </div>
 
 <!-- SCENE SCREEN -->
@@ -87,42 +85,54 @@
 
 <!-- PUZZLE MINIGAME SCREEN -->
 <div class="screen" id="s-puzzle">
-  <div class="puz-hdr">
-    <div class="puz-title" id="puz-title-text">🧩 Chapter 1 Puzzle</div>
-    <div class="puz-counter">Placed: <span id="puz-counter">0 / 16</span></div>
-    <button class="puz-btn-preview" onclick="PuzzleGame.togglePreview()">👁️ Photo</button>
+  <div class="puz-hdr-card-wrap">
+    <div class="puz-hdr-card">
+      <div class="puz-title" id="puz-title-text">Ch.1b: The Match Puzzle</div>
+      <div class="puz-hdr-row">
+        <div class="puz-progress-box">
+          <div class="puz-counter-chip">Pieces <span id="puz-counter">0 / 12</span></div>
+          <div class="puz-bar-track"><div class="puz-bar-fill" id="puz-bar-fill" style="width:0%"></div></div>
+        </div>
+        <div class="puz-pip-box" onclick="PuzzleGame.togglePreview()" role="button" tabindex="0" title="Tap to view full photo">
+          <img id="puz-pip-img" class="puz-pip-img" src="" alt="Thumbnail">
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="puzzle-board" id="puzzle-board"></div>
-  <div class="puz-hint">
-    click or drag pieces to swap into place
+
+  <div class="puzzle-board-wrap">
+    <div class="puzzle-board" id="puzzle-board"></div>
   </div>
 </div>
 
 <!-- PUZZLE PREVIEW MODAL -->
 <div class="puzzle-preview-modal" id="puzzle-preview-modal" onclick="PuzzleGame.togglePreview()">
-  <div style="font-size:9px;color:var(--gold);margin-bottom:10px">✦ Full Photo Reference ✦</div>
+  <div style="font-size:13px;font-weight:700;color:#ffe270;margin-bottom:12px;letter-spacing:1px">✦ Full Photo Reference ✦</div>
   <img id="puz-preview-img" class="puzzle-preview-img" src="" alt="Preview">
-  <div style="font-size:7px;color:var(--pink2);margin-top:10px">tap anywhere to close</div>
+  <div style="font-size:11px;color:var(--pink-light);margin-top:12px;letter-spacing:0.5px">tap anywhere to close</div>
 </div>
 
 <!-- ENDING SCREEN -->
 <div class="screen" id="s-end">
   <div class="e-stars">
     <span class="spin" style="display:inline-block">✨</span>
-    <span style="animation:hb 1.4s infinite;display:inline-block">💕</span>
-    <span class="spin" style="animation-direction:reverse;display:inline-block">✨</span>
+    <span>💕</span>
+    <span class="spin" style="display:inline-block">✨</span>
   </div>
-  <div class="e-title">✦ &nbsp;SWEET DREAMS COME TRUE&nbsp; ✦</div>
-  <div class="e-msg" id="e-msg"></div>
+  <div class="e-title">OUR STORY CONTINUES...</div>
+  <div class="e-msg" id="e-msg">
+    Through all the cities, late night confessions, and shared secrets... Every memory brought us closer together.
+  </div>
   <div class="e-stats" id="e-stats"></div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-    <button class="btn btn-ghost" onclick="showMap()">◀ Replay</button>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+    <button class="btn btn-ghost" onclick="replayGame()">◀ Replay</button>
     <button class="btn" onclick="showTitle()">🏠 Title</button>
   </div>
 </div>
 
 <!-- JAVASCRIPT MODULES -->
 <script src="js/audio.js"></script>
+<script src="js/romanceBg.js"></script>
 <script src="js/characters.js"></script>
 <script src="js/storyData.js"></script>
 <script src="js/lib/konva.min.js"></script>

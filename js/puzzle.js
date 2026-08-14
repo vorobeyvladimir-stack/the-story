@@ -1,13 +1,10 @@
 /* ═══════════════════════════════════════
    PUZZLE MINIGAME (headbreaker.js + konva.min.js)
    Owns: the whole jigsaw screen — grid/piece generation, connection rules,
-   image scaling, and completion.
-   Exports (globals): PuzzleGame (start, togglePreview)
-   Depends on: show, completeChapter, notify (core.js), SoundEngine
-   (audio.js), headbreaker/konva (js/lib)
-   Used by: core.js (buildMap, for chapters with type:'puzzle')
-   Self-contained: this is the one module that can be edited, replaced, or
-   have its whole minigame swapped out without touching quest.js or chat.js.
+   image scaling, magnetic snap sparks, and completion.
+   Exports (globals): PuzzleGame (start, togglePreview, shuffle, hintSnap)
+   Depends on: show, completeChapter, notify (core.js), SoundEngine (audio.js),
+   headbreaker/konva (js/lib)
 ═══════════════════════════════════════ */
 
 const PuzzleGame = (function() {
@@ -23,71 +20,98 @@ const PuzzleGame = (function() {
     if (counter) {
       counter.textContent = `${solved} / ${total}`;
     }
+    const bar = document.getElementById('puz-bar-fill');
+    if (bar && total > 0) {
+      bar.style.width = `${(solved / total) * 100}%`;
+    }
   }
 
   function oppInsert(ins) {
+    if (!ins) return null;
     return ins === headbreaker.Tab ? headbreaker.Slot : headbreaker.Tab;
   }
 
-  // Piece ids are 'p_{row}_{col}' (see sketchPiece below). Parsing them lets
-  // the connection requirement verify TRUE photo-adjacency, independent of
-  // whatever Tab/Slot shape randomly ended up on that edge.
   function gridPos(piece) {
     const m = /^p_(\d+)_(\d+)$/.exec(piece.metadata && piece.metadata.id);
     return m ? { r: +m[1], c: +m[2] } : null;
   }
 
-  // headbreaker only checks shape (Tab<->Slot) + on-canvas proximity before
-  // connecting two pieces — it has no idea which pieces are supposed to be
-  // neighbours in the source photo. With only two possible edge shapes,
-  // unrelated edges will randomly match, so without this check pieces that
-  // aren't adjacent in the photo could snap together.
-  //
-  // IMPORTANT: headbreaker's horizontalConnector and verticalConnector both
-  // call whatever requirement function is attached to them — with the SAME
-  // (one, other) pair — regardless of which direction is actually being
-  // tested. A single "are these two cells 1 step apart" check (Manhattan
-  // distance) passes for horizontal *and* vertical neighbours alike, so a
-  // pair that's only meant to connect left-right (e.g. p_2_2 / p_2_3) could
-  // also be forced together top-bottom, since they're still "1 step apart".
-  // Each direction needs its own, direction-specific check:
-  // horizontalConnector tests one.right against other.left, i.e. one must be
-  // immediately LEFT of other; verticalConnector tests one.down against
-  // other.up, i.e. one must be immediately ABOVE other.
-  function isImmediatelyLeftOf(one, other) {
-    const a = gridPos(one);
-    const b = gridPos(other);
-    return !!a && !!b && a.r === b.r && b.c === a.c + 1;
+  function isImmediatelyLeftOf(p1, p2) {
+    const a = gridPos(p1);
+    const b = gridPos(p2);
+    return !!(a && b && a.r === b.r && a.c + 1 === b.c);
   }
 
-  function isImmediatelyAbove(one, other) {
-    const a = gridPos(one);
-    const b = gridPos(other);
-    return !!a && !!b && a.c === b.c && b.r === a.r + 1;
+  function isImmediatelyAbove(p1, p2) {
+    const a = gridPos(p1);
+    const b = gridPos(p2);
+    return !!(a && b && a.c === b.c && a.r + 1 === b.r);
+  }
+
+  function spawnMagneticSparks(piece) {
+    const boardEl = document.getElementById('puzzle-board');
+    if (!boardEl || !piece) return;
+
+    let px = 60, py = 60;
+    if (piece.group && piece.group.shape) {
+      px = piece.group.shape.x();
+      py = piece.group.shape.y();
+    }
+
+    const sparkCount = 3 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < sparkCount; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'snap-spark';
+      spark.textContent = Math.random() < 0.65 ? '⚡' : '✨';
+      spark.style.left = `${px + (Math.random() - 0.5) * 50}px`;
+      spark.style.top = `${py + (Math.random() - 0.5) * 50}px`;
+      spark.style.setProperty('--sx', `${(Math.random() - 0.5) * 60}px`);
+      spark.style.setProperty('--sy', `${(Math.random() - 0.5) * 60}px`);
+      spark.style.setProperty('--srot', `${(Math.random() - 0.5) * 70}deg`);
+      boardEl.appendChild(spark);
+
+      setTimeout(() => {
+        if (spark.parentNode) {
+          spark.parentNode.removeChild(spark);
+        }
+      }, 600);
+    }
   }
 
   return {
     start: function(ch) {
       currentCh = ch;
 
-      document.getElementById('hud-ch').textContent = `Ch.${ch.num}: ${ch.title}`;
-      document.getElementById('puz-title-text').textContent = `🧩 ${ch.title}`;
-      document.getElementById('puz-preview-img').src = ch.image;
+      const hudCh = document.getElementById('hud-ch');
+      if (hudCh) hudCh.textContent = `Ch.${ch.num}: ${ch.title}`;
 
-      // 1. Show screen FIRST so DOM container is visible
+      const titleEl = document.getElementById('puz-title-text');
+      if (titleEl) {
+        titleEl.textContent = `Ch.${ch.num}: ${ch.title}`;
+      }
+
+      const prevImg = document.getElementById('puz-preview-img');
+      if (prevImg) prevImg.src = ch.image;
+
+      const pipImg = document.getElementById('puz-pip-img');
+      if (pipImg) pipImg.src = ch.image;
+
       show('s-puzzle');
 
       const boardEl = document.getElementById('puzzle-board');
       if (!boardEl) return;
       boardEl.innerHTML = '';
 
-      // Default 4x4 grid (16 pieces)
       const cols = ch.grid ? ch.grid.cols : 4;
-      const rows = ch.grid ? ch.grid.rows : 4;
+      const rows = ch.grid ? ch.grid.rows : 3;
 
       const counterEl = document.getElementById('puz-counter');
       if (counterEl) {
         counterEl.textContent = `0 / ${cols * rows}`;
+      }
+      const barEl = document.getElementById('puz-bar-fill');
+      if (barEl) {
+        barEl.style.width = '0%';
       }
 
       const img = new Image();
@@ -97,76 +121,66 @@ const PuzzleGame = (function() {
         if (hasLoaded) return;
         hasLoaded = true;
 
-        const imgW = (img.naturalWidth && img.naturalWidth > 0) ? img.naturalWidth : 600;
-        const imgH = (img.naturalHeight && img.naturalHeight > 0) ? img.naturalHeight : 400;
+        const imgW = (img.naturalWidth && img.naturalWidth > 0) ? img.naturalWidth : 858;
+        const imgH = (img.naturalHeight && img.naturalHeight > 0) ? img.naturalHeight : 854;
 
-        // Reserve room for one extra piece-width/height (half a piece of margin on
-        // each side) within the same on-screen budget. During normal play, pieces
-        // are shuffled and reconnected freehand — the final assembled picture ends
-        // up wherever the player happened to build it, not pinned to the board's
-        // top-left corner. Without this margin, a cluster built even slightly off
-        // from that corner runs past the board edge and gets clipped by its
-        // overflow:hidden, showing "missing" half-pieces on the far side(s).
-        const maxW = Math.min(window.innerWidth * 0.92, 540);
-        const pieceW = Math.floor(maxW / (cols + 1));
-        const aspect = (imgH / rows) / (imgW / cols);
-        const pieceH = Math.floor(pieceW * aspect);
-        const marginX = pieceW / 2;
+        const availW = Math.min(window.innerWidth * 0.94, 540);
+        const availH = Math.max(340, Math.min(window.innerHeight * 0.52, 480));
 
-        // The board also needs to double as a "parking lot" for pieces you're not
-        // working on yet — on a phone there's little room to drag them out of the
-        // way. Add a third more vertical space on top of the base half-piece
-        // margin, without touching pieceH, so the assembled photo stays the same
-        // size and only the empty workspace above/below it grows.
-        const baseMarginY = pieceH / 2;
-        const boardHBeforeExtraSpace = pieceH * rows + baseMarginY * 2;
-        const extraVerticalSpace = boardHBeforeExtraSpace / 3;
-        const marginY = baseMarginY + extraVerticalSpace / 2;
+        const basePieceW = availW / (cols + 0.8);
+        const basePieceH = availH / (rows + 0.8);
 
-        // Playfield is the grid plus that margin on every side
+        const imgAspect = imgW / imgH;
+        const gridAspect = cols / rows;
+
+        let pieceW, pieceH;
+        if (imgAspect >= gridAspect) {
+          pieceW = basePieceW;
+          pieceH = (pieceW * cols / imgAspect) / rows;
+          if (pieceH * (rows + 0.8) > availH) {
+            pieceH = basePieceH;
+            pieceW = (pieceH * rows * imgAspect) / cols;
+          }
+        } else {
+          pieceH = basePieceH;
+          pieceW = (pieceH * rows * imgAspect) / cols;
+          if (pieceW * (cols + 0.8) > availW) {
+            pieceW = basePieceW;
+            pieceH = (pieceW * cols / imgAspect) / rows;
+          }
+        }
+
+        pieceW = Math.max(32, Math.floor(pieceW));
+        pieceH = Math.max(32, Math.floor(pieceH));
+
+        const marginX = Math.floor(pieceW / 2);
+        const marginY = Math.floor(pieceH / 2);
         const boardW = pieceW * cols + marginX * 2;
-        const boardH = pieceH * rows + marginY * 2; // = boardHBeforeExtraSpace * 4/3
+        const boardH = pieceH * rows + marginY * 2;
 
         boardEl.style.width = `${boardW}px`;
         boardEl.style.height = `${boardH}px`;
-        boardEl.innerHTML = '';
 
         try {
-          // Initialize Headbreaker Canvas with Rounded Lines outline
           hbCanvas = new headbreaker.Canvas('puzzle-board', {
             width: boardW,
             height: boardH,
-            pieceSize: {
-              x: pieceW,
-              y: pieceH
-            },
-            proximity: 20,
-            borderFill: 0, // CRITICAL: 0 borderFill for 100% seamless image texture alignment
-            strokeWidth: 2,
-            strokeColor: '#e8457a',
+            pieceSize: { x: pieceW, y: pieceH },
+            proximity: 22,
+            borderFill: 0,
+            strokeWidth: 2.5,
+            strokeColor: '#ff2a9d',
+            lineSoftness: 0.18,
             outline: new headbreaker.outline.Rounded(),
             image: img,
-            preventOffstageDrag: false, // CRITICAL: Allows connected piece clusters to drag smoothly without detaching
+            preventOffstageDrag: false,
             maxPiecesCount: { x: cols, y: rows }
           });
 
-          // Reject connections between pieces that aren't real photo-neighbours in
-          // THAT specific direction, even when their Tab/Slot shapes happen to
-          // match (see isImmediatelyLeftOf/isImmediatelyAbove above — each
-          // connector gets its own directional check, not a shared one).
           hbCanvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
           hbCanvas.puzzle.attachVerticalConnectionRequirement(isImmediatelyAbove);
-
-          // CRITICAL: Lock connected pieces permanently while dragging so they NEVER detach!
           hbCanvas.puzzle.forceConnectionWhileDragging();
 
-          // Scale the photo to COVER the grid, not just fit one axis. headbreaker's
-          // two helpers each scale by a single axis, so picking the wrong one leaves
-          // the other axis short: the far row/column's crop then runs past the
-          // image edge and Konva's fillPatternRepeat:'repeat' wraps it in.
-          // pieceH is Math.floor'd, so the grid is never exactly the photo's aspect
-          // — which side comes up short depends on the photo and the grid, and must
-          // be decided per case rather than assumed.
           const gridIsWiderThanPhoto =
             hbCanvas.puzzleDiameter.x / hbCanvas.puzzleDiameter.y > imgW / imgH;
           if (gridIsWiderThanPhoto) {
@@ -175,28 +189,11 @@ const PuzzleGame = (function() {
             hbCanvas.adjustImagesToPuzzleHeight();
           }
 
-          // headbreaker reuses each piece's targetPosition as the base offset for
-          // cropping the source image, not just for placing the piece on the board:
-          //   cropOffset = (targetPosition + imageMetadata.offset - pieceDiameter) / scale
-          // (see _baseImageMetadataFor + adjustImagesToPuzzle in the library).
-          //
-          // targetPosition below is `margin + cell + pieceSize/2`, so without a
-          // correction the margin leaks into the crop and shifts which slice of the
-          // photo every piece shows. Push it far enough and the crop starts at a
-          // NEGATIVE image coordinate; Konva's fillPatternRepeat:'repeat' then wraps
-          // it, so the top row renders content from the BOTTOM of the photo.
-          //
-          // Solving that equation for piece (0,0) to crop at exactly image (0,0):
-          //   margin + pieceSize/2 + offset - pieceSize = 0  =>  offset = pieceSize/2 - margin
-          // This holds for ANY margin, so the vertical workspace can grow freely.
-          // (It also explains why margin == pieceSize/2 happened to work with no
-          // correction at all: the two terms cancelled by coincidence.)
           hbCanvas.imageMetadata.offset = {
             x: pieceW / 2 - marginX,
             y: pieceH / 2 - marginY
           };
 
-          // Generate 100% guaranteed complementary Tab & Slot objects for all inside edges
           const horiz = [], vert = [];
           for (let r = 0; r < rows - 1; r++) {
             horiz.push(Array.from({length: cols}, () => Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot));
@@ -214,10 +211,6 @@ const PuzzleGame = (function() {
               if (c < cols - 1) structObj.right = vert[r][c];
 
               const id = `p_${r}_${c}`;
-              // headbreaker positions a piece by its CENTER (central anchor), not its
-              // top-left corner, so the +pieceW/2,+pieceH/2 below is needed on top of
-              // the cell's own top-left. marginX/marginY shift the whole grid so it
-              // sits centered within the larger, margin-padded board (see boardW/H).
               const posX = marginX + c * pieceW + pieceW / 2;
               const posY = marginY + r * pieceH + pieceH / 2;
 
@@ -232,15 +225,6 @@ const PuzzleGame = (function() {
             }
           }
 
-          // headbreaker's own piece.drop() only auto-connects the ONE piece you
-          // physically dragged (puzzle.autoconnectWith(that piece)). When you drag
-          // an already-connected cluster of pieces next to another cluster, several
-          // OTHER pairs along that shared seam become truly adjacent too, but they
-          // never get tested — only the pair right under the cursor does. Those
-          // other pairs have perfectly valid, matching Tab/Slot connectors; they just
-          // never get a chance to connect. Patch drop() on these pieces (instance-only,
-          // not the shared prototype) to sweep the whole board afterwards, so every
-          // pair that's now genuinely touching actually gets linked.
           hbCanvas.puzzle.pieces.forEach(piece => {
             const originalDrop = piece.drop.bind(piece);
             piece.drop = () => {
@@ -249,12 +233,11 @@ const PuzzleGame = (function() {
             };
           });
 
-          // Shuffle pieces across the board
-          hbCanvas.shuffle(0.7);
+          hbCanvas.shuffle(0.75);
 
-          // Audio triggers & deferred counter updates
-          hbCanvas.onConnect(() => {
+          hbCanvas.onConnect((piece) => {
             SoundEngine.playCorrect();
+            spawnMagneticSparks(piece);
             setTimeout(updateCounter, 20);
           });
 
@@ -263,21 +246,22 @@ const PuzzleGame = (function() {
             setTimeout(updateCounter, 20);
           });
 
-          // Solved trigger
           hbCanvas.attachSolvedValidator();
           hbCanvas.onValid(() => {
             SoundEngine.playFanfare();
-            notify('🧩 Interlocking Jigsaw Solved!');
+            notify('🎉 Puzzle Complete!');
+            const counter = document.getElementById('puz-counter');
+            if (counter) counter.textContent = `${cols * rows} / ${cols * rows}`;
+            const bar = document.getElementById('puz-bar-fill');
+            if (bar) bar.style.width = '100%';
             setTimeout(() => {
               completeChapter(currentCh);
-            }, 1500);
+            }, 1400);
           });
 
-          // Initial draw
           hbCanvas.draw();
           updateCounter();
 
-          // Scheduled redraws to force paint after CSS transitions settle
           [30, 100, 250, 500].forEach(delay => {
             setTimeout(() => {
               if (hbCanvas) {
@@ -311,6 +295,44 @@ const PuzzleGame = (function() {
         modal.classList.toggle('show');
         SoundEngine.playClick();
       }
+    },
+
+    shuffle: function() {
+      if (!hbCanvas || !hbCanvas.puzzle) return;
+      SoundEngine.playClick();
+      hbCanvas.shuffle(0.8);
+      hbCanvas.redraw();
+      notify('🔄 Pieces shuffled!');
+      updateCounter();
+    },
+
+    hintSnap: function() {
+      if (!hbCanvas || !hbCanvas.puzzle) return;
+      SoundEngine.playClick();
+      const loose = hbCanvas.puzzle.pieces.filter(p => !p.fixed && !p.connected);
+      if (loose.length > 0) {
+        const piece = loose[0];
+        const pos = gridPos(piece);
+        if (pos) {
+          const pw = hbCanvas.puzzle.pieceWidth;
+          const ph = hbCanvas.puzzle.pieceHeight;
+          const marginX = Math.floor(pw / 2);
+          const marginY = Math.floor(ph / 2);
+          piece.relocateTo(marginX + pos.c * pw + pw / 2, marginY + pos.r * ph + ph / 2);
+          hbCanvas.puzzle.autoconnect();
+          hbCanvas.redraw();
+          SoundEngine.playCorrect();
+          spawnMagneticSparks(piece);
+          notify('💡 Piece guided home!');
+          setTimeout(updateCounter, 20);
+        }
+      } else {
+        notify('✨ All pieces already assembled!');
+      }
     }
   };
 })();
+
+if (window.Game) {
+  window.Game.puzzle = PuzzleGame;
+}

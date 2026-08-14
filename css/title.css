@@ -1,17 +1,89 @@
 /* ═══════════════════════════════════════
-   TITLE SCREEN (#s-title)
-   Depends on: base.css (:root vars, .screen, .btn)
+   2026 NEO-ARCADE ROMANCE DESIGN SYSTEM — TITLE SCREEN (#s-title)
+   Owns: Hero title presentation, neon typography, animated heart,
+   character preview pills, and start action.
 ═══════════════════════════════════════ */
 
-#s-title{gap:22px;text-align:center}
-.big-heart{font-size:48px;animation:hb 1.4s infinite;display:block;line-height:1}
-.t-title{font-size:clamp(16px,4vw,30px);color:var(--pink);text-shadow:3px 3px 0 #7a1535,-1px -1px 0 #ff8fb3;line-height:1.7;animation:glitch 5s infinite}
-@keyframes glitch{0%,85%,100%{text-shadow:3px 3px 0 #7a1535,-1px -1px 0 #ff8fb3}87%{text-shadow:-3px 3px 0 cyan,3px -3px 0 magenta}91%{text-shadow:3px -2px 0 #7a1535}}
-.t-sub{font-size:clamp(7px,1.4vw,10px);color:var(--pink2);line-height:2.4;letter-spacing:1px}
+#s-title {
+  gap: 24px;
+  text-align: center;
+  padding: 24px 16px;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 42, 133, 0.15) 0%, transparent 60%);
+}
 
-@media(max-width:600px){
-  .t-title{font-size:18px!important}
-  .t-sub{font-size:9px!important;line-height:2!important}
-  #s-title{gap:16px!important}
-  .big-heart{font-size:36px!important}
+.big-heart {
+  font-size: 58px;
+  animation: hb 1.4s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+  display: block;
+  line-height: 1;
+  filter: drop-shadow(0 0 20px var(--pink-glow));
+}
+
+.t-title {
+  font-family: var(--font-arcade);
+  font-size: clamp(22px, 5.5vw, 38px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 3px;
+  line-height: 1.4;
+  text-shadow: 
+    0 0 10px rgba(255, 42, 133, 0.8),
+    0 0 25px rgba(255, 42, 133, 0.5),
+    3px 3px 0 #7e0a39;
+  background: linear-gradient(180deg, #ffffff 30%, #ff85b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titlePulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+  0% { filter: drop-shadow(0 0 12px rgba(255, 42, 133, 0.5)); }
+  100% { filter: drop-shadow(0 0 28px rgba(192, 132, 252, 0.8)); }
+}
+
+.t-sub {
+  font-family: var(--font-dialog);
+  font-size: clamp(12px, 2.8vw, 14px);
+  font-weight: 600;
+  color: var(--pink-light);
+  line-height: 1.8;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(255, 133, 182, 0.4);
+  max-width: 500px;
+}
+
+/* Character pills wrapper */
+#s-title .char-pills {
+  display: flex;
+  gap: 12px;
+  background: rgba(22, 13, 44, 0.65);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+#s-title .char-pill {
+  font-family: var(--font-arcade);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 600px) {
+  .t-title {
+    font-size: 24px !important;
+    letter-spacing: 2px !important;
+  }
+  .t-sub {
+    font-size: 10.5px !important;
+    line-height: 1.6 !important;
+  }
+  #s-title {
+    gap: 20px !important;
+  }
+  .big-heart {
+    font-size: 46px !important;
+  }
 }

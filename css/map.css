@@ -1,30 +1,170 @@
 /* ═══════════════════════════════════════
-   CHAPTER MAP SCREEN (#s-map)
-   Depends on: base.css (:root vars, .screen)
+   2026 NEO-ARCADE ROMANCE DESIGN SYSTEM — CHAPTER MAP SCREEN (#s-map)
+   Owns: Chapter select cassette cards, glowing progress bar, and card grid.
 ═══════════════════════════════════════ */
 
-#s-map{gap:18px}
-.map-title{font-size:clamp(9px,1.8vw,14px);color:var(--gold);text-shadow:2px 2px 0 #7a5500;letter-spacing:3px}
-.prog-wrap{width:min(320px,90vw);height:14px;background:var(--panel2);border:2px solid var(--gray)}
-.prog-fill{height:100%;background:var(--pink);transition:width .7s ease}
-.prog-lbl{font-size:8px;color:var(--pink2);margin-top:4px;text-align:center}
-.ch-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:680px}
-.ch-card{font-family:'Press Start 2P',monospace;font-size:8px;padding:12px 10px;background:var(--panel2);border:2px solid var(--gray);cursor:pointer;text-align:center;width:118px;line-height:1.9;transition:all .15s;box-shadow:3px 3px 0 #000;touch-action:manipulation;-webkit-tap-highlight-color:rgba(232,69,122,0.3);user-select:none;-webkit-user-select:none}
-.ch-card:hover:not(.locked){border-color:var(--pink);color:var(--pink2);transform:translate(-2px,-2px);box-shadow:5px 5px 0 #7a1535}
-.ch-card.done{border-color:var(--teal);color:var(--teal)}
-.ch-card.locked{opacity:.3;cursor:not-allowed}
-.ch-ico{font-size:24px;display:block;margin-bottom:6px}
-.ch-loc{font-size:7px;color:var(--blue);display:block;margin-top:4px}
-
-@media(max-width:600px){
-  .map-title{font-size:10px!important;letter-spacing:1px!important}
-  .ch-card{width:calc(50% - 8px)!important;font-size:7px!important;padding:10px 6px!important}
-  .ch-ico{font-size:20px!important}
-  .ch-grid{gap:8px!important;padding:0 4px!important}
-  .prog-wrap{width:90vw!important}
-  #s-map{gap:12px!important}
+#s-map {
+  gap: 20px;
+  padding: 60px 16px 20px;
+  overflow-y: auto;
+  justify-content: flex-start;
 }
 
-@media(max-width:480px){
-  .ch-card{width:calc(50% - 8px)}
+.map-title {
+  font-family: var(--font-arcade);
+  font-size: clamp(13px, 2.4vw, 18px);
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 12px var(--gold-glow), 2px 2px 0 #6e4b00;
+  letter-spacing: 3px;
 }
+
+.prog-wrap {
+  width: min(380px, 92vw);
+  height: 16px;
+  background: rgba(22, 13, 44, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff2a85 0%, #ff6b9d 50%, #ffd166 100%);
+  box-shadow: 0 0 16px var(--pink-glow);
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 8px;
+}
+
+.prog-lbl {
+  font-family: var(--font-arcade);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pink-light);
+  margin-top: 4px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  justify-content: center;
+  width: 100%;
+  max-width: 680px;
+  margin-top: 6px;
+}
+
+.ch-card {
+  font-family: var(--font-arcade);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 16px 12px;
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.6;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 42, 133, 0.3);
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ch-card:hover:not(.locked) {
+  border-color: var(--pink);
+  color: #fff;
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--pink-glow);
+}
+
+.ch-card:active:not(.locked) {
+  transform: translateY(1px);
+}
+
+.ch-card.done {
+  border-color: var(--teal);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 14px rgba(45, 212, 191, 0.25);
+}
+
+.ch-card.done .ch-ico {
+  filter: drop-shadow(0 0 10px var(--teal-glow));
+}
+
+.ch-card.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+.ch-ico {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+  transition: transform 0.2s ease;
+}
+
+.ch-card:hover .ch-ico {
+  transform: scale(1.15);
+}
+
+.ch-loc {
+  font-family: var(--font-dialog);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--blue);
+  display: block;
+  margin-top: 6px;
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 600px) {
+  .map-title {
+    font-size: 13px !important;
+    letter-spacing: 2px !important;
+  }
+  .ch-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .ch-card {
+    font-size: 11px !important;
+    padding: 14px 10px !important;
+  }
+  .ch-ico {
+    font-size: 28px !important;
+  }
+  .prog-wrap {
+    width: 92vw !important;
+    height: 14px !important;
+  }
+  #s-map {
+    gap: 14px !important;
+    padding-top: 54px !important;
+  }
+}
+
+/* iOS safe areas & Momentum Scrolling */
+#s-map {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+@supports (padding: max(0px)) {
+  #s-map {
+    padding-top: max(56px, calc(48px + env(safe-area-inset-top))) !important;
+    padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+  }
+}
+

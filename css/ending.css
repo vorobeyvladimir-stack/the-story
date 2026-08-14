@@ -1,20 +1,113 @@
 /* ═══════════════════════════════════════
-   ENDING SCREEN (#s-end)
-   Depends on: base.css (:root vars, .screen, .btn)
+   2026 NEO-ARCADE ROMANCE DESIGN SYSTEM — ENDING SCREEN (#s-end)
+   Owns: Shimmering victory epilogue, glassmorphic message card, and action buttons.
 ═══════════════════════════════════════ */
 
-#s-end{gap:22px;text-align:center}
-.e-title{font-size:clamp(13px,2.8vw,22px);color:var(--gold);text-shadow:2px 2px 0 #7a5500;animation:glow 2s infinite}
-@keyframes glow{0%,100%{text-shadow:2px 2px 0 #7a5500}50%{text-shadow:2px 2px 0 #7a5500,0 0 20px #ffd166}}
-.e-msg{font-family:'VT323',monospace;font-size:clamp(19px,3.2vw,28px);color:var(--white);max-width:600px;line-height:1.7;background:var(--panel2);border:2px solid var(--pink);padding:22px 26px}
-.e-stats{font-size:8px;color:var(--pink2);line-height:2.4}
-.e-stars{font-size:32px;display:flex;gap:10px;justify-content:center}
-.spin{animation:spin 3s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-@media(max-width:600px){
-  .e-title{font-size:14px!important}
-  .e-msg{font-size:18px!important;padding:14px 16px!important}
-  .e-stats{font-size:7px!important}
-  #s-end{gap:14px!important;padding:16px!important}
+#s-end {
+  gap: 20px;
+  text-align: center;
+  padding: 40px 16px 20px;
+  overflow-y: auto;
 }
+
+.e-stars {
+  font-size: 38px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  filter: drop-shadow(0 0 16px var(--pink-glow));
+}
+
+.spin {
+  animation: spin 4s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.e-title {
+  font-family: var(--font-arcade);
+  font-size: clamp(15px, 3.2vw, 24px);
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 16px var(--gold-glow), 2px 2px 0 #6e4b00;
+  letter-spacing: 2px;
+  animation: glowEnd 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes glowEnd {
+  0% { text-shadow: 0 0 12px var(--gold-glow), 2px 2px 0 #6e4b00; }
+  100% { text-shadow: 0 0 28px var(--gold-glow), 0 0 40px rgba(255, 42, 133, 0.6), 2px 2px 0 #6e4b00; }
+}
+
+.e-msg {
+  font-family: var(--font-dialog);
+  font-size: clamp(16px, 3.8vw, 18.5px);
+  font-weight: 500;
+  color: var(--white);
+  max-width: 620px;
+  line-height: 1.65;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid var(--pink);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), 0 0 24px var(--pink-glow);
+  letter-spacing: 0.2px;
+}
+
+.e-stats {
+  font-family: var(--font-arcade);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--pink-light);
+  line-height: 2.2;
+  letter-spacing: 1px;
+  background: rgba(38, 20, 72, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 10px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 600px) {
+  .e-title {
+    font-size: 15px !important;
+    letter-spacing: 1px !important;
+  }
+  .e-msg {
+    font-size: 15.5px !important;
+    padding: 18px 20px !important;
+    line-height: 1.55 !important;
+  }
+  .e-stats {
+    font-size: 10.5px !important;
+    line-height: 2 !important;
+    padding: 8px 14px !important;
+  }
+  #s-end {
+    gap: 16px !important;
+    padding: 24px 14px !important;
+  }
+  .e-stars {
+    font-size: 30px !important;
+  }
+}
+
+/* iOS safe areas & Momentum Scrolling */
+#s-end {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+@supports (padding: max(0px)) {
+  #s-end {
+    padding-top: max(48px, calc(36px + env(safe-area-inset-top))) !important;
+    padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  }
+}
+

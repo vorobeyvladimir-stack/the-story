@@ -64,16 +64,21 @@ const SoundEngine = (function() {
 
   return {
     init: function() {
-      // Enable Web Audio on initial user interaction
+      // Enable Web Audio & BGM on initial user interaction (click, tap, touch)
       const enableAudio = () => {
         initCtx();
+        if (!muted) {
+          SoundEngine.startBGM();
+        }
         window.removeEventListener('click', enableAudio);
         window.removeEventListener('keydown', enableAudio);
         window.removeEventListener('touchstart', enableAudio);
+        window.removeEventListener('pointerdown', enableAudio);
       };
-      window.addEventListener('click', enableAudio, { once: true });
-      window.addEventListener('keydown', enableAudio, { once: true });
-      window.addEventListener('touchstart', enableAudio, { once: true });
+      window.addEventListener('click', enableAudio);
+      window.addEventListener('keydown', enableAudio);
+      window.addEventListener('touchstart', enableAudio, { passive: true });
+      window.addEventListener('pointerdown', enableAudio);
     },
 
     isMuted: function() {
@@ -86,6 +91,7 @@ const SoundEngine = (function() {
       if (muted) {
         this.stopBGM();
       } else {
+        initCtx();
         this.startBGM();
       }
       this.updateHudIcon();
@@ -105,7 +111,6 @@ const SoundEngine = (function() {
     // Typewriter text tick sound
     playTypewriter: function() {
       if (muted) return;
-      // Soft high pitch square wave tick
       const pitch = 580 + Math.random() * 80;
       playTone(pitch, 'square', 0.025, 0.02);
     },
@@ -187,6 +192,7 @@ const SoundEngine = (function() {
 
     startBGM: function() {
       if (bgmInterval || muted) return;
+      initCtx();
       bgmStep = 0;
       bgmInterval = setInterval(() => {
         if (muted) return;
