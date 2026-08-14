@@ -435,48 +435,6 @@ const HapticEngine = {
     this._lastDragX = null;
     this._lastDragY = null;
     this._dragDistanceAccumulator = 0;
-  },
-
-  /**
-   * Reports what the current client actually supports. Handy on a real phone
-   * where there is no console: Game.haptic.diagnose() → notify() toast.
-   */
-  diagnose: function() {
-    const wa = window.Telegram && window.Telegram.WebApp;
-    const wv = window.Telegram && window.Telegram.WebView;
-    const report = {
-      inTelegram: !!wa,
-      version: wa ? wa.version : 'none',
-      platform: wa ? wa.platform : 'web',
-      sdkWillFire: this._sdkCanFire(),
-      hasWebView: !!(wv && typeof wv.postEvent === 'function'),
-      transport: (wv && typeof wv.postEvent === 'function') ? 'Telegram.WebView'
-               : window.TelegramWebviewProxy !== undefined ? 'TelegramWebviewProxy'
-               : (window.external && 'notify' in window.external) ? 'external.notify'
-               : (window.parent && window.parent !== window) ? 'parent.postMessage'
-               : 'none',
-      webVibrate: typeof navigator.vibrate === 'function'
-    };
-    report.path = report.hasWebView || report.transport !== 'none' ? 'Native iOS Bridge'
-                : report.sdkWillFire ? 'SDK Fallback'
-                : 'NO Bridge (In-App Safari)';
-    const msg = `📡 ${report.path} | TG: ${report.platform} v${report.version} | Bridge: ${report.transport}`;
-    if (typeof notify === 'function') {
-      notify(msg);
-    }
-    console.log('[Haptics]', report);
-    return report;
-  },
-
-  /**
-   * Fires the full puzzle pattern once so a real device can be checked by feel.
-   */
-  selfTest: function() {
-    this.impact('rigid');
-    setTimeout(() => this.impact('heavy'), 180);
-    setTimeout(() => this.selection(), 340);
-    setTimeout(() => this.impact('medium'), 520);
-    setTimeout(() => this.notification('success'), 780);
   }
 };
 
