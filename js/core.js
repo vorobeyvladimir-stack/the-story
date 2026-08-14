@@ -254,6 +254,10 @@ let userHasInteracted = false;
 function postTgEvent(eventType, eventData) {
   const data = eventData === undefined ? '' : eventData;
   try {
+    if (window.Telegram && window.Telegram.WebView && typeof window.Telegram.WebView.postEvent === 'function') {
+      window.Telegram.WebView.postEvent(eventType, false, data);
+      return true;
+    }
     if (window.TelegramWebviewProxy !== undefined &&
         typeof window.TelegramWebviewProxy.postEvent === 'function') {
       window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(data));
@@ -439,21 +443,24 @@ const HapticEngine = {
    */
   diagnose: function() {
     const wa = window.Telegram && window.Telegram.WebApp;
+    const wv = window.Telegram && window.Telegram.WebView;
     const report = {
       inTelegram: !!wa,
-      version: wa ? wa.version : null,
-      platform: wa ? wa.platform : null,
+      version: wa ? wa.version : 'none',
+      platform: wa ? wa.platform : 'web',
       sdkWillFire: this._sdkCanFire(),
-      transport: window.TelegramWebviewProxy !== undefined ? 'TelegramWebviewProxy'
+      hasWebView: !!(wv && typeof wv.postEvent === 'function'),
+      transport: (wv && typeof wv.postEvent === 'function') ? 'Telegram.WebView'
+               : window.TelegramWebviewProxy !== undefined ? 'TelegramWebviewProxy'
                : (window.external && 'notify' in window.external) ? 'external.notify'
                : (window.parent && window.parent !== window) ? 'parent.postMessage'
                : 'none',
       webVibrate: typeof navigator.vibrate === 'function'
     };
-    report.path = report.transport !== 'none' ? 'Native iOS Bridge'
+    report.path = report.hasWebView || report.transport !== 'none' ? 'Native iOS Bridge'
                 : report.sdkWillFire ? 'SDK Fallback'
                 : 'NO Bridge (In-App Safari)';
-    const msg = `📡 ${report.path} | TG: ${report.platform || 'web'} v${report.version || 'none'} | Bridge: ${report.transport}`;
+    const msg = `📡 ${report.path} | TG: ${report.platform} v${report.version} | Bridge: ${report.transport}`;
     if (typeof notify === 'function') {
       notify(msg);
     }
@@ -465,13 +472,11 @@ const HapticEngine = {
    * Fires the full puzzle pattern once so a real device can be checked by feel.
    */
   selfTest: function() {
-    this.impact('light');
-    setTimeout(() => this.selection(), 200);
-    setTimeout(() => this.selection(), 300);
-    setTimeout(() => this.selection(), 400);
-    setTimeout(() => this.impact('medium'), 600);
-    setTimeout(() => this.notification('success'), 950);
-    if (typeof notify === 'function') notify('🔬 Haptic self-test fired');
+    this.impact('rigid');
+    setTimeout(() => this.impact('heavy'), 180);
+    setTimeout(() => this.selection(), 340);
+    setTimeout(() => this.impact('medium'), 520);
+    setTimeout(() => this.notification('success'), 780);
   }
 };
 
