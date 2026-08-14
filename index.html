@@ -59,23 +59,23 @@ try {
 
 <!-- TITLE SCREEN -->
 <div class="screen active" id="s-title">
-  <div class="hero-emblem-wrap">
-    <video class="hero-intro-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture poster="assets/hero_emblem.png">
-      <source src="assets/intro-video-resize.mp4" type="video/mp4">
-      <img src="assets/hero_emblem.png" class="hero-emblem-img" alt="Our Story Emblem">
-    </video>
-  </div>
   <div class="t-title-row">
     <div class="t-title">THE STORY</div>
     <img src="assets/story_devil_logo.png" class="t-devil-badge" alt="The Story Devil Logo">
   </div>
-  <div class="t-sub">A Pixel Love Quest &nbsp;✦&nbsp; Three Hearts &nbsp;✦&nbsp; One Adventure</div>
+  <div class="hero-emblem-wrap">
+    <video class="hero-intro-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture poster="assets/hero_emblem.png">
+      <source src="assets/intro-video-resize.mp4" type="video/mp4">
+      <img src="assets/hero_emblem.png" class="hero-emblem-img" alt="The Story Emblem">
+    </video>
+  </div>
+  <div class="t-sub">A Pixel Spicy Quest &nbsp;✦&nbsp; Three Hearts &nbsp;✦&nbsp; One Adventure</div>
   <div class="char-pills">
-    <span class="char-pill" style="color:var(--blue)">● Man</span>
     <span class="char-pill" style="color:var(--purple)">● Gala</span>
     <span class="char-pill" style="color:var(--teal)">● Lydia</span>
+    <span class="char-pill" style="color:var(--blue)">● Man</span>
   </div>
-  <button class="btn" onclick="showMap()">▶ &nbsp;PLAY</button>
+  <button class="btn btn-title-play" onclick="showMap()">▶ &nbsp;PLAY</button>
 </div>
 
 <!-- MAP SCREEN -->

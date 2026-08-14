@@ -107,13 +107,19 @@
 /* Character pills wrapper */
 #s-title .char-pills {
   display: flex;
-  gap: 12px;
-  background: rgba(22, 13, 44, 0.65);
-  backdrop-filter: blur(12px);
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  background: rgba(22, 13, 44, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border);
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 290px;
+  box-sizing: border-box;
 }
 
 #s-title .char-pill {
@@ -121,6 +127,15 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
+}
+
+#s-title .btn-title-play {
+  width: 100%;
+  max-width: 290px;
+  box-sizing: border-box;
+  padding: 14px 20px;
+  font-size: 16px;
+  letter-spacing: 2px;
 }
 
 @media (max-width: 600px) {

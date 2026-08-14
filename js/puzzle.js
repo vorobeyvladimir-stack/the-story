@@ -101,8 +101,8 @@ const PuzzleGame = (function() {
         const screenW = window.innerWidth || document.documentElement.clientWidth || 390;
         const screenH = window.innerHeight || document.documentElement.clientHeight || 844;
 
-        const availW = Math.min(screenW * 0.94, 540);
-        const availH = Math.max(380, Math.min(screenH * 0.68, 580));
+        const availW = Math.min(screenW * 0.96, 560);
+        const availH = Math.max(420, Math.min(screenH * 0.76, 660));
 
         const basePieceW = availW / (cols + 0.8);
         const basePieceH = availH / (rows + 0.8);
@@ -127,8 +127,8 @@ const PuzzleGame = (function() {
           }
         }
 
-        pieceW = Math.max(32, Math.floor(pieceW));
-        pieceH = Math.max(32, Math.floor(pieceH));
+        pieceW = Math.max(36, Math.floor(pieceW));
+        pieceH = Math.max(36, Math.floor(pieceH));
 
         const marginX = Math.floor(pieceW / 2);
         const marginY = Math.floor(pieceH / 2);
@@ -151,8 +151,7 @@ const PuzzleGame = (function() {
             outline: new headbreaker.outline.Rounded(),
             image: img,
             preventOffstageDrag: false,
-            maxPiecesCount: { x: cols, y: rows },
-            pixelRatio: safeDPR
+            maxPiecesCount: { x: cols, y: rows }
           });
 
           hbCanvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
