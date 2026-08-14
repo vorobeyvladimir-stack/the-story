@@ -54,6 +54,13 @@ s-title (Title) ──▶ s-map (Chapter Select)
 
 ---
 
+## 🛑 Strict Engineering Guidelines & API Verification
+- **NO ASSUMPTIONS OR GUESSES (CRITICAL)**: Never make "intuitive", "logical", or estimated assumptions about method names, event payloads, library signatures, or SDK behaviors.
+- **VERIFY AGAINST REAL SOURCE & SPECS**: Always inspect the actual library source code (e.g., `telegram-web-app.js`, `headbreaker.js`, `konva.js`), official protocol specs, or verify via exact tests before writing implementation code.
+- **AUDIT HIDDEN GUARDS & GATES**: Always verify internal version checks, WebKit/Safari restrictions, and silent failure branches in external SDKs.
+
+---
+
 ## 🚀 Git & Branch Workflow
 - **Explicit Push Only (CRITICAL)**: NEVER commit or push to Git/GitHub automatically unless the user explicitly asks for it.
 - **Default Branch**: Strictly use `main` for all pushes (never `master`).

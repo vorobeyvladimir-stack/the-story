@@ -450,11 +450,12 @@ const HapticEngine = {
                : 'none',
       webVibrate: typeof navigator.vibrate === 'function'
     };
-    report.path = report.transport !== 'none' ? 'native event'
-                : report.sdkWillFire ? 'SDK fallback'
-                : 'NONE — no haptics possible here';
+    report.path = report.transport !== 'none' ? 'Native iOS Bridge'
+                : report.sdkWillFire ? 'SDK Fallback'
+                : 'NO Bridge (In-App Safari)';
+    const msg = `📡 ${report.path} | TG: ${report.platform || 'web'} v${report.version || 'none'} | Bridge: ${report.transport}`;
     if (typeof notify === 'function') {
-      notify(`${report.path} · v${report.version} · ${report.platform}`);
+      notify(msg);
     }
     console.log('[Haptics]', report);
     return report;
