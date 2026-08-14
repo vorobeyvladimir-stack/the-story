@@ -19,6 +19,7 @@ The game is a modular vanilla JS/CSS web game designed for Telegram WebApps and 
 │   ├── core.js      # CoreEngine & Game: State management, screen transitions, chapter lifecycle
 │   ├── quest.js     # QuestEngine: Visual novel dialogue engine with typewriter & branching
 │   ├── chat.js      # ChatEngine: Telegram group chat quiz minigame
+│   ├── romanceBg.js # RomanceBg: Sensual falling rose petals, lightning & cocktail particles
 │   └── main.js      # Page bootstrapping and Telegram WebApp integration
 ├── index.html       # HTML entry point loading modular CSS and scripts
 └── AGENTS.md        # This AI context file
@@ -47,8 +48,15 @@ s-title (Title) ──▶ s-map (Chapter Select)
 - `Game.core`: `show(id)`, `buildMap()`, `completeChapter(ch)`, `resetState()`, `replayGame()`
 - `Game.quest`: `startChapter(ch)`, `nextLine()`, `showLine(line)`, `pickChoice(branchId)`
 - `Game.chat`: `startChat(ch)`, `endChat()`
-- `Game.puzzle`: `start(ch)`, `togglePreview()`
-- `Game.audio`: `SoundEngine` (`playClick()`, `playTypewriter()`, `playCorrect()`, `playWrong()`, `playFanfare()`)
+- `Game.puzzle`: `start(ch)`, `togglePreview()`, `shuffle()`, `hintSnap()`
+- `Game.audio`: `SoundEngine` (`playClick()`, `playTypewriter()`, `playCorrect()`, `playWrong()`, `playFanfare()`, `startBGM()`)
+
+---
+
+## 🚀 Git & Branch Workflow
+- **Default Branch**: Strictly use `main` for all pushes (never `master`).
+- **Remote Origin**: Configured with Personal Access Token (PAT) for automated non-interactive deployment.
+- **Push Command**: `git push origin main`
 
 ---
 
