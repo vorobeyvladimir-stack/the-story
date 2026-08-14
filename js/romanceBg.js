@@ -74,7 +74,7 @@
     if (isLips) {
       el.className = 'romance-particle romance-lips';
       el.textContent = BITTEN_LIPS;
-      const size = 26 + Math.random() * 12;
+      const size = 52 + Math.random() * 24;
       el.style.fontSize = `${size}px`;
     } else {
       el.className = 'romance-particle romance-spicy-asset';
@@ -84,7 +84,7 @@
       img.alt = 'Spicy item';
       el.appendChild(img);
 
-      const width = 28 + Math.random() * 16;
+      const width = 56 + Math.random() * 32;
       el.style.width = `${width}px`;
       el.style.height = `${width}px`;
     }
