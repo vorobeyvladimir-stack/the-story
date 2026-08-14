@@ -27,15 +27,18 @@
       { id: 'orb-6', x1: -95, y1: -70, scale: 1.28, opMin: 0.6, opMax: 0.86, dur: 8.8, delay: 2.8 }
     ];
 
+    const isMobile = window.innerWidth <= 600;
+    const motionFactor = isMobile ? 0.45 : 1.0;
+
     orbsConfig.forEach(cfg => {
       const el = document.getElementById(cfg.id);
       if (!el) return;
 
-      // Smooth floating X/Y wandering
+      // Smooth floating X/Y wandering (scaled for mobile viewport)
       gsap.to(el, {
-        x: `+=${cfg.x1}`,
-        y: `+=${cfg.y1}`,
-        scale: cfg.scale,
+        x: `+=${cfg.x1 * motionFactor}`,
+        y: `+=${cfg.y1 * motionFactor}`,
+        scale: isMobile ? 1 + (cfg.scale - 1) * 0.5 : cfg.scale,
         duration: cfg.dur,
         repeat: -1,
         yoyo: true,
