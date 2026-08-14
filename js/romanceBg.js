@@ -115,14 +115,13 @@
     const left = Math.random() * 92;
     // 10% slower: duration scaled from [7..13s] to [7.7..14.3s]
     const duration = (7 + Math.random() * 6) * 1.10;
-    const delay = Math.random() * 1.5;
     const opacity = 0.5 + Math.random() * 0.45;
     const rot = (Math.random() - 0.5) * 45;
 
     el.style.left = `${left}vw`;
     el.style.animationDuration = `${duration}s`;
-    el.style.animationDelay = `${delay}s`;
-    el.style.opacity = opacity;
+    el.style.animationDelay = `0s`;
+    el.style.setProperty('--target-opacity', opacity);
     el.style.setProperty('--rot', `${rot}deg`);
 
     container.appendChild(el);
@@ -131,7 +130,7 @@
       if (el.parentNode) {
         el.parentNode.removeChild(el);
       }
-    }, (duration + delay) * 1000);
+    }, duration * 1000);
   }
 
   function init() {
