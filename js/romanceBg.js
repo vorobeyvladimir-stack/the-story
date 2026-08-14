@@ -3,20 +3,42 @@
    Powered by GSAP & Framer GrainOverlay Mode 3:
    - 6 GSAP multi-point floating glowing purple/violet/magenta orbs
    - Pure CRT scanlines raster texture & cinematic vignette
-   - Floating spicy assets (mask, handcuffs, whip, collar, harness silhouette) + bitten lips 🫦
-   - No flowers / rose petals
+   - Fair Shuffle Deck queue (100% equal distribution of all 11 spicy assets)
+   - Smooth drifting motion at relaxed 10% slower speed
 ═══════════════════════════════════════ */
 
 (function() {
-  const SPICY_FLOAT_ASSETS = [
-    'assets/spicy_mask.png',
-    'assets/spicy_cuffs.png',
-    'assets/spicy_collar.png',
-    'assets/spicy_body.png'
+  const PARTICLE_POOL = [
+    { type: 'img', src: 'assets/spicy_mask.png' },
+    { type: 'img', src: 'assets/spicy_cuffs.png' },
+    { type: 'img', src: 'assets/spicy_collar.png' },
+    { type: 'img', src: 'assets/spicy_body.png' },
+    { type: 'img', src: 'assets/spicy_purple_collar.png' },
+    { type: 'img', src: 'assets/spicy_toy.png' },
+    { type: 'img', src: 'assets/spicy_panties_lace.png' },
+    { type: 'img', src: 'assets/spicy_thong.png' },
+    { type: 'img', src: 'assets/spicy_nightie.png' },
+    { type: 'img', src: 'assets/spicy_corset_girl.png' },
+    { type: 'text', text: '🫦' }
   ];
-  const BITTEN_LIPS = '🫦';
+
   const MAX_FLOAT_PARTICLES = 16;
   let container = null;
+  let deck = [];
+
+  // Fair Shuffle Bag (Fisher-Yates) guaranteeing 100% equal frequency and zero clustered duplicates
+  function getNextParticle() {
+    if (deck.length === 0) {
+      deck = [...PARTICLE_POOL];
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = deck[i];
+        deck[i] = deck[j];
+        deck[j] = temp;
+      }
+    }
+    return deck.pop();
+  }
 
   // 1. GSAP Multi-Orb Ambient Lighting Animation (6 distinct spheres across the viewport)
   function initGSAPAurora() {
@@ -62,25 +84,26 @@
     });
   }
 
-  // 2. Spawner for floating upwards spicy elements & bitten lips
+  // 2. Spawner for floating upwards spicy elements & bitten lips (10% slower, perfectly balanced)
   function createFloatParticle() {
     if (!container) return;
     const currentFloats = container.querySelectorAll('.romance-particle').length;
     if (currentFloats >= MAX_FLOAT_PARTICLES) return;
 
-    const el = document.createElement('div');
-    const isLips = Math.random() < 0.28; // ~28% bitten lips, ~72% spicy item assets
+    const item = getNextParticle();
+    if (!item) return;
 
-    if (isLips) {
+    const el = document.createElement('div');
+
+    if (item.type === 'text') {
       el.className = 'romance-particle romance-lips';
-      el.textContent = BITTEN_LIPS;
+      el.textContent = item.text;
       const size = 52 + Math.random() * 24;
       el.style.fontSize = `${size}px`;
     } else {
       el.className = 'romance-particle romance-spicy-asset';
-      const asset = SPICY_FLOAT_ASSETS[Math.floor(Math.random() * SPICY_FLOAT_ASSETS.length)];
       const img = document.createElement('img');
-      img.src = asset;
+      img.src = item.src;
       img.alt = 'Spicy item';
       el.appendChild(img);
 
@@ -90,7 +113,8 @@
     }
 
     const left = Math.random() * 92;
-    const duration = 7 + Math.random() * 6;
+    // 10% slower: duration scaled from [7..13s] to [7.7..14.3s]
+    const duration = (7 + Math.random() * 6) * 1.10;
     const delay = Math.random() * 1.5;
     const opacity = 0.5 + Math.random() * 0.45;
     const rot = (Math.random() - 0.5) * 45;
@@ -123,15 +147,15 @@
 
     // Initial waves
     for (let i = 0; i < 6; i++) {
-      setTimeout(createFloatParticle, i * 350);
+      setTimeout(createFloatParticle, i * 380);
     }
 
     let isPaused = false;
 
-    // Continuous spawn timer
+    // Continuous spawn timer (spaced to match the 10% slower speed)
     setInterval(() => {
       if (!isPaused) createFloatParticle();
-    }, 1200);
+    }, 1350);
 
     window.RomanceFx = {
       pause: function() {
