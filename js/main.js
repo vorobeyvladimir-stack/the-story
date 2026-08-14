@@ -13,15 +13,15 @@ try {
   if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
     tg.ready();
-    tg.expand();
+    if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
+    if (typeof tg.expand === 'function') tg.expand();
+    if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
+    if (typeof tg.lockOrientation === 'function') tg.lockOrientation();
 
     // Match Telegram client chrome to our velvet midnight palette
     if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#0b0616');
     if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#0b0616');
     if (typeof tg.setBottomBarColor === 'function') tg.setBottomBarColor('#0b0616');
-
-    // Prevent accidental swipe-down closing on iOS Telegram WebApp
-    if (typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes();
   }
 } catch (e) {
   console.warn('Telegram WebApp integration notice:', e);
