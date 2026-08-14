@@ -212,33 +212,15 @@ const PuzzleGame = (function() {
 
           hbCanvas.shuffle(0.75);
 
-          // iOS 17+ / Telegram WebApp Taptic Engine piece drag tactile sensation.
-          // Bound once per board element: start() runs again on every replay, and
-          // clearing innerHTML does not detach listeners from boardEl itself, so
-          // re-binding would stack duplicate haptics on top of each other.
+          // iOS 17+ / Telegram WebApp Taptic Engine: Discrete tactile feedback
+          // Bound once per board element to avoid duplicate listeners on replay.
           if (boardEl && !boardEl.dataset.hapticsBound) {
             boardEl.dataset.hapticsBound = '1';
-            let isDraggingPiece = false;
 
-            boardEl.addEventListener('pointerdown', (e) => {
-              isDraggingPiece = true;
-              if (window.HapticEngine) HapticEngine.startDrag(e.clientX, e.clientY);
+            // Subtle grab response when touching/selecting a piece
+            boardEl.addEventListener('pointerdown', () => {
+              if (window.HapticEngine) HapticEngine.impact('light');
             }, { passive: true });
-
-            boardEl.addEventListener('pointermove', (e) => {
-              if (isDraggingPiece && window.HapticEngine) {
-                HapticEngine.onDragMove(e.clientX, e.clientY);
-              }
-            }, { passive: true });
-
-            const stopDrag = () => {
-              if (isDraggingPiece) {
-                isDraggingPiece = false;
-                if (window.HapticEngine) HapticEngine.endDrag();
-              }
-            };
-            boardEl.addEventListener('pointerup', stopDrag, { passive: true });
-            boardEl.addEventListener('pointercancel', stopDrag, { passive: true });
           }
 
           hbCanvas.onConnect(() => {
