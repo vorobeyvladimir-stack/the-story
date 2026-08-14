@@ -92,9 +92,9 @@ const PuzzleGame = (function() {
         const screenW = window.innerWidth || document.documentElement.clientWidth || 390;
         const screenH = window.innerHeight || document.documentElement.clientHeight || 844;
 
-        // 1. Board expands across the whole viewport height and width
+        // 1. Board fills all remaining vertical space directly below the top controls
         const boardW = Math.floor(Math.min(screenW * 0.96, 560));
-        const boardH = Math.floor(Math.min(screenH * 0.91, 840));
+        const boardH = Math.floor(Math.max(420, Math.min(screenH - 84, 860)));
 
         // 2. Keep piece size exact (do NOT increase piece size, allowing generous drag room)
         const imgAspect = imgW / imgH;
@@ -117,6 +117,11 @@ const PuzzleGame = (function() {
 
         boardEl.style.width = `${boardW}px`;
         boardEl.style.height = `${boardH}px`;
+
+        const floatControls = document.querySelector('.puz-floating-controls');
+        if (floatControls) {
+          floatControls.style.maxWidth = `${boardW}px`;
+        }
 
         try {
           hbCanvas = new headbreaker.Canvas('puzzle-board', {

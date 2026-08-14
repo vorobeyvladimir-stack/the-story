@@ -1,16 +1,98 @@
 /* ═══════════════════════════════════════
-   2026 NEO-ARCADE ROMANCE DESIGN SYSTEM — TITLE SCREEN (#s-title)
-   Owns: Hero title presentation, neon typography, animated heart,
-   character preview pills, and start action.
+   2026 NEO-TOKYO PIXEL POP DESIGN SYSTEM — TITLE SCREEN (#s-title)
+   Clean, unified arcade romance aesthetic:
+   - Harmonized typography (Silkscreen + Press Start)
+   - Strict 3-color palette: Midnight Obsidian, Ice Platinum, Electric Hot Pink
+   - Balanced visual hierarchy & zero clutter
 ═══════════════════════════════════════ */
 
 #s-title {
-  gap: 24px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2.6vh, 22px);
   text-align: center;
-  padding: 24px 16px;
-  background: radial-gradient(circle at 50% 30%, rgba(255, 42, 133, 0.15) 0%, transparent 60%);
+  padding: clamp(16px, 3vh, 28px) 16px;
+  background: radial-gradient(circle at 50% 32%, rgba(255, 42, 133, 0.18) 0%, rgba(18, 7, 36, 0.4) 45%, transparent 70%);
+  min-height: 100%;
+  box-sizing: border-box;
 }
 
+#s-title.active {
+  display: flex;
+}
+
+/* LOGO LOCKUP: TITLE + 3D DEVIL */
+.t-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2.5vw, 14px);
+  margin-bottom: 2px;
+}
+
+.t-title {
+  font-family: 'Silkscreen', var(--font-arcade);
+  font-size: clamp(28px, 7.5vw, 44px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: clamp(2px, 0.7vw, 3.5px);
+  line-height: 1.15;
+  text-transform: uppercase;
+  text-shadow: 
+    0 2px 0 #9e0847,
+    0 4px 0 #4a0320,
+    0 6px 12px rgba(0, 0, 0, 0.95),
+    0 0 16px rgba(255, 42, 133, 0.6);
+  animation: titlePulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+  0% {
+    text-shadow: 
+      0 2px 0 #9e0847,
+      0 4px 0 #4a0320,
+      0 6px 12px rgba(0, 0, 0, 0.95),
+      0 0 14px rgba(255, 42, 133, 0.5);
+  }
+  100% {
+    text-shadow: 
+      0 2px 0 #9e0847,
+      0 4px 0 #4a0320,
+      0 6px 14px rgba(0, 0, 0, 0.95),
+      0 0 24px rgba(255, 42, 133, 0.85),
+      0 0 36px rgba(255, 130, 180, 0.4);
+  }
+}
+
+.t-devil-badge {
+  width: clamp(38px, 9.5vw, 52px);
+  height: clamp(38px, 9.5vw, 52px);
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(255, 42, 133, 0.85)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+  animation: devil3DFloat 3.6s ease-in-out infinite alternate;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, filter;
+  flex-shrink: 0;
+}
+
+@keyframes devil3DFloat {
+  0% {
+    transform: translateY(0) rotate(-3deg) scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 42, 133, 0.6)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+  }
+  50% {
+    transform: translateY(-5px) rotate(4deg) scale(1.06);
+    filter: drop-shadow(0 0 22px rgba(255, 42, 133, 0.95)) drop-shadow(0 0 28px rgba(255, 42, 157, 0.6)) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.9));
+  }
+  100% {
+    transform: translateY(2px) rotate(-2deg) scale(0.98);
+    filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.75)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
+  }
+}
+
+/* HERO VIDEO CONTAINER */
 .hero-emblem-wrap {
   display: flex;
   justify-content: center;
@@ -28,7 +110,7 @@
   max-height: clamp(165px, 46vw, 265px);
   border-radius: 18px;
   border: 1.5px solid rgba(255, 42, 157, 0.75);
-  box-shadow: 0 0 12px rgba(255, 42, 157, 0.4), 0 4px 16px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 16px rgba(255, 42, 157, 0.4), 0 8px 24px rgba(0, 0, 0, 0.75);
   animation: gentleBreathe 3.6s ease-in-out infinite;
   display: block;
   object-fit: cover;
@@ -38,119 +120,70 @@
   will-change: transform, filter, box-shadow;
 }
 
-.t-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.t-devil-badge {
-  width: clamp(34px, 8.5vw, 48px);
-  height: clamp(34px, 8.5vw, 48px);
-  object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(255, 42, 133, 0.75)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
-  animation: devil3DFloat 3.6s ease-in-out infinite alternate;
-  transform: translate3d(0, 0, 0);
-  will-change: transform, filter;
-  flex-shrink: 0;
-}
-
-@keyframes devil3DFloat {
-  0% {
-    transform: translateY(0) rotate(-3deg) scale(1);
-    filter: drop-shadow(0 0 10px rgba(255, 42, 133, 0.6)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
-  }
-  50% {
-    transform: translateY(-6px) rotate(4deg) scale(1.08);
-    filter: drop-shadow(0 0 20px rgba(255, 42, 133, 0.95)) drop-shadow(0 0 28px rgba(255, 42, 157, 0.6)) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.9));
-  }
-  100% {
-    transform: translateY(2px) rotate(-2deg) scale(0.98);
-    filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.75)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
-  }
-}
-
-.t-title {
-  font-family: var(--font-arcade);
-  font-size: clamp(22px, 5.5vw, 38px);
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 3px;
-  line-height: 1.4;
-  text-shadow: 
-    0 0 10px rgba(255, 42, 133, 0.8),
-    0 0 25px rgba(255, 42, 133, 0.5),
-    3px 3px 0 #7e0a39;
-  background: linear-gradient(180deg, #ffffff 30%, #ff85b6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: titlePulse 4s ease-in-out infinite alternate;
-}
-
-@keyframes titlePulse {
-  0% { filter: drop-shadow(0 0 12px rgba(255, 42, 133, 0.5)); }
-  100% { filter: drop-shadow(0 0 28px rgba(192, 132, 252, 0.8)); }
-}
-
+/* SUBTITLE */
 .t-sub {
-  font-family: var(--font-dialog);
-  font-size: clamp(12px, 2.8vw, 14px);
-  font-weight: 600;
-  color: var(--pink-light);
-  line-height: 1.8;
-  letter-spacing: 1px;
-  text-shadow: 0 0 8px rgba(255, 133, 182, 0.4);
-  max-width: 500px;
+  font-family: 'Silkscreen', var(--font-arcade);
+  font-size: clamp(10px, 2.5vw, 12px);
+  font-weight: 700;
+  color: #ffd6e8;
+  letter-spacing: 1.2px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255, 42, 133, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+  max-width: 420px;
 }
 
-/* Character pills wrapper */
+/* UNIFIED FROSTED CHARACTER CAPSULE */
 #s-title .char-pills {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 14px;
-  background: rgba(22, 13, 44, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--glass-border);
+  gap: 10px;
+  background: rgba(22, 11, 42, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 42, 157, 0.45);
   padding: 10px 18px;
-  border-radius: 20px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), inset 0 0 12px rgba(255, 42, 157, 0.12);
   width: 100%;
   max-width: 290px;
   box-sizing: border-box;
 }
 
 #s-title .char-pill {
-  font-family: var(--font-arcade);
+  font-family: 'Silkscreen', var(--font-arcade);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  color: #ffffff;
+  letter-spacing: 0.8px;
 }
 
+#s-title .char-sep {
+  color: #ff2a85;
+  font-size: 9px;
+  text-shadow: 0 0 8px rgba(255, 42, 133, 0.8);
+}
+
+/* CALL TO ACTION PLAY BUTTON */
 #s-title .btn-title-play {
   width: 100%;
   max-width: 290px;
   box-sizing: border-box;
   padding: 14px 20px;
-  font-size: 16px;
+  font-family: var(--font-arcade);
+  font-size: 15px;
   letter-spacing: 2px;
+  font-weight: 700;
 }
 
 @media (max-width: 600px) {
   .t-title {
-    font-size: 24px !important;
-    letter-spacing: 2px !important;
+    font-size: clamp(26px, 7vw, 34px);
+    letter-spacing: 2px;
   }
   .t-sub {
-    font-size: 10.5px !important;
-    line-height: 1.6 !important;
-  }
-  #s-title {
-    gap: 20px !important;
-  }
-  .big-heart {
-    font-size: 46px !important;
+    font-size: 9.5px;
+    letter-spacing: 1px;
   }
 }

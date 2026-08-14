@@ -61,7 +61,7 @@ try {
 <div class="screen active" id="s-title">
   <div class="t-title-row">
     <div class="t-title">THE STORY</div>
-    <img src="assets/story_devil_logo.png" class="t-devil-badge" alt="The Story Devil Logo">
+    <img src="assets/story_devil_neon.png" class="t-devil-badge" alt="The Story Neon Devil">
   </div>
   <div class="hero-emblem-wrap">
     <video class="hero-intro-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture poster="assets/hero_emblem.png">
@@ -69,11 +69,13 @@ try {
       <img src="assets/hero_emblem.png" class="hero-emblem-img" alt="The Story Emblem">
     </video>
   </div>
-  <div class="t-sub">A Pixel Spicy Quest &nbsp;✦&nbsp; Three Hearts &nbsp;✦&nbsp; One Adventure</div>
+  <div class="t-sub">Three Hearts ✦ One Spicy Quest</div>
   <div class="char-pills">
-    <span class="char-pill" style="color:var(--purple)">● Gala</span>
-    <span class="char-pill" style="color:var(--teal)">● Lydia</span>
-    <span class="char-pill" style="color:var(--blue)">● Man</span>
+    <span class="char-pill">Gala</span>
+    <span class="char-sep">✦</span>
+    <span class="char-pill">Lydia</span>
+    <span class="char-sep">✦</span>
+    <span class="char-pill">Man</span>
   </div>
   <button class="btn btn-title-play" onclick="showMap()">▶ &nbsp;PLAY</button>
 </div>
@@ -119,29 +121,29 @@ try {
 
 <!-- PUZZLE MINIGAME SCREEN -->
 <div class="screen" id="s-puzzle">
-  <!-- Floating Glassmorphic Top Controls -->
-  <div class="puz-floating-controls">
-    <button class="puz-float-back" onclick="goMap()" role="button" tabindex="0" title="Back to Map">
-      <span class="puz-back-arr">◀</span> MAP
-    </button>
-    <div class="puz-radial-widget" onclick="PuzzleGame.togglePreview()" role="button" tabindex="0" title="Tap to view full reference photo">
-      <div class="puz-ring-container">
-        <svg class="puz-ring-svg" viewBox="0 0 68 68">
-          <defs>
-            <linearGradient id="puz-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00f3ff" />
-              <stop offset="100%" stop-color="#ff2a9d" />
-            </linearGradient>
-          </defs>
-          <circle class="puz-ring-bg" cx="34" cy="34" r="28" />
-          <circle class="puz-ring-bar" id="puz-ring-bar" cx="34" cy="34" r="28" stroke-dasharray="175.93" stroke-dashoffset="175.93" />
-        </svg>
-        <img id="puz-pip-img" class="puz-pip-circle" src="" alt="Thumbnail">
+  <div class="puzzle-board-wrap">
+    <!-- Floating Top Controls Anchored to Board -->
+    <div class="puz-floating-controls">
+      <button class="puz-float-back" onclick="goMap()" role="button" tabindex="0" title="Back to Map">
+        <span class="puz-back-arr">◀</span> MAP
+      </button>
+      <div class="puz-radial-widget" onclick="PuzzleGame.togglePreview()" role="button" tabindex="0" title="Tap to view full reference photo">
+        <div class="puz-ring-container">
+          <svg class="puz-ring-svg" viewBox="0 0 68 68">
+            <defs>
+              <linearGradient id="puz-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f3ff" />
+                <stop offset="100%" stop-color="#ff2a9d" />
+              </linearGradient>
+            </defs>
+            <circle class="puz-ring-bg" cx="34" cy="34" r="28" />
+            <circle class="puz-ring-bar" id="puz-ring-bar" cx="34" cy="34" r="28" stroke-dasharray="175.93" stroke-dashoffset="175.93" />
+          </svg>
+          <img id="puz-pip-img" class="puz-pip-circle" src="" alt="Thumbnail">
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="puzzle-board-wrap">
     <div class="puzzle-board" id="puzzle-board"></div>
   </div>
 </div>
