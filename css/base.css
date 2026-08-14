@@ -78,12 +78,102 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* FRAMER GRAIN / CRT SCANLINES & AMBIENT AURORA ORBS */
+.bg-aurora-wrap {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, #160729 0%, #080210 100%);
+}
+
+.aurora-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.7;
+  will-change: transform;
+}
+
+.aurora-orb-1 {
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, #4a1378 0%, rgba(74, 19, 120, 0) 70%);
+  top: -10%;
+  left: 5%;
+}
+
+.aurora-orb-2 {
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(circle, #2a0b4d 0%, rgba(42, 11, 77, 0) 70%);
+  bottom: -15%;
+  right: -5%;
+}
+
+.aurora-orb-3 {
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, #5b158a 0%, rgba(91, 21, 138, 0) 70%);
+  top: 35%;
+  left: 40%;
+}
+
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(18, 16, 26, 0) 50%,
+    rgba(0, 0, 0, 0.42) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 2;
+  opacity: 0.85;
+}
+
+.crt-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 35%, rgba(6, 2, 14, 0.6) 75%, rgba(4, 1, 10, 0.92) 100%);
+  z-index: 3;
+}
+
+.crt-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: linear-gradient(
+    180deg,
+    rgba(192, 132, 252, 0) 0%,
+    rgba(192, 132, 252, 0.05) 50%,
+    rgba(192, 132, 252, 0) 100%
+  );
+  animation: crtScanSweep 8s linear infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes crtScanSweep {
+  0% { top: -160px; }
+  100% { top: 100%; }
+}
+
 /* BACKGROUND ROMANCE & SENSUAL AMBIENT FX */
 .bg-romance-fx {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
   overflow: hidden;
 }
 

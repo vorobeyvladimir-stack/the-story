@@ -1,7 +1,10 @@
 /* ═══════════════════════════════════════
    ROMANTIC & SAPPHIC AMBIENT FX (romanceBg.js)
-   Sensual night-out ambience: cocktails, cherries, lipstick kisses,
-   biting lips, neon passion lightning bolts, and gracefully falling rose petals.
+   Powered by GSAP & Framer-style CRT Scanlines:
+   - GSAP ambient floating neon aurora orbs (deep violet & purple backlight)
+   - CRT scanline raster texture & cinematic vignette
+   - Floating romantic items (cocktails, cherries, kisses, lips, lightning)
+   - Gracefully falling & swirling rose petals
 ═══════════════════════════════════════ */
 
 (function() {
@@ -11,7 +14,57 @@
   const MAX_PETAL_PARTICLES = 10;
   let container = null;
 
-  // 1. Spawner for floating upwards romantic & passion elements
+  // 1. GSAP Ambient Aurora Orbs Animation
+  function initGSAPAurora() {
+    if (typeof gsap === 'undefined') return;
+
+    const orb1 = document.getElementById('orb-1');
+    const orb2 = document.getElementById('orb-2');
+    const orb3 = document.getElementById('orb-3');
+
+    if (orb1) {
+      gsap.to(orb1, {
+        x: '+=110',
+        y: '+=70',
+        scale: 1.2,
+        opacity: 0.85,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+    }
+
+    if (orb2) {
+      gsap.to(orb2, {
+        x: '-=130',
+        y: '-=90',
+        scale: 1.15,
+        opacity: 0.75,
+        duration: 10,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: 1
+      });
+    }
+
+    if (orb3) {
+      gsap.to(orb3, {
+        x: '+=80',
+        y: '-=60',
+        scale: 1.3,
+        opacity: 0.9,
+        duration: 7,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: 1.5
+      });
+    }
+  }
+
+  // 2. Spawner for floating upwards romantic & passion elements
   function createFloatParticle() {
     if (!container) return;
     const currentFloats = container.querySelectorAll('.romance-particle').length;
@@ -45,7 +98,7 @@
     }, (duration + delay) * 1000);
   }
 
-  // 2. Spawner for gracefully falling & swirling rose petals
+  // 3. Spawner for gracefully falling & swirling rose petals
   function createRosePetal() {
     if (!container) return;
     const currentPetals = container.querySelectorAll('.rose-petal').length;
@@ -57,7 +110,7 @@
 
     const left = Math.random() * 96;
     const size = 18 + Math.random() * 14;
-    const duration = 9 + Math.random() * 8; // 9s to 17s gentle fall
+    const duration = 9 + Math.random() * 8;
     const delay = Math.random() * 2;
     const opacity = 0.4 + Math.random() * 0.45;
     const sway = (Math.random() < 0.5 ? 1 : -1) * (20 + Math.random() * 35);
@@ -79,6 +132,8 @@
   }
 
   function init() {
+    initGSAPAurora();
+
     container = document.getElementById('bg-romance-fx');
     if (!container) {
       container = document.createElement('div');

@@ -20,6 +20,19 @@
 </head>
 <body>
 
+<!-- GSAP AMBIENT AURORA & CRT SCANLINES BACKGROUND (Framer Mode 3) -->
+<div class="bg-aurora-wrap" id="bg-aurora-wrap">
+  <div class="aurora-orb aurora-orb-1" id="orb-1"></div>
+  <div class="aurora-orb aurora-orb-2" id="orb-2"></div>
+  <div class="aurora-orb aurora-orb-3" id="orb-3"></div>
+</div>
+
+<div class="crt-overlay">
+  <div class="crt-scanlines"></div>
+  <div class="crt-vignette"></div>
+  <div class="crt-sweep"></div>
+</div>
+
 <!-- HUD HEADER -->
 <div id="hud">
   <span class="hud-back" onclick="goMap()" role="button" tabindex="0">◀ MAP</span>
@@ -130,7 +143,8 @@
   </div>
 </div>
 
-<!-- JAVASCRIPT MODULES -->
+<!-- ANIMATION & JAVASCRIPT MODULES -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/romanceBg.js"></script>
 <script src="js/characters.js"></script>
