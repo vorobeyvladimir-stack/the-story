@@ -65,7 +65,10 @@ try {
       <img src="assets/hero_emblem.png" class="hero-emblem-img" alt="Our Story Emblem">
     </video>
   </div>
-  <div class="t-title">OUR STORY</div>
+  <div class="t-title-row">
+    <div class="t-title">THE STORY</div>
+    <img src="assets/story_devil_logo.png" class="t-devil-badge" alt="The Story Devil Logo">
+  </div>
   <div class="t-sub">A Pixel Love Quest &nbsp;✦&nbsp; Three Hearts &nbsp;✦&nbsp; One Adventure</div>
   <div class="char-pills">
     <span class="char-pill" style="color:var(--blue)">● Man</span>
@@ -117,18 +120,26 @@ try {
 
 <!-- PUZZLE MINIGAME SCREEN -->
 <div class="screen" id="s-puzzle">
-  <div class="puz-hdr-card-wrap">
-    <div class="puz-hdr-card">
-      <div class="puz-title" id="puz-title-text">Ch.1b: The Match Puzzle</div>
-      <div class="puz-hdr-row">
-        <div class="puz-progress-box">
-          <div class="puz-counter-chip">Pieces <span id="puz-counter">0 / 12</span></div>
-          <div class="puz-bar-track"><div class="puz-bar-fill" id="puz-bar-fill" style="width:0%"></div></div>
-        </div>
-        <div class="puz-pip-box" onclick="PuzzleGame.togglePreview()" role="button" tabindex="0" title="Tap to view full photo">
-          <img id="puz-pip-img" class="puz-pip-img" src="" alt="Thumbnail">
-        </div>
+  <!-- Floating Glassmorphic Top Controls -->
+  <div class="puz-floating-controls">
+    <button class="puz-float-back" onclick="goMap()" role="button" tabindex="0" title="Back to Map">
+      <span class="puz-back-arr">◀</span> MAP
+    </button>
+    <div class="puz-radial-widget" onclick="PuzzleGame.togglePreview()" role="button" tabindex="0" title="Tap to view full reference photo">
+      <div class="puz-ring-container">
+        <svg class="puz-ring-svg" viewBox="0 0 68 68">
+          <defs>
+            <linearGradient id="puz-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f3ff" />
+              <stop offset="100%" stop-color="#ff2a9d" />
+            </linearGradient>
+          </defs>
+          <circle class="puz-ring-bg" cx="34" cy="34" r="28" />
+          <circle class="puz-ring-bar" id="puz-ring-bar" cx="34" cy="34" r="28" stroke-dasharray="175.93" stroke-dashoffset="175.93" />
+        </svg>
+        <img id="puz-pip-img" class="puz-pip-circle" src="" alt="Thumbnail">
       </div>
+      <div class="puz-ring-badge" id="puz-counter">0 / 12</div>
     </div>
   </div>
 

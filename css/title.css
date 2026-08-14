@@ -38,6 +38,39 @@
   will-change: transform, filter, box-shadow;
 }
 
+.t-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.t-devil-badge {
+  width: clamp(34px, 8.5vw, 48px);
+  height: clamp(34px, 8.5vw, 48px);
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 42, 133, 0.75)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+  animation: devil3DFloat 3.6s ease-in-out infinite alternate;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, filter;
+  flex-shrink: 0;
+}
+
+@keyframes devil3DFloat {
+  0% {
+    transform: translateY(0) rotate(-3deg) scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 42, 133, 0.6)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+  }
+  50% {
+    transform: translateY(-6px) rotate(4deg) scale(1.08);
+    filter: drop-shadow(0 0 20px rgba(255, 42, 133, 0.95)) drop-shadow(0 0 28px rgba(255, 42, 157, 0.6)) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.9));
+  }
+  100% {
+    transform: translateY(2px) rotate(-2deg) scale(0.98);
+    filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.75)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
+  }
+}
+
 .t-title {
   font-family: var(--font-arcade);
   font-size: clamp(22px, 5.5vw, 38px);

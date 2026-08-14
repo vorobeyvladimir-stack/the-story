@@ -1,156 +1,152 @@
 /* ═══════════════════════════════════════
    2026 NEO-ARCADE ROMANCE DESIGN SYSTEM — PUZZLE MINIGAME SCREEN (#s-puzzle)
-   Exact 1:1 match to Modern Romance Concept Art.
-   Owns: Glowing gradient header card with side tabs, inset progress pill,
-   cyan neon progress bar, luxury glowing PiP frame, and glowing board border.
+   Variant 2: Floating Glass Overlays & Radial Progress Ring
+   Owns: Floating glassmorphic '< MAP' button, glowing radial progress ring,
+   fullscreen edge-to-edge board container, and photo reference modal.
 ═══════════════════════════════════════ */
 
+/* Hide global top HUD during puzzle mode to maximize board real estate */
+body.puzzle-mode #hud {
+  display: none !important;
+}
+
 #s-puzzle {
-  padding: 76px 14px 18px 14px;
-  justify-content: flex-start;
-  align-items: center;
-  overflow-y: auto;
-  gap: 18px;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* TOP HEADER CARD WRAPPER WITH GLOWING SIDE TABS */
-.puz-hdr-card-wrap {
-  position: relative;
-  width: 100%;
-  max-width: 540px;
-  display: flex;
+  display: none;
+  padding: env(safe-area-inset-top, 14px) 10px env(safe-area-inset-bottom, 14px) 10px;
+  flex-direction: column;
   justify-content: center;
-  margin-top: 4px;
-  flex-shrink: 0;
-}
-
-.puz-hdr-card {
-  position: relative;
-  width: 100%;
-  background: rgba(22, 12, 44, 0.92);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  border-radius: 22px;
-  padding: 16px 20px 14px 20px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(56, 189, 248, 0.25), 0 0 30px rgba(255, 42, 157, 0.3);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 2;
-  border: 1.5px solid rgba(192, 132, 252, 0.35);
-  border-top: 2.5px solid #38bdf8;
-  border-bottom: 1.5px solid #ff2a9d;
-}
-
-/* Glowing side tabs flanking the header card (exact match to concept art) */
-.puz-hdr-card-wrap::before,
-.puz-hdr-card-wrap::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 42px;
-  background: #ff2a9d;
-  border-radius: 4px;
-  box-shadow: 0 0 16px #ff2a9d, 0 0 26px rgba(255, 42, 157, 0.85);
-  z-index: 1;
-}
-
-.puz-hdr-card-wrap::before {
-  left: -5px;
-}
-
-.puz-hdr-card-wrap::after {
-  right: -5px;
-}
-
-/* CHAPTER TITLE (Warm Amber-Gold with soft radiance) */
-.puz-title {
-  font-family: var(--font-arcade);
-  font-size: clamp(14px, 3.2vw, 17px);
-  font-weight: 700;
-  color: #ffe270;
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 14px rgba(255, 226, 112, 0.65), 0 2px 4px rgba(0, 0, 0, 0.9);
-  text-align: center;
-  text-transform: none;
-}
-
-/* LOWER ROW (INSET PROGRESS CAPSULE + PiP PHOTO) */
-.puz-hdr-row {
-  display: flex;
   align-items: center;
-  gap: 14px;
-}
-
-/* INSET PROGRESS CAPSULE */
-.puz-progress-box {
-  flex: 1;
-  background: rgba(32, 18, 64, 0.92);
-  border: 1.5px solid rgba(192, 132, 252, 0.28);
-  border-radius: 14px;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
-}
-
-.puz-counter-chip {
-  font-family: var(--font-arcade);
-  font-size: 12px;
-  font-weight: 700;
-  color: #e4dcfa;
-  letter-spacing: 1px;
-}
-
-.puz-bar-track {
-  width: 100%;
-  height: 8px;
-  background: rgba(12, 6, 26, 0.95);
-  border-radius: 6px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.puz-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-  box-shadow: 0 0 14px #00f2fe;
-  border-radius: 5px;
-  transition: width 0.35s ease-out;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
 }
 
-/* PICTURE-IN-PICTURE (PiP) MINI THUMBNAIL (1:1 Concept Art Frame) */
-.puz-pip-box {
-  width: 62px;
-  height: 62px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 2.5px solid #ff2a9d;
-  box-shadow: 0 0 22px rgba(255, 42, 157, 0.9), inset 0 0 10px rgba(255, 42, 157, 0.45);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  background: #000;
+#s-puzzle.active {
   display: flex;
+}
+
+/* FLOATING GLASSMORPHIC CONTROLS OVERLAY */
+.puz-floating-controls {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top, 14px));
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* TOP-LEFT FLOATING GLASS PILL '< MAP' */
+.puz-float-back {
+  pointer-events: auto;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: rgba(18, 9, 36, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(0, 243, 255, 0.55);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: var(--font-arcade);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.65), 0 0 16px rgba(0, 243, 255, 0.35);
+  cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.puz-pip-box:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 30px rgba(255, 42, 157, 1);
+.puz-float-back:active {
+  transform: scale(0.93);
+  box-shadow: 0 0 26px rgba(0, 243, 255, 0.75);
+  border-color: #00f3ff;
 }
 
-.puz-pip-img {
+.puz-back-arr {
+  color: #00f3ff;
+  font-size: 11px;
+}
+
+/* TOP-RIGHT RADIAL PROGRESS RING WIDGET */
+.puz-radial-widget {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+
+.puz-radial-widget:active {
+  transform: scale(0.94);
+}
+
+.puz-ring-container {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.puz-ring-svg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  transform: rotate(-90deg);
+}
+
+.puz-ring-bg {
+  fill: rgba(14, 7, 28, 0.85);
+  stroke: rgba(255, 42, 157, 0.25);
+  stroke-width: 4.5;
+}
+
+.puz-ring-bar {
+  fill: transparent;
+  stroke: url(#puz-ring-grad);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 0 6px #ff2a9d);
+}
+
+.puz-pip-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   object-fit: cover;
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+.puz-ring-badge {
+  font-family: var(--font-arcade);
+  font-size: 11px;
+  font-weight: 700;
+  color: #e4dcfa;
+  background: rgba(16, 8, 32, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 42, 157, 0.45);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 42, 157, 0.35);
 }
 
 /* PUZZLE CANVAS WRAPPER & BOARD */
@@ -158,20 +154,23 @@
   position: relative;
   width: 100%;
   max-width: 540px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 10px;
+  box-sizing: border-box;
 }
 
 .puzzle-board {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: min(94vw, 540px);
+  width: min(95vw, 540px);
   background: radial-gradient(circle at center, #1b0a33 0%, #090314 100%);
   border: 2.5px solid #ff2a9d;
   border-radius: 26px;
-  box-shadow: 0 0 30px rgba(255, 42, 157, 0.65), 0 12px 40px rgba(0, 0, 0, 0.85), inset 0 0 18px rgba(255, 42, 157, 0.25);
+  box-shadow: 0 0 32px rgba(255, 42, 157, 0.65), 0 14px 44px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(255, 42, 157, 0.25);
   margin: 0 auto;
   position: relative;
   overflow: hidden;
@@ -193,8 +192,8 @@
   inset: 0;
   z-index: 100;
   background: rgba(11, 4, 22, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   display: none;
   flex-direction: column;
   align-items: center;
@@ -218,44 +217,16 @@
   max-width: 88vw;
   max-height: 68vh;
   border: 2.5px solid #ffe270;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 226, 112, 0.65);
+  border-radius: 20px;
+  box-shadow: 0 0 32px rgba(255, 226, 112, 0.65), 0 16px 48px rgba(0, 0, 0, 0.9);
+  object-fit: contain;
 }
 
-@media (max-width: 600px) {
-  #s-puzzle {
-    padding: 72px 10px 14px 10px !important;
-    gap: 14px !important;
-  }
-  .puz-hdr-card {
-    padding: 14px 16px 12px 16px !important;
-    border-radius: 18px !important;
-  }
-  .puz-title {
-    font-size: 13.5px !important;
-  }
-  .puz-pip-box {
-    width: 54px !important;
-    height: 54px !important;
-    border-radius: 12px !important;
-  }
-  .puz-progress-box {
-    padding: 8px 12px !important;
-    gap: 6px !important;
-    border-radius: 12px !important;
-  }
-  .puz-counter-chip {
-    font-size: 11px !important;
-  }
-  .puzzle-board {
-    border-radius: 20px !important;
-  }
-}
-
-/* iOS safe areas */
-@supports (padding: max(0px)) {
-  #s-puzzle {
-    padding-top: max(74px, calc(64px + env(safe-area-inset-top))) !important;
-    padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
-  }
+/* SHUFFLE / HINT BUTTONS */
+.puzzle-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  justify-content: center;
+  width: 100%;
 }

@@ -20,9 +20,11 @@ const PuzzleGame = (function() {
     if (counter) {
       counter.textContent = `${solved} / ${total}`;
     }
-    const bar = document.getElementById('puz-bar-fill');
-    if (bar && total > 0) {
-      bar.style.width = `${(solved / total) * 100}%`;
+    const ringBar = document.getElementById('puz-ring-bar');
+    if (ringBar && total > 0) {
+      const circumference = 175.93;
+      const ratio = solved / total;
+      ringBar.style.strokeDashoffset = String(circumference * (1 - ratio));
     }
   }
 
@@ -51,14 +53,6 @@ const PuzzleGame = (function() {
   return {
     start: function(ch) {
       currentCh = ch;
-
-      const hudCh = document.getElementById('hud-ch');
-      if (hudCh) hudCh.textContent = `Ch.${ch.num}: ${ch.title}`;
-
-      const titleEl = document.getElementById('puz-title-text');
-      if (titleEl) {
-        titleEl.textContent = `Ch.${ch.num}: ${ch.title}`;
-      }
 
       const prevImg = document.getElementById('puz-preview-img');
       if (prevImg) prevImg.src = ch.image;
@@ -90,9 +84,9 @@ const PuzzleGame = (function() {
       if (counterEl) {
         counterEl.textContent = `0 / ${cols * rows}`;
       }
-      const barEl = document.getElementById('puz-bar-fill');
-      if (barEl) {
-        barEl.style.width = '0%';
+      const ringBar = document.getElementById('puz-ring-bar');
+      if (ringBar) {
+        ringBar.style.strokeDashoffset = '175.93';
       }
 
       let isInitialized = false;
@@ -108,7 +102,7 @@ const PuzzleGame = (function() {
         const screenH = window.innerHeight || document.documentElement.clientHeight || 844;
 
         const availW = Math.min(screenW * 0.94, 540);
-        const availH = Math.max(340, Math.min(screenH * 0.52, 480));
+        const availH = Math.max(380, Math.min(screenH * 0.68, 580));
 
         const basePieceW = availW / (cols + 0.8);
         const basePieceH = availH / (rows + 0.8);
@@ -245,8 +239,8 @@ const PuzzleGame = (function() {
             notify('🎉 Puzzle Complete!');
             const counter = document.getElementById('puz-counter');
             if (counter) counter.textContent = `${cols * rows} / ${cols * rows}`;
-            const bar = document.getElementById('puz-bar-fill');
-            if (bar) bar.style.width = '100%';
+            const ringBar = document.getElementById('puz-ring-bar');
+            if (ringBar) ringBar.style.strokeDashoffset = '0';
             setTimeout(() => {
               completeChapter(currentCh);
             }, 1400);
