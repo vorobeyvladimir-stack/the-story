@@ -48,36 +48,6 @@ const PuzzleGame = (function() {
     return !!(a && b && a.c === b.c && a.r + 1 === b.r);
   }
 
-  function spawnMagneticSparks(piece) {
-    const boardEl = document.getElementById('puzzle-board');
-    if (!boardEl || !piece) return;
-
-    let px = 60, py = 60;
-    if (piece.group && piece.group.shape) {
-      px = piece.group.shape.x();
-      py = piece.group.shape.y();
-    }
-
-    const sparkCount = 3 + Math.floor(Math.random() * 3);
-    for (let i = 0; i < sparkCount; i++) {
-      const spark = document.createElement('div');
-      spark.className = 'snap-spark';
-      spark.textContent = Math.random() < 0.65 ? '⚡' : '✨';
-      spark.style.left = `${px + (Math.random() - 0.5) * 50}px`;
-      spark.style.top = `${py + (Math.random() - 0.5) * 50}px`;
-      spark.style.setProperty('--sx', `${(Math.random() - 0.5) * 60}px`);
-      spark.style.setProperty('--sy', `${(Math.random() - 0.5) * 60}px`);
-      spark.style.setProperty('--srot', `${(Math.random() - 0.5) * 70}deg`);
-      boardEl.appendChild(spark);
-
-      setTimeout(() => {
-        if (spark.parentNode) {
-          spark.parentNode.removeChild(spark);
-        }
-      }, 600);
-    }
-  }
-
   return {
     start: function(ch) {
       currentCh = ch;
@@ -242,20 +212,37 @@ const PuzzleGame = (function() {
 
           hbCanvas.shuffle(0.75);
 
-          hbCanvas.onConnect((piece) => {
+          // iOS 17+ / Telegram WebApp Taptic Engine piece drag tactile sensation
+          if (hbCanvas.stage) {
+            hbCanvas.stage.on('dragstart', () => {
+              const pos = hbCanvas.stage.getPointerPosition() || { x: 0, y: 0 };
+              if (window.HapticEngine) HapticEngine.startDrag(pos.x, pos.y);
+            });
+            hbCanvas.stage.on('dragmove', () => {
+              const pos = hbCanvas.stage.getPointerPosition();
+              if (pos && window.HapticEngine) HapticEngine.onDragMove(pos.x, pos.y);
+            });
+            hbCanvas.stage.on('dragend', () => {
+              if (window.HapticEngine) HapticEngine.endDrag();
+            });
+          }
+
+          hbCanvas.onConnect(() => {
             SoundEngine.playCorrect();
-            spawnMagneticSparks(piece);
+            if (window.HapticEngine) HapticEngine.impact('medium');
             setTimeout(updateCounter, 20);
           });
 
           hbCanvas.onDisconnect(() => {
             SoundEngine.playClick();
+            if (window.HapticEngine) HapticEngine.impact('light');
             setTimeout(updateCounter, 20);
           });
 
           hbCanvas.attachSolvedValidator();
           hbCanvas.onValid(() => {
             SoundEngine.playFanfare();
+            if (window.HapticEngine) HapticEngine.notification('success');
             notify('🎉 Puzzle Complete!');
             const counter = document.getElementById('puz-counter');
             if (counter) counter.textContent = `${cols * rows} / ${cols * rows}`;

@@ -215,6 +215,108 @@ const CoreEngine = {
   }
 };
 
+/* ═══════════════════════════════════════
+   HAPTIC FEEDBACK ENGINE (iOS 17+ / Telegram WebApp Taptic Engine & Web Vibration)
+═══════════════════════════════════════ */
+const HapticEngine = {
+  _lastDragX: null,
+  _lastDragY: null,
+  _dragDistanceAccumulator: 0,
+  _DRAG_STEP_PX: 38, // Distance in pixels between delicate friction ticks
+
+  /**
+   * Triggers haptic impact (light, medium, heavy, rigid, soft)
+   * @param {'light'|'medium'|'heavy'|'rigid'|'soft'} style
+   */
+  impact: function(style = 'light') {
+    try {
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred(style);
+        return;
+      }
+      if (navigator.vibrate) {
+        navigator.vibrate(style === 'heavy' ? 24 : style === 'medium' ? 14 : 7);
+      }
+    } catch(e) {}
+  },
+
+  /**
+   * Triggers notification haptic (success, warning, error)
+   * @param {'success'|'warning'|'error'} type
+   */
+  notification: function(type = 'success') {
+    try {
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred(type);
+        return;
+      }
+      if (navigator.vibrate) {
+        navigator.vibrate(type === 'success' ? [14, 40, 20] : 30);
+      }
+    } catch(e) {}
+  },
+
+  /**
+   * Ultra-short selection tick (iOS wheel click sensation)
+   */
+  selection: function() {
+    try {
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.selectionChanged();
+        return;
+      }
+      if (navigator.vibrate) {
+        navigator.vibrate(5);
+      }
+    } catch(e) {}
+  },
+
+  /**
+   * Starts drag distance tracking
+   * @param {number} x
+   * @param {number} y
+   */
+  startDrag: function(x, y) {
+    this._lastDragX = x;
+    this._lastDragY = y;
+    this._dragDistanceAccumulator = 0;
+    this.impact('light');
+  },
+
+  /**
+   * Accumulates drag distance and fires delicate selection tick on threshold
+   * @param {number} x
+   * @param {number} y
+   */
+  onDragMove: function(x, y) {
+    if (this._lastDragX === null || this._lastDragY === null) {
+      this._lastDragX = x;
+      this._lastDragY = y;
+      return;
+    }
+    const dx = x - this._lastDragX;
+    const dy = y - this._lastDragY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    this._lastDragX = x;
+    this._lastDragY = y;
+
+    this._dragDistanceAccumulator += dist;
+    if (this._dragDistanceAccumulator >= this._DRAG_STEP_PX) {
+      this.selection();
+      this._dragDistanceAccumulator = 0;
+    }
+  },
+
+  /**
+   * Resets drag distance tracking
+   */
+  endDrag: function() {
+    this._lastDragX = null;
+    this._lastDragY = null;
+    this._dragDistanceAccumulator = 0;
+  }
+};
+
 // Global Bridge Functions
 function show(id) { CoreEngine.show(id); }
 function showTitle() { CoreEngine.showTitle(); }
@@ -231,10 +333,12 @@ function notify(msg) { CoreEngine.notify(msg); }
 /**
  * Unified Game Namespace
  */
+window.HapticEngine = HapticEngine;
 window.Game = window.Game || {};
 window.Game.state = state;
 window.Game.core = CoreEngine;
 window.Game.audio = SoundEngine;
+window.Game.haptic = HapticEngine;
 if (typeof PuzzleGame !== 'undefined') {
   window.Game.puzzle = PuzzleGame;
 }
