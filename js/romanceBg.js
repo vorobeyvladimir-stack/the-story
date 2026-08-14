@@ -1,17 +1,21 @@
 /* ═══════════════════════════════════════
-   ROMANTIC & SAPPHIC AMBIENT FX (romanceBg.js)
-   Powered by GSAP & Framer GrainOverlay Mode 3 (Scanlines):
+   ROMANTIC & SPICY AMBIENT FX (romanceBg.js)
+   Powered by GSAP & Framer GrainOverlay Mode 3:
    - 6 GSAP multi-point floating glowing purple/violet/magenta orbs
-   - Pure CRT scanlines raster texture & cinematic vignette (no falling bar)
-   - Floating romantic items (cocktails, cherries, kisses, lips, lightning)
-   - Gracefully falling & swirling rose petals
+   - Pure CRT scanlines raster texture & cinematic vignette
+   - Floating spicy assets (mask, handcuffs, whip, collar, harness silhouette) + bitten lips 🫦
+   - No flowers / rose petals
 ═══════════════════════════════════════ */
 
 (function() {
-  const FLOAT_ICONS = ['🍸', '🍒', '💋', '🫦', '💄', '🍹', '🍾', '🔥', '⚡'];
-  const PETAL_ICONS = ['🌹'];
+  const SPICY_FLOAT_ASSETS = [
+    'assets/spicy_mask.png',
+    'assets/spicy_cuffs.png',
+    'assets/spicy_collar.png',
+    'assets/spicy_body.png'
+  ];
+  const BITTEN_LIPS = '🫦';
   const MAX_FLOAT_PARTICLES = 16;
-  const MAX_PETAL_PARTICLES = 10;
   let container = null;
 
   // 1. GSAP Multi-Orb Ambient Lighting Animation (6 distinct spheres across the viewport)
@@ -58,63 +62,44 @@
     });
   }
 
-  // 2. Spawner for floating upwards romantic & passion elements
+  // 2. Spawner for floating upwards spicy elements & bitten lips
   function createFloatParticle() {
     if (!container) return;
     const currentFloats = container.querySelectorAll('.romance-particle').length;
     if (currentFloats >= MAX_FLOAT_PARTICLES) return;
 
     const el = document.createElement('div');
-    const icon = FLOAT_ICONS[Math.floor(Math.random() * FLOAT_ICONS.length)];
-    el.className = 'romance-particle' + (icon === '⚡' ? ' neon-lightning' : '');
-    el.textContent = icon;
+    const isLips = Math.random() < 0.28; // ~28% bitten lips, ~72% spicy item assets
 
-    const left = Math.random() * 94;
-    const size = (icon === '💋' || icon === '🫦') ? 22 + Math.random() * 10 : (icon === '⚡' ? 20 + Math.random() * 10 : 16 + Math.random() * 12);
-    const duration = 7 + Math.random() * 7;
+    if (isLips) {
+      el.className = 'romance-particle romance-lips';
+      el.textContent = BITTEN_LIPS;
+      const size = 26 + Math.random() * 12;
+      el.style.fontSize = `${size}px`;
+    } else {
+      el.className = 'romance-particle romance-spicy-asset';
+      const asset = SPICY_FLOAT_ASSETS[Math.floor(Math.random() * SPICY_FLOAT_ASSETS.length)];
+      const img = document.createElement('img');
+      img.src = asset;
+      img.alt = 'Spicy item';
+      el.appendChild(img);
+
+      const width = 28 + Math.random() * 16;
+      el.style.width = `${width}px`;
+      el.style.height = `${width}px`;
+    }
+
+    const left = Math.random() * 92;
+    const duration = 7 + Math.random() * 6;
     const delay = Math.random() * 1.5;
-    const opacity = (icon === '⚡') ? 0.65 + Math.random() * 0.35 : 0.35 + Math.random() * 0.45;
-    const rot = (Math.random() - 0.5) * 50;
+    const opacity = 0.5 + Math.random() * 0.45;
+    const rot = (Math.random() - 0.5) * 45;
 
     el.style.left = `${left}vw`;
-    el.style.fontSize = `${size}px`;
     el.style.animationDuration = `${duration}s`;
     el.style.animationDelay = `${delay}s`;
     el.style.opacity = opacity;
     el.style.setProperty('--rot', `${rot}deg`);
-
-    container.appendChild(el);
-
-    setTimeout(() => {
-      if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
-    }, (duration + delay) * 1000);
-  }
-
-  // 3. Spawner for gracefully falling & swirling rose petals
-  function createRosePetal() {
-    if (!container) return;
-    const currentPetals = container.querySelectorAll('.rose-petal').length;
-    if (currentPetals >= MAX_PETAL_PARTICLES) return;
-
-    const el = document.createElement('div');
-    el.className = 'rose-petal';
-    el.textContent = PETAL_ICONS[Math.floor(Math.random() * PETAL_ICONS.length)];
-
-    const left = Math.random() * 96;
-    const size = 18 + Math.random() * 14;
-    const duration = 9 + Math.random() * 8;
-    const delay = Math.random() * 2;
-    const opacity = 0.4 + Math.random() * 0.45;
-    const sway = (Math.random() < 0.5 ? 1 : -1) * (20 + Math.random() * 35);
-
-    el.style.left = `${left}vw`;
-    el.style.fontSize = `${size}px`;
-    el.style.animationDuration = `${duration}s`;
-    el.style.animationDelay = `${delay}s`;
-    el.style.opacity = opacity;
-    el.style.setProperty('--sway', `${sway}px`);
 
     container.appendChild(el);
 
@@ -140,20 +125,13 @@
     for (let i = 0; i < 6; i++) {
       setTimeout(createFloatParticle, i * 350);
     }
-    for (let j = 0; j < 4; j++) {
-      setTimeout(createRosePetal, j * 500);
-    }
 
     let isPaused = false;
 
-    // Continuous spawn timers
+    // Continuous spawn timer
     setInterval(() => {
       if (!isPaused) createFloatParticle();
-    }, 1400);
-
-    setInterval(() => {
-      if (!isPaused) createRosePetal();
-    }, 2000);
+    }, 1200);
 
     window.RomanceFx = {
       pause: function() {
