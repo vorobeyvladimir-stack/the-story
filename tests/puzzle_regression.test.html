@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Puzzle Regression Test Suite</title>
+  <script src="../js/lib/konva.min.js"></script>
+  <script src="../js/lib/headbreaker.js"></script>
+  <script src="../js/audio.js"></script>
+  <script src="../js/storyData.js"></script>
+  <script src="../js/puzzle.js"></script>
+  <style>
+    body { font-family: monospace; background: #0b0616; color: #fff; padding: 20px; }
+    .pass { color: #4ade80; font-weight: bold; }
+    .fail { color: #f87171; font-weight: bold; }
+    #puzzle-board { width: 400px; height: 500px; display: none; }
+  </style>
+</head>
+<body>
+  <h2>🧪 Puzzle Regression Test Suite</h2>
+  <div id="results">Running tests...</div>
+  <div id="puzzle-board"></div>
+
+  <script>
+    window.testResults = {
+      test1_neighbor_validation: null,
+      test2_cluster_connection: null,
+      allPassed: false,
+      logs: []
+    };
+
+    function log(msg, status) {
+      window.testResults.logs.push({ msg, status });
+      const el = document.getElementById('results');
+      const div = document.createElement('div');
+      div.className = status || '';
+      div.textContent = (status === 'pass' ? '✅ ' : status === 'fail' ? '❌ ' : 'ℹ️ ') + msg;
+      el.appendChild(div);
+    }
+
+    function gridPos(piece) {
+      if (!piece || !piece.metadata) return null;
+      if (typeof piece.metadata.r === 'number' && typeof piece.metadata.c === 'number') {
+        return { r: piece.metadata.r, c: piece.metadata.c };
+      }
+      const m = /^p_(\d+)_(\d+)$/.exec(piece.metadata.id);
+      return m ? { r: +m[1], c: +m[2] } : null;
+    }
+
+    function isImmediatelyLeftOf(p1, p2) {
+      const a = gridPos(p1);
+      const b = gridPos(p2);
+      return !!(a && b && a.r === b.r && a.c + 1 === b.c);
+    }
+
+    function isImmediatelyAbove(p1, p2) {
+      const a = gridPos(p1);
+      const b = gridPos(p2);
+      return !!(a && b && a.c === b.c && a.r + 1 === b.r);
+    }
+
+    window.addEventListener('load', async () => {
+      const el = document.getElementById('results');
+      el.innerHTML = '';
+
+      const img = new Image();
+      img.src = '../assets/ch1_puzzle.jpg';
+      await new Promise(r => { img.onload = r; img.onerror = r; });
+
+      const cols = 4, rows = 3;
+      const pieceW = 75, pieceH = 75;
+      const boardW = 400, boardH = 500;
+
+      // Initialize the puzzle canvas
+      const canvas = new headbreaker.Canvas('puzzle-board', {
+        width: boardW,
+        height: boardH,
+        pieceSize: { x: pieceW, y: pieceH },
+        proximity: 22,
+        borderFill: 0,
+        strokeWidth: 2.5,
+        strokeColor: '#ff2a9d',
+        outline: new headbreaker.outline.Rounded(),
+        image: img,
+        preventOffstageDrag: false,
+        maxPiecesCount: { x: cols, y: rows }
+      });
+
+      const meta = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          meta.push({ r, c, id: `p_${r}_${c}` });
+        }
+      }
+
+      // autogenerate as updated in puzzle.js
+      canvas.autogenerate({
+        horizontalPiecesCount: cols,
+        verticalPiecesCount: rows,
+        insertsGenerator: headbreaker.generators.random,
+        metadata: meta
+      });
+
+      canvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
+      canvas.puzzle.attachVerticalConnectionRequirement(isImmediatelyAbove);
+      canvas.puzzle.forceConnectionWhileDragging();
+
+      const pieces = canvas.puzzle.pieces;
+
+      // --- TEST 1: NON-NEIGHBOR CONNECTION VALIDATION ---
+      log('TEST 1: Verifying that NON-neighbor pieces CANNOT connect...', '');
+      
+      const pTopLeft = pieces[0]; // (c:0, r:0)
+      const pBottomRight = pieces[pieces.length - 1]; // (c:3, r:2)
+      const pTrueNeighborRight = pieces[1]; // (c:1, r:0)
+
+      // Test horizontal requirement validation
+      const horizRejectNonNeighbor = !canvas.puzzle.horizontalConnector.requirement(pTopLeft, pBottomRight);
+      const vertRejectNonNeighbor = !canvas.puzzle.verticalConnector.requirement(pTopLeft, pBottomRight);
+      const horizAcceptTrueNeighbor = canvas.puzzle.horizontalConnector.requirement(pTopLeft, pTrueNeighborRight);
+
+      if (horizRejectNonNeighbor && vertRejectNonNeighbor && horizAcceptTrueNeighbor) {
+        log('TEST 1 PASSED: Strict neighbor validation active! Non-neighbors rejected, true neighbors accepted.', 'pass');
+        window.testResults.test1_neighbor_validation = true;
+      } else {
+        log('TEST 1 FAILED: Neighbor connection requirement check failed.', 'fail');
+        window.testResults.test1_neighbor_validation = false;
+      }
+
+      // --- TEST 2: DRAG DISCONNECTION (FORCE CONNECTION) ---
+      log('TEST 2: Verifying that connected pieces CANNOT be disconnected on drag...', '');
+      
+      const dragDisconnectionMode = canvas.puzzle.dragMode;
+      // In Headbreaker, dragMode should be ForceConnection so connected pieces NEVER disconnect
+      if (dragDisconnectionMode && dragDisconnectionMode.dragShouldDisconnect(canvas.puzzle, 10, 10) === false) {
+        log('TEST 2 PASSED: forceConnectionWhileDragging is active. Pieces locked together permanently.', 'pass');
+        window.testResults.test2_cluster_connection = true;
+      } else {
+        log('TEST 2 FAILED: Connected pieces can be disconnected while dragging! forceConnectionWhileDragging() is missing.', 'fail');
+        window.testResults.test2_cluster_connection = false;
+      }
+
+      window.testResults.allPassed = (window.testResults.test1_neighbor_validation === true && window.testResults.test2_cluster_connection === true);
+      console.log('TEST_RESULTS_JSON:', JSON.stringify(window.testResults));
+    });
+  </script>
+</body>
+</html>

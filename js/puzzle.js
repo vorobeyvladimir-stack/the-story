@@ -7,63 +7,6 @@
    headbreaker/konva (js/lib)
 ═══════════════════════════════════════ */
 
-// ═══════════════════════════════════════
-// UNIVERSAL RANDOMIZED PUZZLE SLICER ENGINE
-// ═══════════════════════════════════════
-const PuzzleSlicer = (function() {
-  function invertInsert(insert) {
-    if (insert === headbreaker.Tab) return headbreaker.Slot;
-    if (insert === headbreaker.Slot) return headbreaker.Tab;
-    return headbreaker.None;
-  }
-
-  // Generates randomized cutting topology for any grid (cols x rows)
-  function generateTopology(cols, rows) {
-    const horiz = [];
-    for (let r = 0; r < rows - 1; r++) {
-      const rowEdges = [];
-      for (let c = 0; c < cols; c++) {
-        rowEdges.push(Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot);
-      }
-      horiz.push(rowEdges);
-    }
-
-    const vert = [];
-    for (let r = 0; r < rows; r++) {
-      const rowEdges = [];
-      for (let c = 0; c < cols - 1; c++) {
-        rowEdges.push(Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot);
-      }
-      vert.push(rowEdges);
-    }
-
-    return { horiz, vert };
-  }
-
-  function getPieceStructure(c, r, cols, rows, topology) {
-    const struct = {};
-    if (r > 0) struct.up = invertInsert(topology.horiz[r - 1][c]);
-    if (r < rows - 1) struct.down = topology.horiz[r][c];
-    if (c > 0) struct.left = invertInsert(topology.vert[r][c - 1]);
-    if (c < cols - 1) struct.right = topology.vert[r][c];
-    return struct;
-  }
-
-  function getOutlineVariation() {
-    return {
-      outline: new headbreaker.outline.Rounded(),
-      lineSoftness: 0.16 + (Math.random() * 0.08),
-      proximity: 22
-    };
-  }
-
-  return {
-    generateTopology,
-    getPieceStructure,
-    getOutlineVariation
-  };
-})();
-
 const PuzzleGame = (function() {
   let currentCh = null;
   let hbCanvas = null;
@@ -73,10 +16,6 @@ const PuzzleGame = (function() {
     const total = hbCanvas.puzzle.pieces.length;
     const solved = hbCanvas.puzzle.pieces.filter(p => p.fixed || p.connected).length;
 
-    const counter = document.getElementById('puz-counter');
-    if (counter) {
-      counter.textContent = `${solved} / ${total}`;
-    }
     const ringBar = document.getElementById('puz-ring-bar');
     if (ringBar && total > 0) {
       const circumference = 175.93;
@@ -86,7 +25,11 @@ const PuzzleGame = (function() {
   }
 
   function gridPos(piece) {
-    const m = /^p_(\d+)_(\d+)$/.exec(piece.metadata && piece.metadata.id);
+    if (!piece || !piece.metadata) return null;
+    if (typeof piece.metadata.r === 'number' && typeof piece.metadata.c === 'number') {
+      return { r: piece.metadata.r, c: piece.metadata.c };
+    }
+    const m = /^p_(\d+)_(\d+)$/.exec(piece.metadata.id);
     return m ? { r: +m[1], c: +m[2] } : null;
   }
 
@@ -132,10 +75,6 @@ const PuzzleGame = (function() {
       const cols = ch.grid ? ch.grid.cols : 4;
       const rows = ch.grid ? ch.grid.rows : 3;
 
-      const counterEl = document.getElementById('puz-counter');
-      if (counterEl) {
-        counterEl.textContent = `0 / ${cols * rows}`;
-      }
       const ringBar = document.getElementById('puz-ring-bar');
       if (ringBar) {
         ringBar.style.strokeDashoffset = '175.93';
@@ -153,64 +92,47 @@ const PuzzleGame = (function() {
         const screenW = window.innerWidth || document.documentElement.clientWidth || 390;
         const screenH = window.innerHeight || document.documentElement.clientHeight || 844;
 
-        const availW = Math.min(screenW * 0.96, 560);
-        const availH = Math.max(420, Math.min(screenH * 0.76, 660));
+        // 1. Board expands across the whole viewport height and width
+        const boardW = Math.floor(Math.min(screenW * 0.96, 560));
+        const boardH = Math.floor(Math.min(screenH * 0.91, 840));
 
-        const basePieceW = availW / (cols + 0.8);
-        const basePieceH = availH / (rows + 0.8);
-
+        // 2. Keep piece size exact (do NOT increase piece size, allowing generous drag room)
         const imgAspect = imgW / imgH;
-        const gridAspect = cols / rows;
+        let pieceW = Math.min(Math.floor((boardW * 0.82) / cols), 78);
+        let pieceH = Math.floor((pieceW * cols / imgAspect) / rows);
 
-        let pieceW, pieceH;
-        if (imgAspect >= gridAspect) {
-          pieceW = basePieceW;
-          pieceH = (pieceW * cols / imgAspect) / rows;
-          if (pieceH * (rows + 0.8) > availH) {
-            pieceH = basePieceH;
-            pieceW = (pieceH * rows * imgAspect) / cols;
-          }
-        } else {
-          pieceH = basePieceH;
-          pieceW = (pieceH * rows * imgAspect) / cols;
-          if (pieceW * (cols + 0.8) > availW) {
-            pieceW = basePieceW;
-            pieceH = (pieceW * cols / imgAspect) / rows;
-          }
+        if (pieceH * rows > boardH * 0.52) {
+          pieceH = Math.floor((boardH * 0.52) / rows);
+          pieceW = Math.floor((pieceH * rows * imgAspect) / cols);
         }
 
-        pieceW = Math.max(36, Math.floor(pieceW));
-        pieceH = Math.max(36, Math.floor(pieceH));
+        pieceW = Math.max(48, Math.min(pieceW, 80));
+        pieceH = Math.max(48, Math.min(pieceH, 80));
 
-        const marginX = Math.floor(pieceW / 2);
-        const marginY = Math.floor(pieceH / 2);
-        const boardW = pieceW * cols + marginX * 2;
-        const boardH = pieceH * rows + marginY * 2;
+        // 3. Center the assembled puzzle inside the large board canvas
+        const puzzleTotalW = pieceW * cols;
+        const puzzleTotalH = pieceH * rows;
+        const originX = Math.floor((boardW - puzzleTotalW) / 2);
+        const originY = Math.floor((boardH - puzzleTotalH) / 2);
 
         boardEl.style.width = `${boardW}px`;
         boardEl.style.height = `${boardH}px`;
-
-        const outlineConfig = PuzzleSlicer.getOutlineVariation();
 
         try {
           hbCanvas = new headbreaker.Canvas('puzzle-board', {
             width: boardW,
             height: boardH,
             pieceSize: { x: pieceW, y: pieceH },
-            proximity: outlineConfig.proximity,
+            proximity: 22,
             borderFill: 0,
             strokeWidth: 2.5,
             strokeColor: '#ff2a9d',
-            lineSoftness: outlineConfig.lineSoftness,
-            outline: outlineConfig.outline,
+            lineSoftness: 0.18,
+            outline: new headbreaker.outline.Rounded(),
             image: img,
             preventOffstageDrag: false,
             maxPiecesCount: { x: cols, y: rows }
           });
-
-          hbCanvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
-          hbCanvas.puzzle.attachVerticalConnectionRequirement(isImmediatelyAbove);
-          hbCanvas.puzzle.forceConnectionWhileDragging();
 
           const gridIsWiderThanPhoto =
             hbCanvas.puzzleDiameter.x / hbCanvas.puzzleDiameter.y > imgW / imgH;
@@ -220,31 +142,26 @@ const PuzzleGame = (function() {
             hbCanvas.adjustImagesToPuzzleHeight();
           }
 
-          hbCanvas.imageMetadata.offset = {
-            x: pieceW / 2 - marginX,
-            y: pieceH / 2 - marginY
-          };
-
-          // Generate randomized puzzle topology for any chapter grid
-          const topology = PuzzleSlicer.generateTopology(cols, rows);
-
+          // Build metadata grid to track exact row and column for every piece
+          const meta = [];
           for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-              const structObj = PuzzleSlicer.getPieceStructure(c, r, cols, rows, topology);
-              const id = `p_${r}_${c}`;
-              const posX = marginX + c * pieceW + pieceW / 2;
-              const posY = marginY + r * pieceH + pieceH / 2;
-
-              hbCanvas.sketchPiece({
-                structure: structObj,
-                metadata: {
-                  id: id,
-                  targetPosition: { x: posX, y: posY },
-                  currentPosition: { x: posX, y: posY }
-                }
-              });
+              meta.push({ r, c, id: `p_${r}_${c}` });
             }
           }
+
+          // Generate randomized puzzle topology for any chapter grid with metadata
+          hbCanvas.autogenerate({
+            horizontalPiecesCount: cols,
+            verticalPiecesCount: rows,
+            insertsGenerator: headbreaker.generators.random,
+            metadata: meta
+          });
+
+          // Strict neighbor connection rules & prevent disconnection on drag
+          hbCanvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
+          hbCanvas.puzzle.attachVerticalConnectionRequirement(isImmediatelyAbove);
+          hbCanvas.puzzle.forceConnectionWhileDragging();
 
           hbCanvas.puzzle.pieces.forEach(piece => {
             const originalDrop = piece.drop.bind(piece);
@@ -280,8 +197,6 @@ const PuzzleGame = (function() {
             SoundEngine.playFanfare();
             if (window.HapticEngine) HapticEngine.victory();
             notify('🎉 Puzzle Complete!');
-            const counter = document.getElementById('puz-counter');
-            if (counter) counter.textContent = `${cols * rows} / ${cols * rows}`;
             const ringBar = document.getElementById('puz-ring-bar');
             if (ringBar) ringBar.style.strokeDashoffset = '0';
             setTimeout(() => {
