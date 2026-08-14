@@ -207,6 +207,25 @@ const SoundEngine = (function() {
         clearInterval(bgmInterval);
         bgmInterval = null;
       }
+    },
+
+    pauseBGM: function() {
+      if (bgmInterval) {
+        clearInterval(bgmInterval);
+        bgmInterval = null;
+      }
+      if (ctx && ctx.state === 'running') {
+        try { ctx.suspend(); } catch(e) {}
+      }
+    },
+
+    resumeBGM: function() {
+      if (ctx && ctx.state === 'suspended' && !muted) {
+        try { ctx.resume(); } catch(e) {}
+      }
+      if (!muted && !bgmInterval) {
+        this.startBGM();
+      }
     }
   };
 })();

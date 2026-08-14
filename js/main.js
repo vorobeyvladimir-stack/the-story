@@ -27,6 +27,28 @@ try {
   console.warn('Telegram WebApp integration notice:', e);
 }
 
+// Page Visibility API: Deep sleep when tab/app is hidden, instant resume on return
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (window.SoundEngine) SoundEngine.pauseBGM();
+    const vid = document.querySelector('.hero-intro-video');
+    if (vid && !vid.paused) vid.pause();
+    if (window.RomanceFx) RomanceFx.pause();
+    if (typeof gsap !== 'undefined') gsap.globalTimeline.pause();
+  } else {
+    if (typeof gsap !== 'undefined') gsap.globalTimeline.resume();
+    const activeScreen = document.querySelector('.screen.active');
+    const isPuzzle = activeScreen && activeScreen.id === 's-puzzle';
+    if (window.RomanceFx && !isPuzzle) RomanceFx.resume();
+    const isTitle = activeScreen && activeScreen.id === 's-title';
+    const vid = document.querySelector('.hero-intro-video');
+    if (vid && isTitle && vid.paused) vid.play().catch(() => {});
+    if (window.SoundEngine && !SoundEngine.isMuted() && !isTitle) {
+      SoundEngine.resumeBGM();
+    }
+  }
+});
+
 // Initialize Map and display Title screen
 buildMap();
 show('s-title');

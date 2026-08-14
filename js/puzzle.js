@@ -121,6 +121,12 @@ const PuzzleGame = (function() {
         if (hasLoaded) return;
         hasLoaded = true;
 
+        // Cap DPR to 2x for optimal mobile GPU performance (saves 50%+ video memory on iPhone Retina 3x)
+        const safeDPR = Math.min(window.devicePixelRatio || 1, 2);
+        if (window.Konva) {
+          window.Konva.pixelRatio = safeDPR;
+        }
+
         const imgW = (img.naturalWidth && img.naturalWidth > 0) ? img.naturalWidth : 858;
         const imgH = (img.naturalHeight && img.naturalHeight > 0) ? img.naturalHeight : 854;
 
@@ -174,7 +180,8 @@ const PuzzleGame = (function() {
             outline: new headbreaker.outline.Rounded(),
             image: img,
             preventOffstageDrag: false,
-            maxPiecesCount: { x: cols, y: rows }
+            maxPiecesCount: { x: cols, y: rows },
+            pixelRatio: safeDPR
           });
 
           hbCanvas.puzzle.attachHorizontalConnectionRequirement(isImmediatelyLeftOf);
@@ -281,11 +288,22 @@ const PuzzleGame = (function() {
         }
       };
 
-      img.onload = initHeadbreaker;
+      const runWithAsyncDecode = async () => {
+        if ('decode' in img) {
+          try {
+            await img.decode();
+          } catch (e) {
+            // Graceful fallback if decode is unsupported or image is already cached
+          }
+        }
+        initHeadbreaker();
+      };
+
+      img.onload = runWithAsyncDecode;
       img.src = ch.image;
 
       if (img.complete && img.naturalWidth > 0) {
-        initHeadbreaker();
+        runWithAsyncDecode();
       }
     },
 

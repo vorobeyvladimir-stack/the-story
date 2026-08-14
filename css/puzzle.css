@@ -180,6 +180,13 @@
   -webkit-user-select: none;
 }
 
+.puzzle-board canvas,
+#puzzle-board canvas {
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
 /* MAGNETIC SNAP SPARKS (Concept Art Micro-Effects) */
 .snap-spark {
   position: absolute;
