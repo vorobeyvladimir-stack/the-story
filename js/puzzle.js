@@ -7,6 +7,63 @@
    headbreaker/konva (js/lib)
 ═══════════════════════════════════════ */
 
+// ═══════════════════════════════════════
+// UNIVERSAL RANDOMIZED PUZZLE SLICER ENGINE
+// ═══════════════════════════════════════
+const PuzzleSlicer = (function() {
+  function invertInsert(insert) {
+    if (insert === headbreaker.Tab) return headbreaker.Slot;
+    if (insert === headbreaker.Slot) return headbreaker.Tab;
+    return headbreaker.None;
+  }
+
+  // Generates randomized cutting topology for any grid (cols x rows)
+  function generateTopology(cols, rows) {
+    const horiz = [];
+    for (let r = 0; r < rows - 1; r++) {
+      const rowEdges = [];
+      for (let c = 0; c < cols; c++) {
+        rowEdges.push(Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot);
+      }
+      horiz.push(rowEdges);
+    }
+
+    const vert = [];
+    for (let r = 0; r < rows; r++) {
+      const rowEdges = [];
+      for (let c = 0; c < cols - 1; c++) {
+        rowEdges.push(Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot);
+      }
+      vert.push(rowEdges);
+    }
+
+    return { horiz, vert };
+  }
+
+  function getPieceStructure(c, r, cols, rows, topology) {
+    const struct = {};
+    if (r > 0) struct.up = invertInsert(topology.horiz[r - 1][c]);
+    if (r < rows - 1) struct.down = topology.horiz[r][c];
+    if (c > 0) struct.left = invertInsert(topology.vert[r][c - 1]);
+    if (c < cols - 1) struct.right = topology.vert[r][c];
+    return struct;
+  }
+
+  function getOutlineVariation() {
+    return {
+      outline: new headbreaker.outline.Rounded(),
+      lineSoftness: 0.16 + (Math.random() * 0.08),
+      proximity: 22
+    };
+  }
+
+  return {
+    generateTopology,
+    getPieceStructure,
+    getOutlineVariation
+  };
+})();
+
 const PuzzleGame = (function() {
   let currentCh = null;
   let hbCanvas = null;
@@ -26,11 +83,6 @@ const PuzzleGame = (function() {
       const ratio = solved / total;
       ringBar.style.strokeDashoffset = String(circumference * (1 - ratio));
     }
-  }
-
-  function oppInsert(ins) {
-    if (!ins) return null;
-    return ins === headbreaker.Tab ? headbreaker.Slot : headbreaker.Tab;
   }
 
   function gridPos(piece) {
@@ -138,17 +190,19 @@ const PuzzleGame = (function() {
         boardEl.style.width = `${boardW}px`;
         boardEl.style.height = `${boardH}px`;
 
+        const outlineConfig = PuzzleSlicer.getOutlineVariation();
+
         try {
           hbCanvas = new headbreaker.Canvas('puzzle-board', {
             width: boardW,
             height: boardH,
             pieceSize: { x: pieceW, y: pieceH },
-            proximity: 22,
+            proximity: outlineConfig.proximity,
             borderFill: 0,
             strokeWidth: 2.5,
             strokeColor: '#ff2a9d',
-            lineSoftness: 0.18,
-            outline: new headbreaker.outline.Rounded(),
+            lineSoftness: outlineConfig.lineSoftness,
+            outline: outlineConfig.outline,
             image: img,
             preventOffstageDrag: false,
             maxPiecesCount: { x: cols, y: rows }
@@ -171,22 +225,12 @@ const PuzzleGame = (function() {
             y: pieceH / 2 - marginY
           };
 
-          const horiz = [], vert = [];
-          for (let r = 0; r < rows - 1; r++) {
-            horiz.push(Array.from({length: cols}, () => Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot));
-          }
-          for (let r = 0; r < rows; r++) {
-            vert.push(Array.from({length: cols - 1}, () => Math.random() < 0.5 ? headbreaker.Tab : headbreaker.Slot));
-          }
+          // Generate randomized puzzle topology for any chapter grid
+          const topology = PuzzleSlicer.generateTopology(cols, rows);
 
           for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-              const structObj = {};
-              if (r > 0) structObj.up = oppInsert(horiz[r - 1][c]);
-              if (r < rows - 1) structObj.down = horiz[r][c];
-              if (c > 0) structObj.left = oppInsert(vert[r][c - 1]);
-              if (c < cols - 1) structObj.right = vert[r][c];
-
+              const structObj = PuzzleSlicer.getPieceStructure(c, r, cols, rows, topology);
               const id = `p_${r}_${c}`;
               const posX = marginX + c * pieceW + pieceW / 2;
               const posY = marginY + r * pieceH + pieceH / 2;
