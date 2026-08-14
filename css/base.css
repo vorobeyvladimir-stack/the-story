@@ -308,6 +308,25 @@ html, body {
   45% { transform: scale(1.12); filter: drop-shadow(0 0 18px rgba(255, 42, 133, 0.75)); }
 }
 
+/* GENTLE ROMANTIC BREATHING PULSE (Soft, delicate & smooth) */
+@keyframes gentleBreathe {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(255, 42, 157, 0.3));
+    box-shadow: 0 0 10px rgba(255, 42, 157, 0.35), 0 4px 16px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 14px rgba(255, 42, 157, 0.5)) drop-shadow(0 0 18px rgba(192, 132, 252, 0.3));
+    box-shadow: 0 0 16px rgba(255, 42, 157, 0.5), 0 6px 20px rgba(0, 0, 0, 0.7);
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(255, 42, 157, 0.3));
+    box-shadow: 0 0 10px rgba(255, 42, 157, 0.35), 0 4px 16px rgba(0, 0, 0, 0.6);
+  }
+}
+
 /* TACTILE 3D ARCADE BUTTONS */
 .btn {
   font-family: var(--font-arcade);
@@ -377,6 +396,33 @@ html, body {
 
 #hud.on {
   display: flex;
+}
+
+.hud-left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-mini-emblem {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1.5px solid #ff2a9d;
+  box-shadow: 0 0 12px rgba(255, 42, 157, 0.6);
+  animation: gentleBreathe 3.6s ease-in-out infinite;
+  object-fit: cover;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+  will-change: transform, filter, box-shadow;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hud-mini-emblem:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 18px rgba(255, 42, 157, 0.9);
 }
 
 .hud-back {
@@ -468,12 +514,21 @@ html, body {
   .hud-ch {
     font-size: 10px !important;
   }
+  .hud-mini-emblem {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 7px !important;
+  }
+  .hud-left-group {
+    gap: 8px !important;
+  }
   .hud-back {
     font-size: 10px !important;
     padding: 5px 9px !important;
   }
   #hud {
     padding: 8px 12px !important;
+    gap: 12px !important;
   }
 }
 

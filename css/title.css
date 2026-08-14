@@ -11,12 +11,29 @@
   background: radial-gradient(circle at 50% 30%, rgba(255, 42, 133, 0.15) 0%, transparent 60%);
 }
 
+.hero-emblem-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+}
+
+.hero-intro-video,
+.hero-emblem-img,
 .big-heart {
-  font-size: 58px;
-  animation: hb 1.4s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+  width: clamp(260px, 76vw, 420px);
+  aspect-ratio: 760 / 480;
+  max-height: clamp(165px, 46vw, 265px);
+  border-radius: 18px;
+  border: 1.5px solid rgba(255, 42, 157, 0.75);
+  box-shadow: 0 0 12px rgba(255, 42, 157, 0.4), 0 4px 16px rgba(0, 0, 0, 0.6);
+  animation: gentleBreathe 3.6s ease-in-out infinite;
   display: block;
-  line-height: 1;
-  filter: drop-shadow(0 0 20px var(--pink-glow));
+  object-fit: cover;
+  background: #000;
+  will-change: transform, filter, box-shadow;
 }
 
 .t-title {

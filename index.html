@@ -37,7 +37,10 @@
 
 <!-- HUD HEADER -->
 <div id="hud">
-  <span class="hud-back" onclick="goMap()" role="button" tabindex="0">◀ MAP</span>
+  <div class="hud-left-group">
+    <img src="assets/hero_emblem.png" class="hud-mini-emblem" alt="Home" onclick="showTitle()" title="Title Screen">
+    <span class="hud-back" onclick="goMap()" role="button" tabindex="0">◀ MAP</span>
+  </div>
   <span class="hud-ch" id="hud-ch">Ch.1</span>
   <button class="hud-sound-btn" id="hud-sound-btn" onclick="toggleAudio()" title="Toggle Audio">🔊</button>
   <span class="hud-h" id="hud-h">❤️❤️❤️</span>
@@ -47,7 +50,12 @@
 
 <!-- TITLE SCREEN -->
 <div class="screen active" id="s-title">
-  <span class="big-heart">💕</span>
+  <div class="hero-emblem-wrap">
+    <video class="hero-intro-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture poster="assets/hero_emblem.png">
+      <source src="assets/intro-video-resize.mp4" type="video/mp4">
+      <img src="assets/hero_emblem.png" class="hero-emblem-img" alt="Our Story Emblem">
+    </video>
+  </div>
   <div class="t-title">OUR STORY</div>
   <div class="t-sub">A Pixel Love Quest &nbsp;✦&nbsp; Three Hearts &nbsp;✦&nbsp; One Adventure</div>
   <div class="char-pills">

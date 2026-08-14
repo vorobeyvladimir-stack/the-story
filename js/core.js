@@ -57,6 +57,10 @@ const CoreEngine = {
   showTitle: function() {
     SoundEngine.playClick();
     this.show('s-title');
+    const vid = document.querySelector('.hero-intro-video');
+    if (vid && vid.paused) {
+      vid.play().catch(() => {});
+    }
   },
 
   showMap: function() {
