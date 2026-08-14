@@ -212,9 +212,14 @@ const PuzzleGame = (function() {
 
           hbCanvas.shuffle(0.75);
 
-          // iOS 17+ / Telegram WebApp Taptic Engine piece drag tactile sensation
-          let isDraggingPiece = false;
-          if (boardEl) {
+          // iOS 17+ / Telegram WebApp Taptic Engine piece drag tactile sensation.
+          // Bound once per board element: start() runs again on every replay, and
+          // clearing innerHTML does not detach listeners from boardEl itself, so
+          // re-binding would stack duplicate haptics on top of each other.
+          if (boardEl && !boardEl.dataset.hapticsBound) {
+            boardEl.dataset.hapticsBound = '1';
+            let isDraggingPiece = false;
+
             boardEl.addEventListener('pointerdown', (e) => {
               isDraggingPiece = true;
               if (window.HapticEngine) HapticEngine.startDrag(e.clientX, e.clientY);
@@ -236,38 +241,21 @@ const PuzzleGame = (function() {
             boardEl.addEventListener('pointercancel', stopDrag, { passive: true });
           }
 
-          if (hbCanvas.stage) {
-            hbCanvas.stage.on('dragstart', () => {
-              isDraggingPiece = true;
-              const pos = hbCanvas.stage.getPointerPosition() || { x: 0, y: 0 };
-              if (window.HapticEngine) HapticEngine.startDrag(pos.x, pos.y);
-            });
-            hbCanvas.stage.on('dragmove', () => {
-              const pos = hbCanvas.stage.getPointerPosition();
-              if (pos && window.HapticEngine) HapticEngine.onDragMove(pos.x, pos.y);
-            });
-            hbCanvas.stage.on('dragend', () => {
-              isDraggingPiece = false;
-              if (window.HapticEngine) HapticEngine.endDrag();
-            });
-          }
-
+          // NOTE: haptics for onConnect/onDisconnect/onValid are emitted inside
+          // SoundEngine.playCorrect / playClick / playFanfare, avoiding doubled buzzes.
           hbCanvas.onConnect(() => {
             SoundEngine.playCorrect();
-            if (window.HapticEngine) HapticEngine.impact('medium');
             setTimeout(updateCounter, 20);
           });
 
           hbCanvas.onDisconnect(() => {
             SoundEngine.playClick();
-            if (window.HapticEngine) HapticEngine.impact('light');
             setTimeout(updateCounter, 20);
           });
 
           hbCanvas.attachSolvedValidator();
           hbCanvas.onValid(() => {
             SoundEngine.playFanfare();
-            if (window.HapticEngine) HapticEngine.notification('success');
             notify('🎉 Puzzle Complete!');
             const counter = document.getElementById('puz-counter');
             if (counter) counter.textContent = `${cols * rows} / ${cols * rows}`;

@@ -216,19 +216,55 @@ const CoreEngine = {
 };
 
 /* ═══════════════════════════════════════
-   HAPTIC FEEDBACK ENGINE (iOS 17+ / Telegram WebApp Taptic Engine & Web Vibration)
+   HAPTIC FEEDBACK ENGINE (iOS 17+ / Telegram WebApp Taptic Engine)
+
+   Telegram routes every haptic through ONE native event:
+     web_app_trigger_haptic_feedback
+       { type: 'impact',           impact_style: light|medium|heavy|rigid|soft }
+       { type: 'notification',     notification_type: success|warning|error }
+       { type: 'selection_change' }
+
+   Telegram.WebApp.HapticFeedback wraps that event, but its wrapper refuses to
+   fire when tgWebAppVersion < 6.1 — it only console.warns and returns. An app
+   that wasn't launched through a real web_app button reports the default '6.0',
+   and on iOS there is no second chance: WebKit has no Vibration API, so
+   navigator.vibrate does not exist. Result: complete silence.
+
+   Posting that native event ourselves skips the version gate entirely, so it is
+   the primary path here and the SDK is only a fallback for a client exposing no
+   transport we recognise. Exactly one of the two ever runs, so a healthy phone
+   never buzzes twice for a single action (see _fire).
 ═══════════════════════════════════════ */
+const TG_HAPTIC_EVENT = 'web_app_trigger_haptic_feedback';
+
+/**
+ * Browsers reject navigator.vibrate before the first user gesture and log an
+ * error for every attempt, so the Web Vibration fallback waits for this.
+ */
+let userHasInteracted = false;
+['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+  window.addEventListener(evt, () => { userHasInteracted = true; }, { once: true, passive: true });
+});
+
+/**
+ * Posts a raw event to the Telegram client, mirroring the transports that
+ * telegram-web-app.js itself uses (native proxy, Windows notify, web iframe).
+ * @returns {boolean} true if a transport accepted the event
+ */
 function postTgEvent(eventType, eventData) {
+  const data = eventData === undefined ? '' : eventData;
   try {
-    if (window.TelegramWebviewProxy && typeof window.TelegramWebviewProxy.postEvent === 'function') {
-      window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(eventData || {}));
+    if (window.TelegramWebviewProxy !== undefined &&
+        typeof window.TelegramWebviewProxy.postEvent === 'function') {
+      window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(data));
       return true;
     }
-    if (window.webkit?.messageHandlers?.eventHandler?.postMessage) {
-      window.webkit.messageHandlers.eventHandler.postMessage(JSON.stringify({
-        eventType: eventType,
-        eventData: eventData || {}
-      }));
+    if (window.external && 'notify' in window.external) {
+      window.external.notify(JSON.stringify({ eventType: eventType, eventData: data }));
+      return true;
+    }
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(JSON.stringify({ eventType: eventType, eventData: data }), '*');
       return true;
     }
   } catch(e) {}
@@ -239,63 +275,121 @@ const HapticEngine = {
   _lastDragX: null,
   _lastDragY: null,
   _dragDistanceAccumulator: 0,
-  _DRAG_STEP_PX: 26, // Distance in pixels between delicate friction ticks
+  _lastFireAt: 0,
+
+  /** Distance between delicate friction ticks while dragging a piece */
+  _DRAG_STEP_PX: 38,
+  /**
+   * Floor between any two haptics. The Taptic Engine cannot retrigger instantly;
+   * calls stacked closer than this are dropped by iOS anyway, and flooding it
+   * makes the whole stream feel mushy instead of crisp.
+   */
+  _MIN_INTERVAL_MS: 45,
 
   /**
-   * Triggers haptic impact (light, medium, heavy, rigid, soft)
+   * Whether a native Telegram transport is reachable at all.
+   */
+  _hasNativeTransport: function() {
+    return window.TelegramWebviewProxy !== undefined ||
+           !!(window.external && 'notify' in window.external) ||
+           !!(window.parent && window.parent !== window);
+  },
+
+  /**
+   * Reports whether the SDK wrapper would pass its own version gate. Used for
+   * diagnostics only — delivery never depends on it, see _fire.
+   */
+  _sdkCanFire: function() {
+    const wa = window.Telegram && window.Telegram.WebApp;
+    if (!wa || !wa.HapticFeedback) return false;
+    return typeof wa.isVersionAtLeast === 'function' ? wa.isVersionAtLeast('6.1') : false;
+  },
+
+  /**
+   * Sends exactly one haptic.
+   *
+   * The raw native event is the primary path on purpose. It is byte-for-byte
+   * what HapticFeedback emits internally, minus the wrapper's version gate —
+   * and that gate is what silences haptics whenever tgWebAppVersion is the
+   * default '6.0'. Going through the SDK also means trusting isVersionAtLeast()
+   * to agree with the wrapper's internal check; when they disagree the haptic
+   * vanishes with no error. The raw event has neither failure mode.
+   *
+   * The SDK is kept strictly as a fallback for a client that exposes no
+   * transport we recognise. Only one of the two ever runs, so a healthy phone
+   * never buzzes twice for one action.
+   *
+   * @param {Object} nativeData - payload for web_app_trigger_haptic_feedback
+   * @param {function(Object):void} sdkCall - invoked with HapticFeedback
+   * @param {boolean} [throttle] - apply the retrigger floor (drag ticks only)
+   */
+  _fire: function(nativeData, sdkCall, throttle) {
+    const now = Date.now();
+    if (throttle && now - this._lastFireAt < this._MIN_INTERVAL_MS) return;
+    this._lastFireAt = now;
+
+    let delivered = false;
+    try {
+      delivered = postTgEvent(TG_HAPTIC_EVENT, nativeData);
+    } catch(e) {}
+
+    if (!delivered) {
+      try {
+        const hf = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback;
+        if (hf) sdkCall(hf);
+      } catch(e) {}
+    }
+
+    // Web Vibration API — plain Android browsers only. Skipped when Telegram
+    // already took the event (otherwise Android Telegram buzzes twice), skipped
+    // for selection ticks (too coarse to imitate a Taptic tick), and skipped
+    // before the first gesture (browsers reject it and log an error each time).
+    // iOS is never served by this: WebKit has no Vibration API at all.
+    if (!delivered && userHasInteracted && nativeData.type !== 'selection_change') {
+      try {
+        if (navigator.vibrate) {
+          navigator.vibrate(nativeData.impact_style === 'heavy' ? 24 :
+                            nativeData.impact_style === 'medium' ? 14 : 8);
+        }
+      } catch(e) {}
+    }
+  },
+
+  /**
+   * Collision feel between UI objects of differing weight
    * @param {'light'|'medium'|'heavy'|'rigid'|'soft'} style
    */
   impact: function(style = 'light') {
-    try {
-      const tgHaptic = window.Telegram?.WebApp?.HapticFeedback;
-      if (tgHaptic && typeof tgHaptic.impactOccurred === 'function') {
-        tgHaptic.impactOccurred(style);
-      }
-      postTgEvent('haptic_impact_occurred', { style: style });
-
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        navigator.vibrate(style === 'heavy' ? 24 : style === 'medium' ? 14 : 7);
-      }
-    } catch(e) {}
+    this._fire(
+      { type: 'impact', impact_style: style },
+      hf => hf.impactOccurred(style)
+    );
   },
 
   /**
-   * Triggers notification haptic (success, warning, error)
+   * Outcome feel for a completed task
    * @param {'success'|'warning'|'error'} type
    */
   notification: function(type = 'success') {
-    try {
-      const tgHaptic = window.Telegram?.WebApp?.HapticFeedback;
-      if (tgHaptic && typeof tgHaptic.notificationOccurred === 'function') {
-        tgHaptic.notificationOccurred(type);
-      }
-      postTgEvent('haptic_notification_occurred', { type: type });
-
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        navigator.vibrate(type === 'success' ? [14, 40, 20] : 30);
-      }
-    } catch(e) {}
+    this._fire(
+      { type: 'notification', notification_type: type },
+      hf => hf.notificationOccurred(type)
+    );
   },
 
   /**
-   * Ultra-short selection tick (iOS wheel click sensation)
+   * Ultra-short tick — the subtlest haptic iOS offers. Used for drag friction.
    */
   selection: function() {
-    try {
-      const tgHaptic = window.Telegram?.WebApp?.HapticFeedback;
-      if (tgHaptic && typeof tgHaptic.selectionChanged === 'function') {
-        tgHaptic.selectionChanged();
-      }
-      postTgEvent('haptic_selection_changed', {});
-
-      if (typeof navigator !== 'undefined' && navigator.vibrate) {
-        navigator.vibrate(5);
-      }
-    } catch(e) {}
+    this._fire(
+      { type: 'selection_change' },
+      hf => hf.selectionChanged(),
+      true
+    );
   },
 
   /**
-   * Starts drag distance tracking
+   * Starts drag distance tracking and marks the grab
    * @param {number} x
    * @param {number} y
    */
@@ -307,7 +401,7 @@ const HapticEngine = {
   },
 
   /**
-   * Accumulates drag distance and fires delicate selection tick on threshold
+   * Accumulates travelled distance and emits a friction tick per step
    * @param {number} x
    * @param {number} y
    */
@@ -337,6 +431,46 @@ const HapticEngine = {
     this._lastDragX = null;
     this._lastDragY = null;
     this._dragDistanceAccumulator = 0;
+  },
+
+  /**
+   * Reports what the current client actually supports. Handy on a real phone
+   * where there is no console: Game.haptic.diagnose() → notify() toast.
+   */
+  diagnose: function() {
+    const wa = window.Telegram && window.Telegram.WebApp;
+    const report = {
+      inTelegram: !!wa,
+      version: wa ? wa.version : null,
+      platform: wa ? wa.platform : null,
+      sdkWillFire: this._sdkCanFire(),
+      transport: window.TelegramWebviewProxy !== undefined ? 'TelegramWebviewProxy'
+               : (window.external && 'notify' in window.external) ? 'external.notify'
+               : (window.parent && window.parent !== window) ? 'parent.postMessage'
+               : 'none',
+      webVibrate: typeof navigator.vibrate === 'function'
+    };
+    report.path = report.transport !== 'none' ? 'native event'
+                : report.sdkWillFire ? 'SDK fallback'
+                : 'NONE — no haptics possible here';
+    if (typeof notify === 'function') {
+      notify(`${report.path} · v${report.version} · ${report.platform}`);
+    }
+    console.log('[Haptics]', report);
+    return report;
+  },
+
+  /**
+   * Fires the full puzzle pattern once so a real device can be checked by feel.
+   */
+  selfTest: function() {
+    this.impact('light');
+    setTimeout(() => this.selection(), 200);
+    setTimeout(() => this.selection(), 300);
+    setTimeout(() => this.selection(), 400);
+    setTimeout(() => this.impact('medium'), 600);
+    setTimeout(() => this.notification('success'), 950);
+    if (typeof notify === 'function') notify('🔬 Haptic self-test fired');
   }
 };
 
