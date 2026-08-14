@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════
    ROMANTIC & SAPPHIC AMBIENT FX (romanceBg.js)
-   Powered by GSAP & Framer-style CRT Scanlines:
-   - GSAP ambient floating neon aurora orbs (deep violet & purple backlight)
-   - CRT scanline raster texture & cinematic vignette
+   Powered by GSAP & Framer GrainOverlay Mode 3 (Scanlines):
+   - 6 GSAP multi-point floating glowing purple/violet/magenta orbs
+   - Pure CRT scanlines raster texture & cinematic vignette (no falling bar)
    - Floating romantic items (cocktails, cherries, kisses, lips, lightning)
    - Gracefully falling & swirling rose petals
 ═══════════════════════════════════════ */
@@ -14,54 +14,45 @@
   const MAX_PETAL_PARTICLES = 10;
   let container = null;
 
-  // 1. GSAP Ambient Aurora Orbs Animation
+  // 1. GSAP Multi-Orb Ambient Lighting Animation (6 distinct spheres across the viewport)
   function initGSAPAurora() {
     if (typeof gsap === 'undefined') return;
 
-    const orb1 = document.getElementById('orb-1');
-    const orb2 = document.getElementById('orb-2');
-    const orb3 = document.getElementById('orb-3');
+    const orbsConfig = [
+      { id: 'orb-1', x1: 90, y1: 60, scale: 1.25, opMin: 0.65, opMax: 0.9, dur: 7.5, delay: 0 },
+      { id: 'orb-2', x1: -110, y1: -75, scale: 1.3, opMin: 0.6, opMax: 0.88, dur: 9.2, delay: 0.8 },
+      { id: 'orb-3', x1: 100, y1: -90, scale: 1.2, opMin: 0.65, opMax: 0.92, dur: 8.4, delay: 1.5 },
+      { id: 'orb-4', x1: -80, y1: 85, scale: 1.35, opMin: 0.58, opMax: 0.85, dur: 6.8, delay: 2.2 },
+      { id: 'orb-5', x1: 70, y1: -65, scale: 1.25, opMin: 0.62, opMax: 0.9, dur: 10.5, delay: 1.0 },
+      { id: 'orb-6', x1: -95, y1: -70, scale: 1.28, opMin: 0.6, opMax: 0.86, dur: 8.8, delay: 2.8 }
+    ];
 
-    if (orb1) {
-      gsap.to(orb1, {
-        x: '+=110',
-        y: '+=70',
-        scale: 1.2,
-        opacity: 0.85,
-        duration: 8,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut'
-      });
-    }
+    orbsConfig.forEach(cfg => {
+      const el = document.getElementById(cfg.id);
+      if (!el) return;
 
-    if (orb2) {
-      gsap.to(orb2, {
-        x: '-=130',
-        y: '-=90',
-        scale: 1.15,
-        opacity: 0.75,
-        duration: 10,
+      // Smooth floating X/Y wandering
+      gsap.to(el, {
+        x: `+=${cfg.x1}`,
+        y: `+=${cfg.y1}`,
+        scale: cfg.scale,
+        duration: cfg.dur,
         repeat: -1,
         yoyo: true,
         ease: 'sine.inOut',
-        delay: 1
+        delay: cfg.delay
       });
-    }
 
-    if (orb3) {
-      gsap.to(orb3, {
-        x: '+=80',
-        y: '-=60',
-        scale: 1.3,
-        opacity: 0.9,
-        duration: 7,
+      // Subtle breathing luminescence
+      gsap.to(el, {
+        opacity: cfg.opMax,
+        duration: cfg.dur * 0.7,
         repeat: -1,
         yoyo: true,
         ease: 'sine.inOut',
-        delay: 1.5
+        delay: cfg.delay + 0.4
       });
-    }
+    });
   }
 
   // 2. Spawner for floating upwards romantic & passion elements

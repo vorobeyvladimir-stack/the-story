@@ -54,9 +54,10 @@ s-title (Title) ──▶ s-map (Chapter Select)
 ---
 
 ## 🚀 Git & Branch Workflow
+- **Explicit Push Only (CRITICAL)**: NEVER commit or push to Git/GitHub automatically unless the user explicitly asks for it.
 - **Default Branch**: Strictly use `main` for all pushes (never `master`).
 - **Remote Origin**: Configured with Personal Access Token (PAT) for automated non-interactive deployment.
-- **Push Command**: `git push origin main`
+- **Push Command**: `git push origin main` (execute ONLY when user requests).
 
 ---
 
