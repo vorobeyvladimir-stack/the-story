@@ -89,7 +89,8 @@
   letter-spacing: 0.15px;
 }
 
-.msg-man {
+.msg-man,
+.msg-vvv {
   background: linear-gradient(135deg, #102d48 0%, #173d62 100%);
   border: 1.5px solid var(--blue);
   align-self: flex-end;
@@ -132,7 +133,8 @@
   letter-spacing: 1px;
 }
 
-.msg-man .msg-who { color: var(--blue); }
+.msg-man .msg-who,
+.msg-vvv .msg-who { color: var(--blue); }
 .msg-gala .msg-who { color: var(--purple); }
 .msg-lydia .msg-who { color: var(--teal); }
 .msg-hidden .msg-who { color: var(--gold); text-shadow: 0 0 8px var(--gold-glow); }

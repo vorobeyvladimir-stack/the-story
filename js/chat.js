@@ -23,12 +23,18 @@ const ChatEngine = {
     let score = 0;
     let total = 0;
     const msgs = Array.isArray(ch.chatLines) ? ch.chatLines : [];
+    const chapterOptions = (ch.chatOptions && ch.chatOptions.length > 0)
+      ? ch.chatOptions
+      : ['gala', 'lydia', 'man'].filter(name => msgs.some(msg => msg.who === name || msg.answer === name));
 
+    const nameDisplay = { man: 'VVV', vvv: 'VVV', gala: 'Gala', lydia: 'Lydia' };
     msgs.forEach((m) => {
       const div = document.createElement('div');
+      const senderKey = (m.who || '').toLowerCase();
+      const displaySender = nameDisplay[senderKey] || (m.who ? m.who.toUpperCase() : '');
       if (!m.hidden) {
-        div.className = `msg msg-${m.who}`;
-        div.innerHTML = `<div class="msg-who">${m.who.toUpperCase()}</div><div class="msg-body">${m.text}</div>`;
+        div.className = `msg msg-${senderKey}`;
+        div.innerHTML = `<div class="msg-who">${displaySender}</div><div class="msg-body">${m.text}</div>`;
       } else {
         total++;
         div.className = 'msg msg-hidden';
@@ -36,10 +42,11 @@ const ChatEngine = {
 
         const row = document.createElement('div');
         row.className = 'guess-row';
-        ['man', 'gala', 'lydia'].forEach(name => {
+        const currentOptions = m.options || chapterOptions;
+        currentOptions.forEach(name => {
           const b = document.createElement('button');
           b.className = 'g-btn';
-          b.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+          b.textContent = nameDisplay[name.toLowerCase()] || (name.charAt(0).toUpperCase() + name.slice(1));
           b.onclick = () => {
             if (div.dataset.answered) return;
             div.dataset.answered = '1';
@@ -47,23 +54,30 @@ const ChatEngine = {
               /** @type {HTMLButtonElement} */ (x).disabled = true;
             });
 
-            if (name === m.answer) {
+            const isCorrect = (name.toLowerCase() === m.answer.toLowerCase()) ||
+                              (name.toLowerCase() === 'vvv' && m.answer.toLowerCase() === 'man') ||
+                              (name.toLowerCase() === 'man' && m.answer.toLowerCase() === 'vvv');
+
+            if (isCorrect) {
               b.classList.add('ok');
               score++;
               SoundEngine.playCorrect();
               const whoEl = div.querySelector('.msg-who');
-              if (whoEl) whoEl.textContent = name.toUpperCase() + ' ✓';
-              div.className = `msg msg-${name}`;
+              if (whoEl) whoEl.textContent = (nameDisplay[name.toLowerCase()] || name.toUpperCase()) + ' ✓';
+              div.className = `msg msg-${name.toLowerCase()}`;
             } else {
               b.classList.add('no');
               SoundEngine.playWrong();
+              const ansDisplay = nameDisplay[m.answer.toLowerCase()] || m.answer.toUpperCase();
               row.querySelectorAll('.g-btn').forEach(x => {
-                if (x.textContent && x.textContent.toLowerCase() === m.answer) {
+                const btnTxt = x.textContent ? x.textContent.trim() : '';
+                if (btnTxt.toLowerCase() === ansDisplay.toLowerCase() ||
+                    (btnTxt.toLowerCase() === 'vvv' && m.answer.toLowerCase() === 'man')) {
                   x.classList.add('ok');
                 }
               });
               const whoEl = div.querySelector('.msg-who');
-              if (whoEl) whoEl.textContent = m.answer.toUpperCase() + ' ✗';
+              if (whoEl) whoEl.textContent = ansDisplay + ' ✗';
             }
 
             const cScore = document.getElementById('c-score');

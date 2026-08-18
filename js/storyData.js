@@ -69,26 +69,61 @@ const CHAPTERS = [
     chars: ['gala', 'lydia'],
     bg: 'zoe',
     lines: [
-      { who: 'NARRATOR', text: 'It all started on a dating app called ZOE...' },
-      { who: 'NARRATOR', text: 'Gala was curious. She made a profile, browsed a little...' },
-      { who: 'GALA', text: "*scrolling* Oh wow... she's beautiful..." },
-      { who: 'NARRATOR', text: 'A blonde girl with grey eyes and a playful smile caught her attention.' },
-      { who: 'GALA', text: '*types nervously* Hi there! Your photos are stunning... 😊' },
-      { who: 'LYDIA', text: '*looks at message* Oh! She seems sweet... ❤️' },
-      { who: 'LYDIA', text: 'Hi! Thanks so much 😊 You have a really warm face!' },
-      { who: 'GALA', text: "I'm Gala, from Germany... this is new for me haha 😅" },
-      { who: 'LYDIA', text: "I'm Lydia, from Kyiv 🇺🇦 Don't be nervous, I don't bite 😄" },
-      { who: 'NARRATOR', text: 'They talked for hours. Something special was already growing...' },
-      { who: 'GALA', text: 'Hey... would you ever come to Germany?' },
-      { who: 'LYDIA', text: '*smiles* For you? Maybe... 💕' },
-      { who: 'NARRATOR', text: 'A trip was planned. Heidelberg awaited.' }
+      { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.' },
+      { who: 'NARRATOR', text: 'They met in the city center. For one suspended moment, the noise of the streets seemed to disappear.' },
+      { who: 'GALA', text: '*smiling* So... you really came.' },
+      { who: 'LYDIA', text: '*looking her up and down* I told you I might.' },
+      { who: 'GALA', text: 'You look even more dangerous in person.' },
+      { who: 'LYDIA', text: 'And you look like trouble I should have prepared for.' },
+      { who: 'NARRATOR', text: 'One look was enough. The attraction between them was immediate, unmistakable... and becoming very difficult to ignore.' },
+      { who: 'GALA', text: 'Coffee first?' },
+      { who: 'LYDIA', text: 'Coffee. Definitely coffee.' },
+      { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.' },
+      { who: 'GALA', text: 'You keep staring at me.' },
+      { who: 'LYDIA', text: 'I’m trying to decide whether you’re more beautiful when you smile or when you pretend to be innocent.' },
+      { who: 'GALA', text: 'That sounds like a dangerous decision.' },
+      { who: 'LYDIA', text: 'I’ve already made it.' },
+      { who: 'NARRATOR', text: 'The coffee disappeared quickly. Their excuses disappeared even faster.' },
+      { who: 'NARRATOR', text: 'Soon, they were walking toward Lydia’s hotel room...' },
+      { who: 'LYDIA', text: 'Are you always this confident?' },
+      { who: 'GALA', text: 'Only when I’m absolutely sure.' },
+      { who: 'LYDIA', text: 'And what are you absolutely sure about?' },
+      { who: 'GALA', text: 'That you want me here.' },
+      { who: 'LYDIA', text: '*after a pause* I do.' },
+      { who: 'NARRATOR', text: 'The moment the door closed behind them, the city was left outside.' },
+      { who: 'GALA', text: 'You can relax now. No more pretending.' },
+      { who: 'LYDIA', text: 'I’m not sure I remember how.' },
+      { who: 'GALA', text: 'Then let me remind you.' },
+      { who: 'NARRATOR', text: 'Gala reached for her hand, giving Lydia every chance to change her mind. Lydia answered by stepping closer.' },
+      { who: 'LYDIA', text: 'You’re very persistent.' },
+      { who: 'GALA', text: 'Only when the answer is worth waiting for.' },
+      { who: 'NARRATOR', text: 'Lydia stripped off all her clothes, starting with her dress and down to her panties' },
+      { who: 'LYDIA', text: 'I don’t think I want you to wait.' },
+      { who: 'NARRATOR', text: 'Their first kiss was soft. The second one was not.' },
+      { who: 'NARRATOR', text: 'Laughter, whispered promises and lingering kisses filled the room ...' },
+      { who: 'LYDIA', text: '*breathless* You planned this, didn’t you?' },
+      { who: 'GALA', text: 'I planned the coffee. The rest is your fault.' },
+      { who: 'LYDIA', text: 'My fault?' },
+      { who: 'GALA', text: 'You looked at me first.' },
+      { who: 'NARRATOR', text: 'Later, they moved toward the shower no longer interested in keeping their distance.' },
+      { who: 'LYDIA', text: 'I’ve never done anything like this before.' },
+      { who: 'GALA', text: 'Then we’ll take it slowly.' },
+      { who: 'LYDIA', text: 'Slowly?' },
+      { who: 'GALA', text: 'Unless you ask for something else.' },
+      { who: 'LYDIA', text: '*smiles* I might.' },
+      { who: 'NARRATOR', text: 'Behind the steamed-up glass, Lydia discovered a side of herself she had never dared to explore.' },
+      { who: 'NARRATOR', text: 'And judging by the smile on her face, she had no intention of forgetting it.' },
+      { who: 'NARRATOR', text: 'What happened next stayed between them, the warm water... and something far more interesting' }
     ],
     chat: true,
     chatLines: [
-      { who: 'gala', text: 'I keep thinking about you 💕', hidden: true, answer: 'gala' },
-      { who: 'lydia', text: 'When does your train arrive?? 🚂', hidden: true, answer: 'lydia' },
-      { who: 'gala', text: "I'm nervous but excited omg", hidden: false, answer: 'gala' },
-      { who: 'lydia', text: 'Same... I packed 3 different outfits 😅', hidden: true, answer: 'lydia' }
+      { who: 'lydia', text: 'I thought I was ready for Heidelberg... I wasn’t ready for her. 😏', hidden: true, answer: 'lydia' },
+      { who: 'gala', text: 'She asked whether I was sure. I told her I was... then I waited for her answer. 😉', hidden: true, answer: 'gala' },
+      { who: 'lydia', text: 'I think I left my last bit of hesitation somewhere between the hotel door and the shower. 🙈❤️', hidden: true, answer: 'lydia' },
+      { who: 'gala', text: 'Some memories belong to the city. Others belong behind a closed door. 😏', hidden: true, answer: 'gala' },
+      { who: 'gala', text: 'By the time the coffee arrived, neither of us was thinking about coffee anymore. ☕😉', hidden: true, answer: 'gala' },
+      { who: 'lydia', text: 'I thought undressing in front of a girl would be easier... but taking off my underwear was a whole different story. 🙈', hidden: true, answer: 'lydia' },
+      { who: 'lydia', text: 'Let’s just say the shower was much warmer than the coffee. 🔥', hidden: true, answer: 'lydia' }
     ]
   },
   {
@@ -125,7 +160,7 @@ const CHAPTERS = [
         text: 'Later that evening, Gala has a decision...',
         choice: true,
         choices: [
-          { text: 'Tell Lydia about Man', next: 'tell' },
+          { text: 'Tell Lydia about VVV', next: 'tell' },
           { text: 'Keep it for later...', next: 'later' }
         ]
       },
@@ -133,7 +168,7 @@ const CHAPTERS = [
     ],
     branches: {
       tell: [
-        { who: 'GALA', text: 'You know... I have a husband. His name is Man. And he\'s wonderful.' },
+        { who: 'GALA', text: 'You know... I have a husband. His name is VVV. And he\'s wonderful.' },
         { who: 'LYDIA', text: 'Oh! *blinks* And he knows you\'re here?' },
         { who: 'GALA', text: 'Not yet... but I\'ll tell him. I promise.' }
       ],
@@ -160,15 +195,15 @@ const CHAPTERS = [
     bg: 'stockholm',
     lines: [
       { who: 'NARRATOR', text: 'Months passed. Messages flowed daily between Kyiv and Germany.' },
-      { who: 'NARRATOR', text: "Man had noticed Gala's distant smile... the glow on her face when her phone buzzed." },
-      { who: 'MAN', text: '*finds the messages* ...Who is Lydia?' },
+      { who: 'NARRATOR', text: "VVV had noticed Gala's distant smile... the glow on her face when her phone buzzed." },
+      { who: 'VVV', text: '*finds the messages* ...Who is Lydia?' },
       { who: 'NARRATOR', text: 'At first, anger. Then curiosity. He asked Gala to show him her photos.' },
-      { who: 'MAN', text: "She's... wow. Tell me about her." },
+      { who: 'VVV', text: "She's... wow. Tell me about her." },
       { who: 'GALA', text: "*surprised* You're not angry?" },
-      { who: 'MAN', text: "I was. Now I'm just... fascinated. By both of you. 😊" },
+      { who: 'VVV', text: "I was. Now I'm just... fascinated. By both of you. 😊" },
       { who: 'NARRATOR', text: 'Stockholm. A new chapter. Gala flew to meet Lydia again.' },
       { who: 'LYDIA', text: '*at the harbour* This city feels like a fairytale!' },
-      { who: 'GALA', text: 'Man says hi, by the way...' },
+      { who: 'GALA', text: 'VVV says hi, by the way...' },
       { who: 'LYDIA', text: '*laughs* Does he now? 😏' },
       { who: 'GALA', text: "He wants to video call... if you're okay with it?" },
       { who: 'LYDIA', text: '*smiles slowly* ...Sure. Let\'s call him.' },
@@ -176,10 +211,10 @@ const CHAPTERS = [
     ],
     chat: true,
     chatLines: [
-      { who: 'man', text: 'Stockholm photos look amazing, both of you 😍', hidden: true, answer: 'man' },
+      { who: 'vvv', text: 'Stockholm photos look amazing, both of you 😍', hidden: true, answer: 'vvv' },
       { who: 'lydia', text: 'Your husband is actually really sweet 💙', hidden: true, answer: 'lydia' },
       { who: 'gala', text: "I can't believe this is my life lol 😄", hidden: true, answer: 'gala' },
-      { who: 'man', text: 'When do I get to actually meet her?? 😅', hidden: false, answer: 'man' }
+      { who: 'vvv', text: 'When do I get to actually meet her?? 😅', hidden: false, answer: 'vvv' }
     ]
   },
   {
@@ -203,13 +238,13 @@ const CHAPTERS = [
     ],
     chat: true,
     chatLines: [
-      { who: 'man', text: "How's my favourite Ukrainian? 😊", hidden: true, answer: 'man' },
+      { who: 'vvv', text: "How's my favourite Ukrainian? 😊", hidden: true, answer: 'vvv' },
       { who: 'lydia', text: 'Gala just ate my entire pasta dish 😤', hidden: true, answer: 'lydia' },
       { who: 'gala', text: 'IT WAS DELICIOUS IN MY DEFENSE 🍝', hidden: false, answer: 'gala' },
-      { who: 'man', text: 'Send photos of the dog IMMEDIATELY', hidden: true, answer: 'man' },
+      { who: 'vvv', text: 'Send photos of the dog IMMEDIATELY', hidden: true, answer: 'vvv' },
       { who: 'lydia', text: 'You two are chaos 😂', hidden: true, answer: 'lydia' },
       { who: 'gala', text: 'Miss you here babe ❤️', hidden: true, answer: 'gala' },
-      { who: 'lydia', text: 'Next time Man comes too. Final answer.', hidden: true, answer: 'lydia' }
+      { who: 'lydia', text: 'Next time VVV comes too. Final answer.', hidden: true, answer: 'lydia' }
     ]
   },
   {
@@ -218,21 +253,21 @@ const CHAPTERS = [
     title: 'All Three Together',
     ico: '🌉',
     loc: 'Frankfurt & Stuttgart',
-    chars: ['man', 'gala', 'lydia'],
+    chars: ['vvv', 'gala', 'lydia'],
     bg: 'frankfurt',
     lines: [
       { who: 'NARRATOR', text: 'Winter. Frankfurt. The moment everyone had been waiting for.' },
-      { who: 'NARRATOR', text: 'Lydia stepped off the train. Man saw her for the first time in person.' },
-      { who: 'MAN', text: '*quietly* Hi, Lydia.' },
-      { who: 'LYDIA', text: "*smiles* Hi, Man. I've heard so much about you." },
+      { who: 'NARRATOR', text: 'Lydia stepped off the train. VVV saw her for the first time in person.' },
+      { who: 'VVV', text: '*quietly* Hi, Lydia.' },
+      { who: 'LYDIA', text: "*smiles* Hi, VVV. I've heard so much about you." },
       { who: 'GALA', text: "*beaming* And now we're all HERE! 🥹" },
       { who: 'NARRATOR', text: 'Three people who found each other by accident... and chose to stay.' },
       { who: 'LYDIA', text: "*looks at both of them* I still can't believe this is real." },
-      { who: 'MAN', text: 'It is. All of it.' },
+      { who: 'VVV', text: 'It is. All of it.' },
       { who: 'NARRATOR', text: 'A few days later — Stuttgart. Another hotel, another adventure.' },
       { who: 'GALA', text: '*laughing over dinner* We need to do this every season!' },
       { who: 'LYDIA', text: 'I volunteer for summer in Kyiv 🌻' },
-      { who: 'MAN', text: 'And somewhere new in winter... maybe Paris?' },
+      { who: 'VVV', text: 'And somewhere new in winter... maybe Paris?' },
       { who: 'LYDIA', text: "*looks at both* You know... I'm really happy." },
       { who: 'GALA', text: 'We are too, Lida. We really are. ❤️' },
       { who: 'NARRATOR', text: 'Every day — messages, laughs, plans. Three hearts in three cities, together.' }
@@ -245,7 +280,7 @@ const CHAPTERS = [
     title: 'Daily Magic',
     ico: '💬',
     loc: 'The Group Chat',
-    chars: ['man', 'gala', 'lydia'],
+    chars: ['vvv', 'gala', 'lydia'],
     bg: 'chat',
     lines: [
       { who: 'NARRATOR', text: 'Every single day — morning messages, jokes, photos, good nights...' },
@@ -255,14 +290,14 @@ const CHAPTERS = [
     chat: true,
     chatLines: [
       { who: 'lydia', text: 'Good morning from Kyiv ☀️ Coffee time', hidden: true, answer: 'lydia' },
-      { who: 'man', text: 'Good morning beautiful ❤️', hidden: true, answer: 'man' },
+      { who: 'vvv', text: 'Good morning beautiful ❤️', hidden: true, answer: 'vvv' },
       { who: 'gala', text: "It's 7am and you two are already ??? 😤", hidden: true, answer: 'gala' },
       { who: 'lydia', text: 'Who ate the last ramen I was saving??', hidden: true, answer: 'lydia' },
-      { who: 'man', text: '...I plead the fifth 😇', hidden: false, answer: 'man' },
+      { who: 'vvv', text: '...I plead the fifth 😇', hidden: false, answer: 'vvv' },
       { who: 'gala', text: 'HE CONFESSED OMFG 😂', hidden: true, answer: 'gala' },
       { who: 'lydia', text: 'Book the flights already!! 🛫', hidden: true, answer: 'lydia' },
       { who: 'gala', text: "Done. March. We're coming to you 🇺🇦💕", hidden: true, answer: 'gala' },
-      { who: 'man', text: "Lydia you're our favourite Ukrainian. Don't tell anyone.", hidden: true, answer: 'man' },
+      { who: 'vvv', text: "Lydia you're our favourite Ukrainian. Don't tell anyone.", hidden: true, answer: 'vvv' },
       { who: 'lydia', text: '*sends 47 heart emojis*', hidden: true, answer: 'lydia' }
     ]
   }

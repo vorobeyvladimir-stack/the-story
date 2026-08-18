@@ -18,7 +18,6 @@
     { type: 'img', src: 'assets/spicy_panties_lace.png' },
     { type: 'img', src: 'assets/spicy_thong.png' },
     { type: 'img', src: 'assets/spicy_nightie.png' },
-    { type: 'img', src: 'assets/spicy_corset_girl.png' },
     { type: 'text', text: '🫦' }
   ];
 

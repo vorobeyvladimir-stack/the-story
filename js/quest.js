@@ -76,6 +76,7 @@ const QuestEngine = {
     // Speaker styling
     const colors = {
       MAN: ' style="color:var(--blue)"',
+      VVV: ' style="color:var(--blue)"',
       GALA: ' style="color:var(--purple)"',
       LYDIA: ' style="color:var(--teal)"',
       NARRATOR: ' style="color:var(--gold)"'
@@ -201,7 +202,7 @@ function buildChars(charList) {
   const wrap = document.getElementById('chars-wrap');
   if (!wrap) return;
   wrap.innerHTML = '';
-  const labels = { man: 'Man ♂', gala: 'Gala', lydia: 'Lydia' };
+  const labels = { man: 'VVV ♂', vvv: 'VVV ♂', gala: 'Gala', lydia: 'Lydia' };
   charList.forEach(c => {
     const w = document.createElement('div');
     w.className = 'char-wrap';
