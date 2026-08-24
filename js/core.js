@@ -72,6 +72,10 @@ const CoreEngine = {
         window.RomanceFx.resume();
       }
     }
+
+    if (id !== 's-scene' && window.ComicEngine) {
+      window.ComicEngine.reset();
+    }
   },
 
   showTitle: function() {

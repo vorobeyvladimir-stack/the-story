@@ -61,6 +61,27 @@
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px var(--gold-glow);
 }
 
+/* COMIC PIXIJS CONTAINER */
+.comic-container {
+  position: absolute;
+  top: 46px;
+  bottom: min(210px, 30dvh);
+  left: 0;
+  right: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.comic-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
 .chars-wrap {
   position: absolute;
   bottom: min(220px, 32dvh);

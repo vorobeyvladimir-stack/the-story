@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Comic Reveal & PixiJS Test</title>
+</head>
+<body style="background:#000;color:#fff;">
+<div id="hud"><span id="hud-ch"></span></div>
+<div id="notif"></div>
+<div class="screen" id="s-title"></div>
+<div class="screen" id="s-map"><div id="ch-grid"></div><div id="prog"></div><div id="prog-lbl"></div></div>
+<div class="screen" id="s-scene">
+  <div class="s-bg" id="s-bg"></div>
+  <div class="s-deco" id="s-deco"></div>
+  <div class="loc-badge" id="loc-badge"></div>
+  <div class="comic-container" id="comic-container" style="width:500px;height:500px;"></div>
+  <div class="chars-wrap" id="chars-wrap"></div>
+  <div class="dialog-box" id="dialog-box">
+    <div class="d-speaker" id="d-speaker"></div>
+    <div class="d-text" id="d-text"></div>
+    <div class="d-choices" id="d-choices"></div>
+    <div class="d-next" id="d-next"></div>
+  </div>
+</div>
+<div class="screen" id="s-chat"><div id="chat-body"></div><div id="chat-res"></div><div id="c-score"></div><div id="c-tot"></div></div>
+<div class="screen" id="s-puzzle"><div id="puzzle-board"></div><div id="puz-preview-img"></div><div id="puz-ring-bar"></div></div>
+<div class="screen" id="s-end"><div id="e-msg"></div><div id="e-stats"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="../js/lib/pixi.min.js"></script>
+<script src="../js/audio.js"></script>
+<script src="../js/romanceBg.js"></script>
+<script src="../js/characters.js"></script>
+<script src="../js/comicScene.js"></script>
+<script src="../js/storyData.js"></script>
+<script src="../js/core.js"></script>
+<script src="../js/quest.js"></script>
+<script>
+window.addEventListener('load', async () => {
+  const logs = [];
+  const report = {
+    pixiLoaded: false,
+    comicEngineExists: false,
+    initSuccess: false,
+    panelCount: 0,
+    revealSuccess: false,
+    allPassed: false,
+    logs: logs
+  };
+
+  function log(msg, status = 'info') {
+    console.log(`[${status.toUpperCase()}] ${msg}`);
+    logs.push({ msg, status });
+  }
+
+  try {
+    report.pixiLoaded = !!window.PIXI;
+    log('PIXI loaded: ' + !!window.PIXI);
+
+    report.comicEngineExists = !!window.ComicEngine;
+    log('ComicEngine exists: ' + !!window.ComicEngine);
+
+    const ch1 = CHAPTERS[0];
+    ch1.comic = '../assets/comic_heidelberg.jpg';
+    log('Chapter 1 comic: ' + ch1.comic);
+
+    startChapter(ch1);
+    
+    // Wait for comic texture to load
+    for (let retry = 0; retry < 20; retry++) {
+      if (ComicEngine.panels && ComicEngine.panels.length === 9) break;
+      await new Promise(r => setTimeout(r, 100));
+    }
+
+    report.initSuccess = ComicEngine.isInitialized;
+    report.panelCount = ComicEngine.panels ? ComicEngine.panels.length : 0;
+    log('ComicEngine initialized: ' + report.initSuccess + ', panels: ' + report.panelCount);
+
+    if (report.panelCount === 9) {
+      log('All 9 panels properly created');
+      
+      // Test individual reveal
+      ComicEngine.revealPanel(0, true);
+      const p0 = ComicEngine.panels[0];
+      log('Panel 0 uProgress after immediate reveal: ' + p0.filter.uniforms.uProgress);
+      
+      // Step through dialogue lines
+      for (let i = 0; i < 9; i++) {
+        nextLine();
+        await new Promise(r => setTimeout(r, 50));
+      }
+
+      report.revealSuccess = ComicEngine.activePanelIdx >= 0;
+      log('Active panel index after dialogue progression: ' + ComicEngine.activePanelIdx);
+      
+      report.allPassed = (report.panelCount === 9) && (ComicEngine.activePanelIdx >= 0);
+    } else {
+      log('Unexpected panel count: ' + report.panelCount, 'error');
+      report.allPassed = false;
+    }
+
+    log('All Tests Result: ' + (report.allPassed ? 'PASSED' : 'FAILED'), report.allPassed ? 'success' : 'error');
+
+  } catch (err) {
+    log('Error during test: ' + err.message, 'error');
+    report.allPassed = false;
+  }
+
+  console.log('TEST_RESULTS_JSON:' + JSON.stringify(report));
+});
+</script>
+</body>
+</html>

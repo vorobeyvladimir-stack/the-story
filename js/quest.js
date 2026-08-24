@@ -48,8 +48,24 @@ const QuestEngine = {
     const locBadge = document.getElementById('loc-badge');
     if (locBadge) locBadge.textContent = bgData.lbl;
 
-    // Render characters & display scene
-    buildChars(ch.chars || []);
+    // Render characters & display scene or comic canvas
+    const charsWrap = document.getElementById('chars-wrap');
+    const comicCont = document.getElementById('comic-container');
+
+    if (ch.comic && window.ComicEngine) {
+      if (charsWrap) charsWrap.style.display = 'none';
+      if (comicCont) {
+        comicCont.style.display = 'flex';
+        ComicEngine.loadComic(ch.comic);
+      }
+    } else {
+      if (comicCont) comicCont.style.display = 'none';
+      if (charsWrap) {
+        charsWrap.style.display = 'flex';
+        buildChars(ch.chars || []);
+      }
+    }
+
     show('s-scene');
 
     if (questState.queue.length > 0) {
@@ -86,6 +102,15 @@ const QuestEngine = {
       spk.innerHTML = `<span${colors[line.who] || ''}>${line.who}</span>`;
     }
     setTalking(line.who === 'NARRATOR' ? '' : line.who);
+
+    // If comic chapter, trigger Pixel Dissolve Reveal for matching panel
+    if (state.currentCh && state.currentCh.comic && window.ComicEngine) {
+      if (typeof line.panel === 'number') {
+        ComicEngine.revealPanel(line.panel);
+      } else {
+        ComicEngine.revealAll();
+      }
+    }
 
     // Typewriter effect with retro audio ticks
     const dt = document.getElementById('d-text');
@@ -174,6 +199,9 @@ const QuestEngine = {
     if (questState.typing) {
       clearInterval(typeTimer);
       questState.typing = false;
+      if (state.currentCh && state.currentCh.comic && window.ComicEngine) {
+        ComicEngine.skipCurrentReveal();
+      }
       const curLine = questState.queue[questState.queueIdx];
       const dt = document.getElementById('d-text');
       if (dt && curLine) {
