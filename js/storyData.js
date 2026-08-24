@@ -63,11 +63,11 @@ const CHAPTERS = [
   {
     id: 'zoe',
     num: 1,
-    title: 'The Match',
-    ico: '📱',
-    loc: 'ZOE App',
+    title: 'Heidelberg Comic',
+    ico: '🎨',
+    loc: 'Comic Reveal (PixiJS)',
     chars: ['gala', 'lydia'],
-    bg: 'zoe',
+    bg: 'heidelberg',
     comic: 'assets/comic_heidelberg.jpg',
     lines: [
       { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.', panel: 0 },
