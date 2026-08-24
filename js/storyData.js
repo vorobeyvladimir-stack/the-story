@@ -143,19 +143,59 @@ const CHAPTERS = [
     ico: '🏰',
     loc: 'Heidelberg',
     comic: 'assets/comic_heidelberg.jpg',
+    comicPages: [
+      {
+        comic: 'assets/comic_heidelberg.jpg',
+        panels: [
+          { id: 1, x: 38, y: 40, w: 958, h: 636, title: "Arrival in Heidelberg" },
+          { id: 2, x: 1028, y: 40, w: 471, h: 636, title: "City Center Meeting" },
+          { id: 3, x: 38, y: 698, w: 479, h: 636, title: "Gala: So... you really came" },
+          { id: 4, x: 543, y: 698, w: 457, h: 636, title: "Lydia: I told you I might" },
+          { id: 5, x: 1028, y: 698, w: 471, h: 636, title: "Dangerous in Person" },
+          { id: 6, x: 38, y: 1362, w: 855, h: 634, title: "Immediate Attraction" },
+          { id: 7, x: 920, y: 1362, w: 578, h: 634, title: "Gala: Coffee first?" },
+          { id: 8, x: 38, y: 2022, w: 648, h: 690, title: "Lydia: Coffee. Definitely coffee." },
+          { id: 9, x: 713, y: 2022, w: 785, h: 690, title: "Entering the Restaurant" }
+        ]
+      },
+      {
+        comic: 'assets/comic_heidelberg2.jpeg',
+        panels: [
+          { id: 1, x: 34, y: 42, w: 716, h: 641, title: "Coffee Conversation" },
+          { id: 2, x: 784, y: 42, w: 717, h: 641, title: "Walking to Hotel" },
+          { id: 3, x: 34, y: 716, w: 717, h: 643, title: "Are you always this confident?" },
+          { id: 4, x: 784, y: 716, w: 717, h: 643, title: "Only when I'm absolutely sure" },
+          { id: 5, x: 34, y: 1393, w: 860, h: 640, title: "What are you sure about?" },
+          { id: 6, x: 929, y: 1393, w: 572, h: 640, title: "That you want me here" },
+          { id: 7, x: 34, y: 2069, w: 650, h: 639, title: "I do" },
+          { id: 8, x: 718, y: 2069, w: 783, h: 639, title: "Entering the Room" }
+        ]
+      }
+    ],
     chars: ['gala', 'lydia'],
     bg: 'heidelberg',
     lines: [
-      { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.', panel: 0 },
-      { who: 'NARRATOR', text: 'They met in the city center. For one suspended moment, the noise of the streets seemed to disappear.', panel: 1 },
-      { who: 'GALA', text: '*smiling* So... you really came.', panel: 2 },
-      { who: 'LYDIA', text: '*looking her up and down* I told you I might.', panel: 3 },
-      { who: 'GALA', text: 'You look even more dangerous in person.', panel: 4 },
-      { who: 'LYDIA', text: 'And you look like trouble I should have prepared for.', panel: 4 },
-      { who: 'NARRATOR', text: 'One look was enough. The attraction between them was immediate, unmistakable... and becoming very difficult to ignore.', panel: 5 },
-      { who: 'GALA', text: 'Coffee first?', panel: 6 },
-      { who: 'LYDIA', text: 'Coffee. Definitely coffee.', panel: 7 },
-      { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.', panel: 8 }
+      // Page 1 (comic_heidelberg.jpg)
+      { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.', page: 0, panel: 0 },
+      { who: 'NARRATOR', text: 'They met in the city center. For one suspended moment, the noise of the streets seemed to disappear.', page: 0, panel: 1 },
+      { who: 'GALA', text: '*smiling* So... you really came.', page: 0, panel: 2 },
+      { who: 'LYDIA', text: '*looking her up and down* I told you I might.', page: 0, panel: 3 },
+      { who: 'GALA', text: 'You look even more dangerous in person.', page: 0, panel: 4 },
+      { who: 'LYDIA', text: 'And you look like trouble I should have prepared for.', page: 0, panel: 4 },
+      { who: 'NARRATOR', text: 'One look was enough. The attraction between them was immediate, unmistakable... and becoming very difficult to ignore.', page: 0, panel: 5 },
+      { who: 'GALA', text: 'Coffee first?', page: 0, panel: 6 },
+      { who: 'LYDIA', text: 'Coffee. Definitely coffee.', page: 0, panel: 7 },
+      { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.', page: 0, panel: 8 },
+
+      // Page 2 (comic_heidelberg2.jpeg)
+      { who: 'NARRATOR', text: 'Over warm coffee, the playful banter turned into an intense, quiet curiosity about each other.', page: 1, panel: 0 },
+      { who: 'NARRATOR', text: "Soon, they were walking toward Lydia's hotel room...", page: 1, panel: 1 },
+      { who: 'LYDIA', text: 'Are you always this confident?', page: 1, panel: 2 },
+      { who: 'GALA', text: "Only when I'm absolutely sure.", page: 1, panel: 3 },
+      { who: 'LYDIA', text: 'And what are you absolutely sure about?', page: 1, panel: 4 },
+      { who: 'GALA', text: 'That you want me here.', page: 1, panel: 5 },
+      { who: 'LYDIA', text: '*after a pause* I do.', page: 1, panel: 6 },
+      { who: 'NARRATOR', text: 'The moment the door closed behind them, the city was left outside.', page: 1, panel: 7 }
     ],
     chat: true,
     chatLines: [

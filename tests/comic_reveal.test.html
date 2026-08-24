@@ -72,23 +72,25 @@ window.addEventListener('load', async () => {
     log('ComicEngine initialized: ' + report.initSuccess + ', panels: ' + report.panelCount);
 
     if (report.panelCount === 9) {
-      log('All 9 panels properly created');
+      log('All 9 panels for Page 1 properly created');
       
-      // Test individual reveal
-      ComicEngine.revealPanel(0, true);
-      const p0 = ComicEngine.panels[0];
-      log('Panel 0 progress after immediate reveal: ' + p0.progress);
-      
-      // Step through dialogue lines
-      for (let i = 0; i < 9; i++) {
+      // Step through dialogue lines to trigger Page 2 transition (skip typing + advance)
+      for (let i = 0; i < 24; i++) {
         nextLine();
-        await new Promise(r => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 40));
       }
 
-      report.revealSuccess = ComicEngine.activePanelIdx >= 0;
-      log('Active panel index after dialogue progression: ' + ComicEngine.activePanelIdx);
+      // Wait for page 2 to load (8 panels)
+      for (let retry = 0; retry < 20; retry++) {
+        if (ComicEngine.panels && ComicEngine.panels.length === 8) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+
+      report.page2PanelCount = ComicEngine.panels ? ComicEngine.panels.length : 0;
+      log('Page 2 Panel Count: ' + report.page2PanelCount);
+      report.revealSuccess = (report.page2PanelCount === 8);
       
-      report.allPassed = (report.panelCount === 9) && (ComicEngine.activePanelIdx >= 0);
+      report.allPassed = (report.panelCount === 9) && (report.page2PanelCount === 8);
     } else {
       log('Unexpected panel count: ' + report.panelCount, 'error');
       report.allPassed = false;

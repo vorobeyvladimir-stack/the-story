@@ -37,12 +37,15 @@ const QuestEngine = {
 
     // Set background & decoration
     const bgData = BG[ch.bg] || { bg: '#080815', deco: '✨', lbl: ch.loc };
+    const isComicChapter = !!(ch.comic || ch.comicPages);
+    questState.currentComicPage = 0;
+
     const sBg = document.getElementById('s-bg');
-    if (sBg) sBg.style.background = ch.comic ? 'linear-gradient(160deg,#0a0614,#140a24)' : bgData.bg;
+    if (sBg) sBg.style.background = isComicChapter ? 'linear-gradient(160deg,#0a0614,#140a24)' : bgData.bg;
 
     const sDeco = document.getElementById('s-deco');
     if (sDeco) {
-      if (ch.comic) {
+      if (isComicChapter) {
         sDeco.style.display = 'none';
       } else {
         sDeco.style.display = 'flex';
@@ -52,7 +55,7 @@ const QuestEngine = {
 
     const locBadge = document.getElementById('loc-badge');
     if (locBadge) {
-      if (ch.comic) {
+      if (isComicChapter) {
         locBadge.style.display = 'none';
       } else {
         locBadge.style.display = 'block';
@@ -64,11 +67,12 @@ const QuestEngine = {
     const charsWrap = document.getElementById('chars-wrap');
     const comicCont = document.getElementById('comic-container');
 
-    if (ch.comic && window.ComicEngine) {
+    if (isComicChapter && window.ComicEngine) {
       if (charsWrap) charsWrap.style.display = 'none';
       if (comicCont) {
         comicCont.style.display = 'flex';
-        ComicEngine.loadComic(ch.comic, undefined, questState.queue[0]?.panel ?? 0);
+        const firstPage = ch.comicPages ? ch.comicPages[0] : { comic: ch.comic };
+        ComicEngine.loadComic(firstPage.comic, firstPage.panels, questState.queue[0]?.panel ?? 0);
       }
     } else {
       if (comicCont) comicCont.style.display = 'none';
@@ -115,12 +119,22 @@ const QuestEngine = {
     }
     setTalking(line.who === 'NARRATOR' ? '' : line.who);
 
-    // If comic chapter, trigger Pixel Dissolve Reveal for matching panel
-    if (state.currentCh && state.currentCh.comic && window.ComicEngine) {
-      if (typeof line.panel === 'number') {
-        ComicEngine.revealPanel(line.panel);
+    // If comic chapter, trigger Pixel Dissolve Reveal for matching panel or switch page
+    const isComic = !!(state.currentCh && (state.currentCh.comic || state.currentCh.comicPages));
+    if (isComic && window.ComicEngine) {
+      const targetPage = (typeof line.page === 'number') ? line.page : 0;
+      if (state.currentCh.comicPages && targetPage !== questState.currentComicPage) {
+        questState.currentComicPage = targetPage;
+        const pageData = state.currentCh.comicPages[targetPage];
+        if (pageData) {
+          ComicEngine.loadComic(pageData.comic, pageData.panels, line.panel ?? 0);
+        }
       } else {
-        ComicEngine.revealAll();
+        if (typeof line.panel === 'number') {
+          ComicEngine.revealPanel(line.panel);
+        } else {
+          ComicEngine.revealAll();
+        }
       }
     }
 
