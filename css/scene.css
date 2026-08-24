@@ -47,7 +47,7 @@
 
 .loc-badge {
   position: absolute;
-  top: max(calc(env(safe-area-inset-top, 0px) + 98px), 104px);
+  top: max(calc(env(safe-area-inset-top, 0px) + 54px), 60px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(11, 6, 22, 0.82);

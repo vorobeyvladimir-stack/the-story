@@ -51,7 +51,14 @@ const QuestEngine = {
     }
 
     const locBadge = document.getElementById('loc-badge');
-    if (locBadge) locBadge.textContent = bgData.lbl;
+    if (locBadge) {
+      if (ch.comic) {
+        locBadge.style.display = 'none';
+      } else {
+        locBadge.style.display = 'block';
+        locBadge.textContent = bgData.lbl;
+      }
+    }
 
     // Render characters & display scene or comic canvas
     const charsWrap = document.getElementById('chars-wrap');
