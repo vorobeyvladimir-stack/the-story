@@ -139,7 +139,7 @@ const CHAPTERS = [
   {
     id: 'heidelberg',
     num: 2,
-    title: 'Meeting in Heidelberg',
+    title: 'First Meeting',
     ico: '🏰',
     loc: 'Heidelberg',
     comic: 'assets/comic_heidelberg.jpg',
