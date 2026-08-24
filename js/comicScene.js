@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
    COMIC ENGINE (PixiJS 7.x)
    Owns: Fullscreen comic presentation, panel segmentation,
-   custom WebGL Pixel Dissolve Shaders, and responsive auto-framing.
+   custom WebGL Multi-Color Pixel Dissolve Shaders, and responsive auto-framing.
    Supports local file://, HTTP/HTTPS, and Telegram WebApp environments.
    Exports (globals): ComicEngine
    ═══════════════════════════════════════════════════════════════ */
@@ -28,7 +28,7 @@
     { id: 9, x: 265, y: 753, w: 292, h: 257, title: "Entering the Restaurant" }
   ];
 
-  // Custom GLSL Fragment Shader for Pixel Dissolve Reveal
+  // Custom GLSL Fragment Shader: Multi-Color Neo-Arcade Pixel Dissolve Reveal
   const pixelDissolveFrag = `
     precision highp float;
     varying vec2 vTextureCoord;
@@ -36,15 +36,33 @@
     uniform float uProgress;      // 0.0 (hidden) to 1.0 (revealed)
     uniform float uBlockSize;     // Pixel block size
     uniform vec2 uResolution;     // Panel resolution in pixels
-    uniform vec4 uEdgeColor;      // Glowing edge tint (RGBA)
     uniform float uEdgeWidth;     // Width of dissolving edge
-    uniform float uNoiseBias;     // Directional bias
 
     // High quality deterministic pseudo-random hash
     float hash(vec2 p) {
       p = fract(p * vec2(123.34, 456.21));
       p += dot(p, p + 45.32);
       return fract(p.x * p.y);
+    }
+
+    // Multi-color neon palette matching Title Screen: Cyan, Pink, Purple, Gold
+    vec3 getNeonColor(vec2 blockCoord) {
+      float colorPick = hash(blockCoord + vec2(7.34, 19.18));
+      
+      vec3 cyan   = vec3(0.00, 0.95, 1.00);    // #00f3ff Neon Cyan
+      vec3 pink   = vec3(1.00, 0.16, 0.52);    // #ff2a85 Hot Pink
+      vec3 purple = vec3(0.75, 0.45, 1.00);    // #c084fc Electric Violet
+      vec3 gold   = vec3(1.00, 0.82, 0.40);    // #ffd166 Arcade Gold
+
+      if (colorPick < 0.28) {
+        return cyan;
+      } else if (colorPick < 0.56) {
+        return pink;
+      } else if (colorPick < 0.82) {
+        return purple;
+      } else {
+        return gold;
+      }
     }
 
     void main(void) {
@@ -63,9 +81,9 @@
       vec2 pixelCoord = vTextureCoord * uResolution;
       vec2 blockCoord = floor(pixelCoord / uBlockSize);
       
+      // Uniform random threshold without deceleration tail / sticking
       float randVal = hash(blockCoord);
-      float dirFactor = (vTextureCoord.x * 0.35 + vTextureCoord.y * 0.65);
-      float threshold = mix(randVal, (randVal * 0.6 + dirFactor * 0.4), uNoiseBias);
+      float threshold = randVal * 0.95 + 0.025;
 
       float diff = uProgress - threshold;
 
@@ -73,9 +91,10 @@
         // Pixel block has not yet dissolved in
         gl_FragColor = vec4(0.0);
       } else if (diff < uEdgeWidth) {
-        // Glowing neon dissolve edge
+        // Multi-colored glowing neon pixel dissolve border
         float edgeFactor = 1.0 - (diff / uEdgeWidth);
-        vec3 glow = mix(texColor.rgb, uEdgeColor.rgb * 1.9, edgeFactor * 0.90);
+        vec3 neonTint = getNeonColor(blockCoord);
+        vec3 glow = mix(texColor.rgb, neonTint * 1.9, edgeFactor * 0.92);
         gl_FragColor = vec4(glow, texColor.a);
       } else {
         // Fully revealed pixel block
@@ -171,7 +190,7 @@
         this.comicContainer.sortableChildren = true;
         this.app.stage.addChild(this.comicContainer);
 
-        // 1. Veiled / Darkened Background Plate (30% less transparent -> alpha 0.44 with dark velvet tint)
+        // 1. Veiled / Darkened Background Plate (dark velvet tone)
         const bgPlate = new PIXI.Sprite(texture);
         bgPlate.width = COMIC_NATURAL_W;
         bgPlate.height = COMIC_NATURAL_H;
@@ -180,7 +199,7 @@
         bgPlate.zIndex = 1;
         this.comicContainer.addChild(bgPlate);
 
-        // 2. Build Panel Sprites with Pixel Dissolve Filter
+        // 2. Build Panel Sprites with Multi-Color Pixel Dissolve Filter
         this.panels = [];
 
         panelDefs.forEach((pDef, idx) => {
@@ -199,14 +218,12 @@
           borderGlow.drawRoundedRect(0, 0, pDef.w, pDef.h, 2);
           panelSprite.addChild(borderGlow);
 
-          // Pixel Dissolve Filter
+          // Multi-Color Pixel Dissolve Filter
           const uniforms = {
             uProgress: 0.0,
-            uBlockSize: 9.0,
+            uBlockSize: 8.0,
             uResolution: [pDef.w, pDef.h],
-            uEdgeColor: [1.0, 0.16, 0.61, 1.0], // Neon Hot Pink
-            uEdgeWidth: 0.15,
-            uNoiseBias: 0.35
+            uEdgeWidth: 0.16
           };
 
           const filter = new PIXI.Filter(null, pixelDissolveFrag, uniforms);
@@ -228,7 +245,7 @@
 
         this.resize();
 
-        // 3. Immediately trigger Pixel Dissolve Reveal on the first panel (panel 0)
+        // 3. Immediately trigger Pixel Dissolve Reveal on the first panel
         const targetToReveal = (this.pendingRevealPanel !== null && this.pendingRevealPanel !== undefined) ? this.pendingRevealPanel : 0;
         this.pendingRevealPanel = null;
         this.revealPanel(targetToReveal);
@@ -239,7 +256,7 @@
     }
 
     /**
-     * Reveals a panel by index with the Pixel Dissolve effect (1.5x duration = 1.3s)
+     * Reveals a panel with even, smooth multi-color pixel assembly
      * @param {number} panelIdx
      * @param {boolean} [immediate=false]
      */
@@ -267,8 +284,8 @@
         return;
       }
 
-      // 1.5x Duration: 1.3 seconds for rich pixel assembly animation
-      const DURATION = 1.30;
+      // Uniform, non-sticking duration (1.20s with smooth power1.inOut easing)
+      const DURATION = 1.20;
 
       if (window.gsap) {
         this.highlightActivePanel(idx);
@@ -276,7 +293,7 @@
         const tween = gsap.to(targetPanel, {
           progress: 1.0,
           duration: DURATION,
-          ease: "power2.out",
+          ease: "power1.inOut",
           onUpdate: () => {
             targetPanel.filter.uniforms.uProgress = targetPanel.progress;
           },
@@ -288,7 +305,7 @@
         this.panelTweens[idx] = tween;
       } else {
         let start = null;
-        const durationMs = 1300;
+        const durationMs = 1200;
         const animate = (timestamp) => {
           if (!start) start = timestamp;
           const elapsed = timestamp - start;
@@ -306,7 +323,7 @@
     }
 
     /**
-     * Highlight active panel border glow
+     * Highlight active panel border glow with cyber neon colors
      * @param {number} idx
      * @param {boolean} [skipAnim=false]
      */
@@ -318,7 +335,7 @@
           p.borderGlow.lineStyle(2.5, 0x00f3ff, 0.95);
           p.borderGlow.drawRoundedRect(0, 0, p.def.w, p.def.h, 2);
           if (!skipAnim && window.gsap) {
-            gsap.fromTo(p.borderGlow, { alpha: 1 }, { alpha: 0.35, duration: 1.6, ease: "power2.out" });
+            gsap.fromTo(p.borderGlow, { alpha: 1 }, { alpha: 0.35, duration: 1.4, ease: "power1.out" });
           }
         }
       });
