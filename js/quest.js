@@ -38,11 +38,16 @@ const QuestEngine = {
     // Set background & decoration
     const bgData = BG[ch.bg] || { bg: '#080815', deco: '✨', lbl: ch.loc };
     const sBg = document.getElementById('s-bg');
-    if (sBg) sBg.style.background = bgData.bg;
+    if (sBg) sBg.style.background = ch.comic ? 'linear-gradient(160deg,#0a0614,#140a24)' : bgData.bg;
 
     const sDeco = document.getElementById('s-deco');
     if (sDeco) {
-      sDeco.innerHTML = bgData.deco.split('').map(e => `<span class="s-deco-ico">${e}</span>`).join('');
+      if (ch.comic) {
+        sDeco.style.display = 'none';
+      } else {
+        sDeco.style.display = 'flex';
+        sDeco.innerHTML = bgData.deco.split('').map(e => `<span class="s-deco-ico">${e}</span>`).join('');
+      }
     }
 
     const locBadge = document.getElementById('loc-badge');
