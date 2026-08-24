@@ -61,7 +61,7 @@ const QuestEngine = {
       if (charsWrap) charsWrap.style.display = 'none';
       if (comicCont) {
         comicCont.style.display = 'flex';
-        ComicEngine.loadComic(ch.comic);
+        ComicEngine.loadComic(ch.comic, undefined, questState.queue[0]?.panel ?? 0);
       }
     } else {
       if (comicCont) comicCont.style.display = 'none';
