@@ -47,7 +47,7 @@
 
 .loc-badge {
   position: absolute;
-  top: 56px;
+  top: max(calc(env(safe-area-inset-top, 0px) + 98px), 104px);
   left: 50%;
   transform: translateX(-50%);
   background: rgba(11, 6, 22, 0.82);
@@ -66,11 +66,11 @@
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px var(--gold-glow);
 }
 
-/* COMIC PIXIJS CONTAINER & SHARP RENDERING GUARANTEE */
+/* COMIC WEBGL CONTAINER & SHARP RENDERING GUARANTEE */
 .comic-container {
   position: absolute;
-  top: 46px;
-  bottom: min(210px, 30dvh);
+  top: max(calc(env(safe-area-inset-top, 0px) + 96px), 106px);
+  bottom: min(200px, 28dvh);
   left: 0;
   right: 0;
   display: none;

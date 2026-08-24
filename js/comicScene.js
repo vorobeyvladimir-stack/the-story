@@ -41,18 +41,19 @@
     }
   `;
 
-  // Dark Veiled Ambient Background Shader
+  // Dark Veiled Ambient Background Shader (Deep opaque silhouette veil: completely hides speech text, lines, and spoilers)
   const fsBgSource = `
     precision highp float;
     varying vec2 vTexCoord;
     uniform sampler2D uTexture;
     uniform vec3 uTint;
-    uniform float uAlpha;
 
     void main(void) {
       vec4 color = texture2D(uTexture, vTexCoord);
-      vec3 tinted = mix(color.rgb, uTint, 0.65);
-      gl_FragColor = vec4(tinted, color.a * uAlpha);
+      float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+      // Heavily darkened veiled silhouette (unreadable text, deep velvet tone)
+      vec3 darkVeil = color.rgb * 0.05 + uTint * (lum * 0.18 + 0.08);
+      gl_FragColor = vec4(darkVeil, 1.0);
     }
   `;
 
@@ -523,7 +524,7 @@
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.quadBuffer);
 
-      // 1. Draw Base Dark Veiled Ambient Background
+      // 1. Draw Base Dark Veiled Ambient Background (Deep opaque silhouette)
       gl.useProgram(this.bgProg);
       const aPosBg = gl.getAttribLocation(this.bgProg, "aPosition");
       const aTexBg = gl.getAttribLocation(this.bgProg, "aTexCoord");
@@ -535,8 +536,7 @@
       gl.uniform2f(gl.getUniformLocation(this.bgProg, "uScreenSize"), screenW, screenH);
       gl.uniform4f(gl.getUniformLocation(this.bgProg, "uDstRect"), this.comicX, this.comicY, this.naturalW * this.comicScale, this.naturalH * this.comicScale);
       gl.uniform4f(gl.getUniformLocation(this.bgProg, "uSrcRect"), 0, 0, 1, 1);
-      gl.uniform3f(gl.getUniformLocation(this.bgProg, "uTint"), 0.047, 0.023, 0.078);
-      gl.uniform1f(gl.getUniformLocation(this.bgProg, "uAlpha"), 0.44);
+      gl.uniform3f(gl.getUniformLocation(this.bgProg, "uTint"), 0.22, 0.08, 0.38);
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.texture);
