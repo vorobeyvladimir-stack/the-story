@@ -66,7 +66,7 @@
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), 0 0 14px var(--gold-glow);
 }
 
-/* COMIC PIXIJS CONTAINER */
+/* COMIC PIXIJS CONTAINER & SHARP RENDERING GUARANTEE */
 .comic-container {
   position: absolute;
   top: 46px;
@@ -79,12 +79,19 @@
   z-index: 6;
   pointer-events: none;
   overflow: hidden;
+  image-rendering: auto !important;
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: smooth !important;
 }
 
-.comic-container canvas {
+.comic-container canvas,
+.comic-container img,
+.comic-container svg,
+.comic-canvas {
   display: block;
   image-rendering: auto !important;
   image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: smooth !important;
   pointer-events: none;
 }
 
