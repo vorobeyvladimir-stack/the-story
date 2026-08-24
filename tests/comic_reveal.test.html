@@ -60,11 +60,10 @@ window.addEventListener('load', async () => {
     report.comicEngineExists = !!window.ComicEngine;
     log('ComicEngine exists: ' + !!window.ComicEngine);
 
-    const ch1 = CHAPTERS[0];
-    ch1.comic = '../assets/comic_heidelberg.jpg';
-    log('Chapter 1 comic: ' + ch1.comic);
+    const ch2 = CHAPTERS.find(c => c.id === 'heidelberg') || CHAPTERS[2];
+    log('Chapter 2 (Heidelberg): ' + ch2.title + ' -> comic: ' + ch2.comic);
 
-    startChapter(ch1);
+    startChapter(ch2);
     
     // Wait for comic texture to load
     for (let retry = 0; retry < 20; retry++) {

@@ -63,23 +63,22 @@ const CHAPTERS = [
   {
     id: 'zoe',
     num: 1,
-    title: 'Heidelberg Comic',
-    ico: '🎨',
-    loc: 'Comic Reveal (PixiJS)',
+    title: 'The Match',
+    ico: '📱',
+    loc: 'ZOE App',
     chars: ['gala', 'lydia'],
-    bg: 'heidelberg',
-    comic: 'assets/comic_heidelberg.jpg',
+    bg: 'zoe',
     lines: [
-      { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.', panel: 0 },
-      { who: 'NARRATOR', text: 'They met in the city center. For one suspended moment, the noise of the streets seemed to disappear.', panel: 1 },
-      { who: 'GALA', text: '*smiling* So... you really came.', panel: 2 },
-      { who: 'LYDIA', text: '*looking her up and down* I told you I might.', panel: 3 },
-      { who: 'GALA', text: 'You look even more dangerous in person.', panel: 4 },
-      { who: 'LYDIA', text: 'And you look like trouble I should have prepared for.', panel: 4 },
-      { who: 'NARRATOR', text: 'One look was enough. The attraction between them was immediate, unmistakable... and becoming very difficult to ignore.', panel: 5 },
-      { who: 'GALA', text: 'Coffee first?', panel: 6 },
-      { who: 'LYDIA', text: 'Coffee. Definitely coffee.', panel: 7 },
-      { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.', panel: 8 },
+      { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.' },
+      { who: 'NARRATOR', text: 'They met in the city center. For one suspended moment, the noise of the streets seemed to disappear.' },
+      { who: 'GALA', text: '*smiling* So... you really came.' },
+      { who: 'LYDIA', text: '*looking her up and down* I told you I might.' },
+      { who: 'GALA', text: 'You look even more dangerous in person.' },
+      { who: 'LYDIA', text: 'And you look like trouble I should have prepared for.' },
+      { who: 'NARRATOR', text: 'One look was enough. The attraction between them was immediate, unmistakable... and becoming very difficult to ignore.' },
+      { who: 'GALA', text: 'Coffee first?' },
+      { who: 'LYDIA', text: 'Coffee. Definitely coffee.' },
+      { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.' },
       { who: 'GALA', text: 'You keep staring at me.' },
       { who: 'LYDIA', text: 'I’m trying to decide whether you’re more beautiful when you smile or when you pretend to be innocent.' },
       { who: 'GALA', text: 'That sounds like a dangerous decision.' },
@@ -140,44 +139,24 @@ const CHAPTERS = [
   {
     id: 'heidelberg',
     num: 2,
-    title: 'First Meeting',
+    title: 'Meeting in Heidelberg',
     ico: '🏰',
     loc: 'Heidelberg',
+    comic: 'assets/comic_heidelberg.jpg',
     chars: ['gala', 'lydia'],
     bg: 'heidelberg',
     lines: [
-      { who: 'NARRATOR', text: 'Heidelberg. A city of cobblestones, a castle on the hill, and golden evening light.' },
-      { who: 'NARRATOR', text: 'Lydia arrived at the hotel. Gala was already waiting in the lobby.' },
-      { who: 'GALA', text: "*sees Lydia* Oh my god you're even prettier in person! 😍" },
-      { who: 'LYDIA', text: '*laughs* Stop it! So are you! Come here!' },
-      { who: 'NARRATOR', text: 'They hugged like they had known each other for years.' },
-      { who: 'LYDIA', text: 'This city is so beautiful...' },
-      { who: 'GALA', text: 'I know the best spots. Shall we walk?' },
-      { who: 'NARRATOR', text: 'They walked along the Neckar river as the sun went down...' },
-      { who: 'LYDIA', text: "Gala... I'm really glad I came." },
-      { who: 'GALA', text: '*squeezes her hand* Me too, Lida. Me too.' },
-      {
-        who: 'NARRATOR',
-        text: 'Later that evening, Gala has a decision...',
-        choice: true,
-        choices: [
-          { text: 'Tell Lydia about VVV', next: 'tell' },
-          { text: 'Keep it for later...', next: 'later' }
-        ]
-      },
-      { who: 'NARRATOR', text: 'The evening ended with laughter and a stolen kiss goodnight...' }
+      { who: 'NARRATOR', text: 'Lydia arrived in Heidelberg on a rainy afternoon, carrying a small suitcase and a much bigger secret.', panel: 0 },
+      { who: 'NARRATOR', text: 'They met in the city center. For one suspended moment, the noise of the streets seemed to disappear.', panel: 1 },
+      { who: 'GALA', text: '*smiling* So... you really came.', panel: 2 },
+      { who: 'LYDIA', text: '*looking her up and down* I told you I might.', panel: 3 },
+      { who: 'GALA', text: 'You look even more dangerous in person.', panel: 4 },
+      { who: 'LYDIA', text: 'And you look like trouble I should have prepared for.', panel: 4 },
+      { who: 'NARRATOR', text: 'One look was enough. The attraction between them was immediate, unmistakable... and becoming very difficult to ignore.', panel: 5 },
+      { who: 'GALA', text: 'Coffee first?', panel: 6 },
+      { who: 'LYDIA', text: 'Coffee. Definitely coffee.', panel: 7 },
+      { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.', panel: 8 }
     ],
-    branches: {
-      tell: [
-        { who: 'GALA', text: 'You know... I have a husband. His name is VVV. And he\'s wonderful.' },
-        { who: 'LYDIA', text: 'Oh! *blinks* And he knows you\'re here?' },
-        { who: 'GALA', text: 'Not yet... but I\'ll tell him. I promise.' }
-      ],
-      later: [
-        { who: 'GALA', text: '*gazes at the river* There\'s so much I want to share with you... step by step.' },
-        { who: 'LYDIA', text: '*smiles warmly* Take your time. We have all the time in the world.' }
-      ]
-    },
     chat: true,
     chatLines: [
       { who: 'gala', text: "She's even better in real life 😍", hidden: true, answer: 'gala' },
