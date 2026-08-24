@@ -128,17 +128,17 @@ try {
 </div>
 
 <!-- SCENE SCREEN -->
-<div class="screen" id="s-scene">
+<div class="screen" id="s-scene" onclick="nextLine()" role="button" tabindex="0" aria-label="Next Dialogue">
   <div class="s-bg" id="s-bg"></div>
   <div class="s-deco" id="s-deco"></div>
   <div class="loc-badge" id="loc-badge">LOCATION</div>
   <div class="comic-container" id="comic-container"></div>
   <div class="chars-wrap" id="chars-wrap"></div>
-  <div class="dialog-box" id="dialog-box" onclick="nextLine()" role="button" tabindex="0" aria-label="Next">
+  <div class="dialog-box" id="dialog-box">
     <div class="d-speaker" id="d-speaker">???</div>
     <div class="d-text" id="d-text">...</div>
     <div class="d-choices" id="d-choices" style="display:none"></div>
-    <div class="d-next" id="d-next">▼ tap to continue</div>
+    <div class="d-next" id="d-next">▼ tap anywhere to continue</div>
   </div>
 </div>
 
