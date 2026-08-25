@@ -221,27 +221,13 @@ const QuestEngine = {
   },
 
   /**
-   * Advances dialogue to next step or skips typewriter animation
+   * Advances dialogue to next step and reveals next comic panel / scene
    */
   nextLine: function() {
-    if (questState.typing) {
-      clearInterval(typeTimer);
-      questState.typing = false;
-      if (state.currentCh && state.currentCh.comic && window.ComicEngine) {
-        ComicEngine.skipCurrentReveal();
-      }
-      const curLine = questState.queue[questState.queueIdx];
-      const dt = document.getElementById('d-text');
-      if (dt && curLine) {
-        dt.textContent = curLine.text;
-        if (curLine.choice && Array.isArray(curLine.choices)) {
-          this.showChoices(curLine.choices);
-        }
-      }
-      return;
-    }
-
     if (questState.choiceWaiting) return;
+
+    if (typeTimer) clearInterval(typeTimer);
+    questState.typing = false;
 
     SoundEngine.playClick();
     questState.queueIdx++;
