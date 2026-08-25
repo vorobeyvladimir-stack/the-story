@@ -12,7 +12,7 @@ body.puzzle-mode #hud {
 
 #s-puzzle {
   display: none;
-  padding: max(calc(env(safe-area-inset-top, 0px) + 50px), 56px) 8px max(8px, env(safe-area-inset-bottom, 8px)) 8px;
+  padding: max(8px, env(safe-area-inset-top, 8px)) 8px max(8px, env(safe-area-inset-bottom, 8px)) 8px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
@@ -21,6 +21,10 @@ body.puzzle-mode #hud {
   width: 100%;
   position: relative;
   box-sizing: border-box;
+}
+
+.is-telegram-webapp #s-puzzle {
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 50px), 56px);
 }
 
 #s-puzzle.active {

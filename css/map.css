@@ -151,7 +151,7 @@
   }
   #s-map {
     gap: 14px !important;
-    padding-top: max(calc(env(safe-area-inset-top, 0px) + 54px), 64px) !important;
+    padding-top: 50px !important;
   }
 }
 
@@ -161,10 +161,7 @@
   overscroll-behavior-y: contain;
 }
 
-@supports (padding: max(0px)) {
-  #s-map {
-    padding-top: max(64px, calc(54px + env(safe-area-inset-top))) !important;
-    padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
-  }
+.is-telegram-webapp #s-map {
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 54px), 64px) !important;
 }
 

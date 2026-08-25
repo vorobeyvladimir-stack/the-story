@@ -6,6 +6,10 @@
 #s-chat {
   padding: 0;
   justify-content: flex-start;
+  padding-top: 50px;
+}
+
+.is-telegram-webapp #s-chat {
   padding-top: max(calc(env(safe-area-inset-top, 0px) + 54px), 64px);
 }
 

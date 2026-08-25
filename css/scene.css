@@ -69,7 +69,7 @@
 /* COMIC WEBGL CONTAINER & SHARP RENDERING GUARANTEE */
 .comic-container {
   position: absolute;
-  top: max(calc(env(safe-area-inset-top, 0px) + 96px), 106px);
+  top: 50px;
   bottom: min(200px, 28dvh);
   left: 0;
   right: 0;
@@ -82,6 +82,10 @@
   image-rendering: auto !important;
   image-rendering: -webkit-optimize-contrast !important;
   image-rendering: smooth !important;
+}
+
+.is-telegram-webapp .comic-container {
+  top: max(calc(env(safe-area-inset-top, 0px) + 98px), 110px);
 }
 
 .comic-container canvas,
