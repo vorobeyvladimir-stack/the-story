@@ -159,7 +159,7 @@ const CHAPTERS = [
         ]
       },
       {
-        comic: 'assets/comic_heidelberg2.jpeg',
+        comic: 'assets/comic_heidelberg2.jpg',
         panels: [
           { id: 1, x: 34, y: 42, w: 716, h: 641, title: "Coffee Conversation" },
           { id: 2, x: 784, y: 42, w: 717, h: 641, title: "Walking to Hotel" },
