@@ -4,8 +4,8 @@
    dynamic aspect ratio scaling, custom WebGL Multi-Color Pixel Dissolve Shaders,
    and 100% crisp linear interpolation guarantee (never pixelated).
    Features:
-   - 🎬 Cinematic Smart Focus Zoom on individual panels
-   - 🌟 Full-Page Zoom Out on final panel to showcase entire completed comic
+   - 🎬 Cinematic Smart Focus Zoom on individual dialogue panels
+   - 🌟 Full-Page Zoom Out on Overview pause step (showcasing entire completed comic)
    - 3px Outer Neon Gradient Border (#00f3ff Cyan -> #ff2a9d Pink) around comic frame
    - Multi-Page comic chapters support
    - 2% subtle ambient visibility (98% dark veil) on unrevealed panels
@@ -226,7 +226,7 @@
       this.camera = {
         x: 768,       // World comic center X (0 to naturalW)
         y: 1375,      // World comic center Y (0 to naturalH)
-        zoom: 1.0     // Current camera magnification (1.0 = full page view)
+        zoom: 1.0     // Current camera magnification
       };
       this.cameraTween = null;
 
@@ -427,25 +427,12 @@
 
     /**
      * 🎬 Computes optimal camera focus (targetX, targetY, targetZoom) for any panel
-     * When active panel is the LAST panel on the page, smoothly zooms out to 1.0x (full page view)!
+     * Ensures active panel fills 78-90% of screen while showing nearby panels in the margins
      * @param {Object} panel
-     * @param {number} panelIdx
      * @returns {{ targetX: number, targetY: number, targetZoom: number }}
      */
-    computeCameraTarget(panel, panelIdx) {
+    computeCameraTarget(panel) {
       if (!panel) {
-        return {
-          targetX: this.naturalW / 2,
-          targetY: this.naturalH / 2,
-          targetZoom: 1.0
-        };
-      }
-
-      // 🌟 Check if this is the final panel on the current page
-      const isLastPanel = (panelIdx >= this.panels.length - 1) || (panel.id >= this.panels.length);
-
-      if (isLastPanel) {
-        // 🌟 Zoom Out to display the FULL COMIC page utilizing maximum available space!
         return {
           targetX: this.naturalW / 2,
           targetY: this.naturalH / 2,
@@ -516,11 +503,10 @@
     /**
      * 🎬 Smoothly glides virtual camera to target panel
      * @param {Object} panel
-     * @param {number} panelIdx
      * @param {boolean} [immediate=false]
      */
-    animateCameraTo(panel, panelIdx = 0, immediate = false) {
-      const { targetX, targetY, targetZoom } = this.computeCameraTarget(panel, panelIdx);
+    animateCameraTo(panel, immediate = false) {
+      const { targetX, targetY, targetZoom } = this.computeCameraTarget(panel);
 
       if (this.cameraTween) {
         this.cameraTween.kill();
@@ -533,20 +519,54 @@
         return;
       }
 
-      const isLastPanel = (panelIdx >= this.panels.length - 1);
-      const duration = isLastPanel ? 1.30 : 1.05;
-
       this.cameraTween = gsap.to(this.camera, {
         x: targetX,
         y: targetY,
         zoom: targetZoom,
-        duration: duration,
+        duration: 1.05,
         ease: "power2.out"
       });
     }
 
     /**
-     * Reveals a panel with smooth multi-color pixel assembly + 🎬 Cinematic Camera Focus Zoom / Zoom Out
+     * 🌟 Zooms out to showcase the complete full-page comic sheet on the Overview pause step
+     */
+    showFullOverview() {
+      // Ensure all panels on the page are 100% revealed
+      this.panels.forEach(p => {
+        p.progress = 1.0;
+        p.revealed = true;
+      });
+
+      if (this.borderTween) this.borderTween.kill();
+      this.borderAlpha = 0.0;
+      this.activePanelIdx = -1;
+
+      if (this.cameraTween) {
+        this.cameraTween.kill();
+      }
+
+      const targetX = this.naturalW / 2;
+      const targetY = this.naturalH / 2;
+      const targetZoom = 1.0;
+
+      if (window.gsap) {
+        this.cameraTween = gsap.to(this.camera, {
+          x: targetX,
+          y: targetY,
+          zoom: targetZoom,
+          duration: 1.25,
+          ease: "power2.out"
+        });
+      } else {
+        this.camera.x = targetX;
+        this.camera.y = targetY;
+        this.camera.zoom = targetZoom;
+      }
+    }
+
+    /**
+     * Reveals a panel with smooth multi-color pixel assembly + 🎬 Cinematic Camera Focus Zoom
      * @param {number} panelIdx
      * @param {boolean} [immediate=false]
      */
@@ -562,8 +582,8 @@
 
       this.activePanelIdx = idx;
 
-      // 🎬 Trigger Cinematic Focus Zoom on intermediate panels OR Zoom Out on the final panel
-      this.animateCameraTo(targetPanel, idx, immediate);
+      // 🎬 Trigger Cinematic Focus Zoom on target panel
+      this.animateCameraTo(targetPanel, immediate);
 
       if (this.panelTweens[idx]) {
         this.panelTweens[idx].kill();
@@ -642,7 +662,7 @@
      */
     revealAll() {
       this.panels.forEach((_, idx) => this.revealPanel(idx, true));
-      this.animateCameraTo(null, this.panels.length - 1, false);
+      this.showFullOverview();
     }
 
     /**
@@ -703,7 +723,7 @@
 
       // Re-align camera to current active panel
       if (this.activePanelIdx >= 0 && this.panels[this.activePanelIdx]) {
-        this.animateCameraTo(this.panels[this.activePanelIdx], this.activePanelIdx, true);
+        this.animateCameraTo(this.panels[this.activePanelIdx], true);
       }
     }
 

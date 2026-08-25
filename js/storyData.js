@@ -186,6 +186,7 @@ const CHAPTERS = [
       { who: 'GALA', text: 'Coffee first?', page: 0, panel: 6 },
       { who: 'LYDIA', text: 'Coffee. Definitely coffee.', page: 0, panel: 7 },
       { who: 'NARRATOR', text: 'They found a cozy restaurant and tried to behave like two perfectly ordinary women meeting for the first time.', page: 0, panel: 8 },
+      { who: '', text: '...... ...... ......', page: 0, overview: true },
 
       // Page 2 (comic_heidelberg2.jpeg)
       { who: 'NARRATOR', text: 'Over warm coffee, the playful banter turned into an intense, quiet curiosity about each other.', page: 1, panel: 0 },
@@ -195,7 +196,8 @@ const CHAPTERS = [
       { who: 'LYDIA', text: 'And what are you absolutely sure about?', page: 1, panel: 4 },
       { who: 'GALA', text: 'That you want me here.', page: 1, panel: 5 },
       { who: 'LYDIA', text: '*after a pause* I do.', page: 1, panel: 6 },
-      { who: 'NARRATOR', text: 'The moment the door closed behind them, the city was left outside.', page: 1, panel: 7 }
+      { who: 'NARRATOR', text: 'The moment the door closed behind them, the city was left outside.', page: 1, panel: 7 },
+      { who: '', text: '...... ...... ......', page: 1, overview: true }
     ],
     chat: true,
     chatLines: [

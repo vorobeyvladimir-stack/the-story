@@ -130,7 +130,9 @@ const QuestEngine = {
           ComicEngine.loadComic(pageData.comic, pageData.panels, line.panel ?? 0);
         }
       } else {
-        if (typeof line.panel === 'number') {
+        if (line.overview) {
+          ComicEngine.showFullOverview();
+        } else if (typeof line.panel === 'number') {
           ComicEngine.revealPanel(line.panel);
         } else {
           ComicEngine.revealAll();
