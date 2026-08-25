@@ -146,28 +146,28 @@ const CHAPTERS = [
       {
         comic: 'assets/comic_heidelberg.jpg',
         panels: [
-          { id: 1, x: 38, y: 40, w: 958, h: 636, title: "Arrival in Heidelberg" },
-          { id: 2, x: 1028, y: 40, w: 471, h: 636, title: "City Center Meeting" },
-          { id: 3, x: 38, y: 698, w: 479, h: 636, title: "Gala: So... you really came" },
-          { id: 4, x: 543, y: 698, w: 457, h: 636, title: "Lydia: I told you I might" },
-          { id: 5, x: 1028, y: 698, w: 471, h: 636, title: "Dangerous in Person" },
-          { id: 6, x: 38, y: 1362, w: 855, h: 634, title: "Immediate Attraction" },
-          { id: 7, x: 920, y: 1362, w: 578, h: 634, title: "Gala: Coffee first?" },
-          { id: 8, x: 38, y: 2022, w: 648, h: 690, title: "Lydia: Coffee. Definitely coffee." },
-          { id: 9, x: 713, y: 2022, w: 785, h: 690, title: "Entering the Restaurant" }
+          { id: 1, x: 0, y: 0, w: 1014, h: 696, title: "Arrival in Heidelberg" },
+          { id: 2, x: 1014, y: 0, w: 522, h: 696, title: "City Center Meeting" },
+          { id: 3, x: 0, y: 696, w: 516, h: 672, title: "Gala: So... you really came" },
+          { id: 4, x: 516, y: 696, w: 499, h: 672, title: "Lydia: I told you I might" },
+          { id: 5, x: 1015, y: 696, w: 521, h: 672, title: "Discover a new side of myself" },
+          { id: 6, x: 0, y: 1368, w: 908, h: 674, title: "Immediate Attraction" },
+          { id: 7, x: 908, y: 1368, w: 628, h: 674, title: "Gala: Coffee first?" },
+          { id: 8, x: 0, y: 2042, w: 697, h: 710, title: "Lydia: Coffee. Definitely coffee." },
+          { id: 9, x: 697, y: 2042, w: 839, h: 710, title: "Entering the Restaurant" }
         ]
       },
       {
         comic: 'assets/comic_heidelberg2.jpg',
         panels: [
-          { id: 1, x: 34, y: 42, w: 716, h: 641, title: "Coffee Conversation" },
-          { id: 2, x: 784, y: 42, w: 717, h: 641, title: "Walking to Hotel" },
-          { id: 3, x: 34, y: 716, w: 717, h: 643, title: "Are you always this confident?" },
-          { id: 4, x: 784, y: 716, w: 717, h: 643, title: "Only when I'm absolutely sure" },
-          { id: 5, x: 34, y: 1393, w: 860, h: 640, title: "What are you sure about?" },
-          { id: 6, x: 929, y: 1393, w: 572, h: 640, title: "That you want me here" },
-          { id: 7, x: 34, y: 2069, w: 650, h: 639, title: "I do" },
-          { id: 8, x: 718, y: 2069, w: 783, h: 639, title: "Entering the Room" }
+          { id: 1, x: 0, y: 0, w: 768, h: 685, title: "Coffee Conversation" },
+          { id: 2, x: 768, y: 0, w: 768, h: 685, title: "Walking to Hotel" },
+          { id: 3, x: 0, y: 685, w: 768, h: 691, title: "Are you always this confident?" },
+          { id: 4, x: 768, y: 685, w: 768, h: 691, title: "Only when I'm absolutely sure" },
+          { id: 5, x: 0, y: 1376, w: 911, h: 674, title: "What are you sure about?" },
+          { id: 6, x: 911, y: 1376, w: 625, h: 674, title: "That you want me here" },
+          { id: 7, x: 0, y: 2050, w: 701, h: 702, title: "I do" },
+          { id: 8, x: 701, y: 2050, w: 835, h: 702, title: "Entering the Room" }
         ]
       }
     ],
