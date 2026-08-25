@@ -50,6 +50,17 @@ const CoreEngine = {
       } else {
         hud.classList.add('on');
       }
+      const chatBadge = document.getElementById('hud-chat-badge');
+      const hearts = document.getElementById('hud-h');
+      const hudCh = document.getElementById('hud-ch');
+      if (id === 's-chat') {
+        if (chatBadge) chatBadge.style.display = 'inline-flex';
+        if (hearts) hearts.style.display = 'none';
+        if (hudCh) hudCh.textContent = '💬 CHAT';
+      } else {
+        if (chatBadge) chatBadge.style.display = 'none';
+        if (hearts) hearts.style.display = '';
+      }
     }
     SoundEngine.updateHudIcon();
 

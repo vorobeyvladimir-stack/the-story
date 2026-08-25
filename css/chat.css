@@ -6,56 +6,15 @@
 #s-chat {
   padding: 0;
   justify-content: flex-start;
-  padding-top: 50px;
+  padding-top: 64px;
 }
 
 .is-telegram-webapp #s-chat {
-  padding-top: max(calc(env(safe-area-inset-top, 0px) + 54px), 64px);
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 96px), 106px);
 }
 
 .chat-hdr {
-  width: 100%;
-  background: rgba(18, 10, 36, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1.5px solid var(--pink);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 16px var(--pink-glow);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-shrink: 0;
-  z-index: 10;
-}
-
-.chat-app {
-  font-family: var(--font-arcade);
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px var(--pink-glow);
-}
-
-.chat-sub {
-  font-family: var(--font-arcade);
-  font-size: 10px;
-  color: var(--pink-light);
-  margin-top: 3px;
-  letter-spacing: 0.5px;
-}
-
-.chat-sc {
-  margin-left: auto;
-  font-family: var(--font-arcade);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--gold);
-  text-shadow: 0 0 10px var(--gold-glow);
-  background: rgba(255, 209, 102, 0.12);
-  border: 1px solid rgba(255, 209, 102, 0.35);
-  padding: 6px 12px;
-  border-radius: 8px;
+  display: none !important;
 }
 
 .chat-body {

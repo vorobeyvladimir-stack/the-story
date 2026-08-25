@@ -445,6 +445,20 @@ body.puzzle-mode .aurora-orb {
   text-shadow: 0 0 10px var(--gold-glow);
 }
 
+.hud-chat-badge {
+  font-family: var(--font-arcade);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 8px var(--gold-glow);
+  background: rgba(255, 209, 102, 0.12);
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  padding: 4px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
 .hud-sound-btn {
   font-size: 16px;
   background: rgba(255, 255, 255, 0.06);
@@ -502,6 +516,10 @@ body.puzzle-mode .aurora-orb {
   }
   .hud-ch {
     font-size: 10px !important;
+  }
+  .hud-chat-badge {
+    font-size: 9.5px !important;
+    padding: 3px 6px !important;
   }
   .hud-mini-emblem {
     width: 28px !important;

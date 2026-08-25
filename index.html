@@ -91,6 +91,7 @@
     <span class="hud-back" onclick="goMap()" role="button" tabindex="0">◀ MAP</span>
   </div>
   <span class="hud-ch" id="hud-ch">Ch.1</span>
+  <div class="hud-chat-badge" id="hud-chat-badge" style="display:none">SCORE: <span id="c-score">0</span> / <span id="c-tot">0</span></div>
   <button class="hud-sound-btn" id="hud-sound-btn" onclick="toggleAudio()" title="Toggle Audio">🔊</button>
   <span class="hud-h" id="hud-h">❤️❤️❤️</span>
 </div>
@@ -148,13 +149,6 @@
 
 <!-- CHAT MINIGAME SCREEN -->
 <div class="screen" id="s-chat">
-  <div class="chat-hdr">
-    <div>
-      <div class="chat-app">💬 &nbsp;GROUP CHAT — The Three 💕</div>
-      <div class="chat-sub">Guess who wrote each message!</div>
-    </div>
-    <div class="chat-sc">SCORE: <span id="c-score">0</span> / <span id="c-tot">0</span></div>
-  </div>
   <div class="chat-body" id="chat-body"></div>
   <div class="chat-foot" id="chat-foot">
     <div class="chat-res" id="chat-res"></div>
