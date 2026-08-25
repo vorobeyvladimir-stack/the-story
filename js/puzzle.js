@@ -93,8 +93,8 @@ const PuzzleGame = (function() {
         const screenH = window.innerHeight || document.documentElement.clientHeight || 844;
 
         // 1. Board fills all remaining vertical space directly below the top controls
-        const boardW = Math.floor(Math.min(screenW * 0.96, 560));
-        const boardH = Math.floor(Math.max(420, Math.min(screenH - 84, 860)));
+        const boardW = Math.floor(Math.min(screenW * 0.98, 560));
+        const boardH = Math.floor(Math.max(430, Math.min(screenH - 74, 880)));
 
         // 2. Keep piece size exact (do NOT increase piece size, allowing generous drag room)
         const imgAspect = imgW / imgH;

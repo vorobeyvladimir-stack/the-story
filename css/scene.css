@@ -70,7 +70,7 @@
 .comic-container {
   position: absolute;
   top: 50px;
-  bottom: min(200px, 28dvh);
+  bottom: min(100px, 14dvh);
   left: 0;
   right: 0;
   display: none;
@@ -86,6 +86,7 @@
 
 .is-telegram-webapp .comic-container {
   top: max(calc(env(safe-area-inset-top, 0px) + 98px), 110px);
+  bottom: max(calc(env(safe-area-inset-bottom, 0px) + 95px), 105px);
 }
 
 .comic-container canvas,
@@ -101,7 +102,7 @@
 
 .chars-wrap {
   position: absolute;
-  bottom: min(220px, 32dvh);
+  bottom: min(130px, 20dvh);
   left: 0;
   right: 0;
   display: flex;
@@ -135,7 +136,7 @@
 
 .char-svg {
   width: auto;
-  height: clamp(120px, 22vh, 180px);
+  height: clamp(110px, 20vh, 160px);
   transition: transform 0.25s ease, filter 0.25s ease;
   filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
 }
@@ -151,22 +152,22 @@
   to { transform: translateY(-8px) scale(1.03); }
 }
 
-/* FROSTED GLASS VISUAL NOVEL DIALOGUE BOX */
+/* FROSTED GLASS VISUAL NOVEL DIALOGUE BOX (ULTRA-SLIM COMPACT) */
 .dialog-box {
   position: relative;
   z-index: 10;
   width: 100%;
   max-width: 860px;
-  background: rgba(18, 10, 36, 0.92);
+  background: rgba(18, 10, 36, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-top: 3px solid var(--pink);
+  border-top: 2.5px solid var(--pink);
   border-left: 1px solid var(--glass-border);
   border-right: 1px solid var(--glass-border);
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.7), 0 0 24px rgba(255, 42, 133, 0.2);
-  padding: 20px 26px 16px;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 42, 133, 0.2);
+  padding: 8px 18px 6px;
   margin: 0 auto;
   cursor: pointer;
   touch-action: manipulation;
@@ -175,23 +176,30 @@
   -webkit-user-select: none;
 }
 
+.d-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
 .d-speaker {
   font-family: var(--font-arcade);
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 800;
   color: var(--gold);
-  margin-bottom: 8px;
-  letter-spacing: 1.5px;
+  margin-bottom: 0;
+  letter-spacing: 1.2px;
   text-shadow: 0 0 8px var(--gold-glow);
 }
 
 .d-text {
   font-family: var(--font-dialog);
-  font-size: clamp(16px, 4.2vw, 19px);
+  font-size: clamp(14px, 3.8vw, 17px);
   font-weight: 500;
   color: #fff;
-  line-height: 1.6;
-  min-height: 58px;
+  line-height: 1.38;
+  min-height: 34px;
   letter-spacing: 0.2px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
@@ -199,20 +207,20 @@
 .d-choices {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .d-choice {
   font-family: var(--font-dialog);
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.4;
-  padding: 13px 18px;
+  line-height: 1.35;
+  padding: 10px 14px;
   background: rgba(38, 20, 72, 0.85);
   backdrop-filter: blur(10px);
   border: 1.5px solid var(--glass-border);
-  border-radius: 10px;
+  border-radius: 9px;
   color: #fff;
   cursor: pointer;
   text-align: left;
@@ -237,45 +245,44 @@
 
 .d-next {
   font-family: var(--font-arcade);
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 700;
   color: var(--pink-light);
-  margin-top: 12px;
-  text-align: right;
-  letter-spacing: 1px;
+  margin-top: 0;
+  letter-spacing: 0.8px;
   opacity: 0.85;
   animation: bounceHint 1.4s ease-in-out infinite;
 }
 
 @keyframes bounceHint {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50% { transform: translateY(-3px); }
 }
 
 @media (max-width: 600px) {
   .char-svg {
-    height: 120px !important;
+    height: 110px !important;
   }
   .char-lbl {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
   }
   .dialog-box {
-    padding: 16px 18px 14px !important;
+    padding: 7px 12px 5px !important;
   }
   .d-speaker {
-    font-size: 12px !important;
+    font-size: 11px !important;
   }
   .d-text {
-    font-size: 16px !important;
-    min-height: 52px !important;
-    line-height: 1.55 !important;
+    font-size: 14.5px !important;
+    min-height: 32px !important;
+    line-height: 1.35 !important;
   }
   .d-choice {
-    font-size: 13.5px !important;
-    padding: 11px 14px !important;
+    font-size: 13px !important;
+    padding: 9px 12px !important;
   }
   .d-next {
-    font-size: 10px !important;
+    font-size: 9px !important;
   }
   .loc-badge {
     font-size: 10px !important;
@@ -288,9 +295,9 @@
 /* iOS safe areas */
 @supports (padding: max(0px)) {
   .dialog-box {
-    padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    padding-bottom: max(6px, env(safe-area-inset-bottom)) !important;
   }
   .chars-wrap {
-    bottom: max(220px, calc(205px + env(safe-area-inset-bottom))) !important;
+    bottom: max(120px, calc(105px + env(safe-area-inset-bottom))) !important;
   }
 }

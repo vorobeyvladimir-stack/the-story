@@ -3,8 +3,11 @@
    Owns: Fullscreen comic presentation, universal multi-comic loading,
    dynamic aspect ratio scaling, custom WebGL Multi-Color Pixel Dissolve Shaders,
    and 100% crisp linear interpolation guarantee (never pixelated).
-   Supports Multi-Page comic chapters, Ultra High-Res (1536x2752 3K),
-   and 2% subtle ambient visibility (98% dark veil) on unrevealed panels.
+   Features:
+   - 🎬 Cinematic Smart Focus Zoom & Smooth Pan Camera for mobile/desktop
+   - 3px Outer Neon Gradient Border (#00f3ff Cyan -> #ff2a9d Pink) around comic frame
+   - Multi-Page comic chapters support
+   - 2% subtle ambient visibility (98% dark veil) on unrevealed panels
    Exports (globals): ComicEngine, DEFAULT_HEIDELBERG_PANELS, HEIDELBERG_PAGE2_PANELS
    ═══════════════════════════════════════════════════════════════ */
 
@@ -148,7 +151,7 @@
     }
   `;
 
-  // Active Border Outline Shader
+  // Active Border Outline Shader for individual active panels
   const vsBorder = `
     attribute vec2 aPosition;
     uniform vec2 uScreenSize;
@@ -168,6 +171,40 @@
     }
   `;
 
+  // 3px Outer Neon Frame Shader (Diagonal #00f3ff Cyan -> #ff2a9d Pink Gradient, matching #puz-ring-grad)
+  const vsOuterFrame = `
+    attribute vec2 aPosition;
+    uniform vec2 uScreenSize;
+    uniform vec4 uDstRect;
+    uniform vec2 uComicOrigin;
+    uniform vec2 uComicSize;
+    varying vec2 vGlobalNormalized;
+
+    void main(void) {
+      vec2 screenPos = uDstRect.xy + aPosition * uDstRect.zw;
+      vGlobalNormalized = (screenPos - uComicOrigin) / uComicSize;
+      vec2 clipSpace = (screenPos / uScreenSize) * 2.0 - 1.0;
+      gl_Position = vec4(clipSpace.x, -clipSpace.y, 0.0, 1.0);
+    }
+  `;
+
+  const fsOuterFrame = `
+    precision highp float;
+    varying vec2 vGlobalNormalized;
+    uniform float uAlpha;
+
+    void main(void) {
+      vec3 cyan = vec3(0.00, 0.95, 1.00);   // #00f3ff Cyber Cyan
+      vec3 pink = vec3(1.00, 0.16, 0.62);   // #ff2a9d Hot Cyber Pink
+      
+      // Diagonal gradient matching x1="0%" y1="0%" x2="100%" y2="100%"
+      float t = clamp((vGlobalNormalized.x + vGlobalNormalized.y) * 0.5, 0.0, 1.0);
+      vec3 color = mix(cyan, pink, t);
+
+      gl_FragColor = vec4(color, uAlpha);
+    }
+  `;
+
   class VanillaComicEngine {
     constructor() {
       this.canvas = null;
@@ -182,9 +219,16 @@
       this.currentPanelDefs = DEFAULT_HEIDELBERG_PANELS;
       this.naturalW = 1536;
       this.naturalH = 2750;
-      this.comicScale = 1.0;
-      this.comicX = 0;
-      this.comicY = 0;
+      this.baseScale = 1.0;
+
+      // 🎬 Virtual 2D Camera State
+      this.camera = {
+        x: 768,       // World comic center X (0 to naturalW)
+        y: 1375,      // World comic center Y (0 to naturalH)
+        zoom: 1.0     // Current camera magnification
+      };
+      this.cameraTween = null;
+
       this.viewW = 400;
       this.viewH = 600;
       this.borderAlpha = 0.0;
@@ -286,6 +330,7 @@
       this.bgProg = this.createProgram(vsSource, fsBgSource);
       this.dissolveProg = this.createProgram(vsSource, fsDissolveSource);
       this.borderProg = this.createProgram(vsBorder, fsBorderSource);
+      this.outerFrameProg = this.createProgram(vsOuterFrame, fsOuterFrame);
 
       this._onResize = () => this.resize();
       window.addEventListener("resize", this._onResize);
@@ -337,6 +382,11 @@
         this.naturalW = img.naturalWidth || 1536;
         this.naturalH = img.naturalHeight || 2750;
 
+        // Reset camera center
+        this.camera.x = this.naturalW / 2;
+        this.camera.y = this.naturalH / 2;
+        this.camera.zoom = 1.0;
+
         if (this.texture) {
           gl.deleteTexture(this.texture);
         }
@@ -364,7 +414,7 @@
 
         this.resize();
 
-        // Immediately trigger smooth Pixel Dissolve Reveal on the target panel
+        // Immediately trigger smooth Pixel Dissolve Reveal on the target panel with cinematic focus
         const targetToReveal = (this.pendingRevealPanel !== null && this.pendingRevealPanel !== undefined) ? this.pendingRevealPanel : 0;
         this.pendingRevealPanel = null;
         this.revealPanel(targetToReveal);
@@ -375,7 +425,110 @@
     }
 
     /**
-     * Reveals a panel with smooth multi-color pixel assembly
+     * 🎬 Computes optimal camera focus (targetX, targetY, targetZoom) for any panel
+     * Ensures active panel fills 78-90% of screen while showing nearby panels in the margins
+     * @param {Object} panel
+     * @returns {{ targetX: number, targetY: number, targetZoom: number }}
+     */
+    computeCameraTarget(panel) {
+      if (!panel) {
+        return {
+          targetX: this.naturalW / 2,
+          targetY: this.naturalH / 2,
+          targetZoom: 1.0
+        };
+      }
+
+      const isMobileOrPortrait = (this.viewW <= 680) || (this.viewH > this.viewW * 1.15);
+
+      if (!isMobileOrPortrait) {
+        // Desktop / Wide Screen: Subtle 1.25x zoom or gentle centering
+        const targetZoom = 1.25;
+        const effScale = this.baseScale * targetZoom;
+        const halfVisibleW = (this.viewW * 0.5) / effScale;
+        const halfVisibleH = (this.viewH * 0.5) / effScale;
+
+        let cx = panel.x + panel.w / 2;
+        let cy = panel.y + panel.h / 2;
+
+        if (halfVisibleW * 2 >= this.naturalW) {
+          cx = this.naturalW / 2;
+        } else {
+          cx = Math.max(halfVisibleW, Math.min(this.naturalW - halfVisibleW, cx));
+        }
+
+        if (halfVisibleH * 2 >= this.naturalH) {
+          cy = this.naturalH / 2;
+        } else {
+          cy = Math.max(halfVisibleH, Math.min(this.naturalH - halfVisibleH, cy));
+        }
+
+        return { targetX: cx, targetY: cy, targetZoom };
+      }
+
+      // Mobile / Portrait / Telegram WebApp:
+      // Active panel is large, bold, clear, and perfectly readable (~82-90% of screen width)
+      const marginPad = 24;
+      const fitZoomX = this.viewW / ((panel.w + marginPad) * this.baseScale);
+      const fitZoomY = this.viewH / ((panel.h + marginPad) * this.baseScale);
+
+      // Clamp zoom between 1.75x and 2.45x for ideal mobile viewing
+      let targetZoom = Math.min(fitZoomX, fitZoomY);
+      targetZoom = Math.max(1.75, Math.min(2.45, targetZoom));
+
+      const effScale = this.baseScale * targetZoom;
+      const halfVisibleW = (this.viewW * 0.5) / effScale;
+      const halfVisibleH = (this.viewH * 0.5) / effScale;
+
+      let cx = panel.x + panel.w / 2;
+      let cy = panel.y + panel.h / 2;
+
+      // Smooth clamping to prevent viewing black outside boundaries
+      if (halfVisibleW * 2 >= this.naturalW) {
+        cx = this.naturalW / 2;
+      } else {
+        cx = Math.max(halfVisibleW, Math.min(this.naturalW - halfVisibleW, cx));
+      }
+
+      if (halfVisibleH * 2 >= this.naturalH) {
+        cy = this.naturalH / 2;
+      } else {
+        cy = Math.max(halfVisibleH, Math.min(this.naturalH - halfVisibleH, cy));
+      }
+
+      return { targetX: cx, targetY: cy, targetZoom };
+    }
+
+    /**
+     * 🎬 Smoothly glides virtual camera to target panel
+     * @param {Object} panel
+     * @param {boolean} [immediate=false]
+     */
+    animateCameraTo(panel, immediate = false) {
+      const { targetX, targetY, targetZoom } = this.computeCameraTarget(panel);
+
+      if (this.cameraTween) {
+        this.cameraTween.kill();
+      }
+
+      if (immediate || !window.gsap) {
+        this.camera.x = targetX;
+        this.camera.y = targetY;
+        this.camera.zoom = targetZoom;
+        return;
+      }
+
+      this.cameraTween = gsap.to(this.camera, {
+        x: targetX,
+        y: targetY,
+        zoom: targetZoom,
+        duration: 1.05,
+        ease: "power2.out"
+      });
+    }
+
+    /**
+     * Reveals a panel with smooth multi-color pixel assembly + 🎬 Cinematic Camera Focus Zoom
      * @param {number} panelIdx
      * @param {boolean} [immediate=false]
      */
@@ -390,6 +543,9 @@
       if (!targetPanel) return;
 
       this.activePanelIdx = idx;
+
+      // 🎬 Trigger Cinematic Focus Zoom & Glide
+      this.animateCameraTo(targetPanel, immediate);
 
       if (this.panelTweens[idx]) {
         this.panelTweens[idx].kill();
@@ -464,10 +620,11 @@
     }
 
     /**
-     * Unlocks all panels instantly
+     * Unlocks all panels instantly and zooms out to full view
      */
     revealAll() {
       this.panels.forEach((_, idx) => this.revealPanel(idx, true));
+      this.animateCameraTo(null, false);
     }
 
     /**
@@ -477,9 +634,13 @@
       this.panelTweens.forEach(t => t && t.kill());
       this.panelTweens = [];
       if (this.borderTween) this.borderTween.kill();
+      if (this.cameraTween) this.cameraTween.kill();
       this.borderAlpha = 0.0;
       this.activePanelIdx = -1;
       this.pendingRevealPanel = null;
+      this.camera.x = this.naturalW / 2;
+      this.camera.y = this.naturalH / 2;
+      this.camera.zoom = 1.0;
       this.panels.forEach(p => {
         p.progress = 0.0;
         p.revealed = false;
@@ -512,19 +673,37 @@
 
       this.gl.viewport(0, 0, canvasPixelW, canvasPixelH);
 
-      const padding = 4;
+      const padding = 6;
       const availW = Math.max(100, w - padding * 2);
       const availH = Math.max(100, h - padding * 2);
 
       const natW = this.naturalW || 1536;
       const natH = this.naturalH || 2750;
 
-      // Exact natural aspect ratio scaling
-      const scale = Math.min(availW / natW, availH / natH);
+      // Base scaling factor
+      this.baseScale = Math.min(availW / natW, availH / natH);
 
-      this.comicScale = scale;
-      this.comicX = Math.round((w - natW * scale) / 2);
-      this.comicY = Math.round((h - natH * scale) / 2);
+      // Re-align camera to current active panel
+      if (this.activePanelIdx >= 0 && this.panels[this.activePanelIdx]) {
+        this.animateCameraTo(this.panels[this.activePanelIdx], true);
+      }
+    }
+
+    /**
+     * Converts comic world rectangle to screen rectangle using virtual 2D camera
+     * @param {number} rx World X
+     * @param {number} ry World Y
+     * @param {number} rw World Width
+     * @param {number} rh World Height
+     * @returns {[number, number, number, number]} [dstX, dstY, dstW, dstH]
+     */
+    worldToScreenRect(rx, ry, rw, rh) {
+      const currentScale = this.baseScale * this.camera.zoom;
+      const dstX = (rx - this.camera.x) * currentScale + (this.viewW * 0.5);
+      const dstY = (ry - this.camera.y) * currentScale + (this.viewH * 0.5);
+      const dstW = rw * currentScale;
+      const dstH = rh * currentScale;
+      return [dstX, dstY, dstW, dstH];
     }
 
     /**
@@ -540,6 +719,9 @@
       const screenW = this.viewW;
       const screenH = this.viewH;
 
+      // World-to-Screen transformation for entire comic sheet
+      const [fullDstX, fullDstY, fullDstW, fullDstH] = this.worldToScreenRect(0, 0, this.naturalW, this.naturalH);
+
       gl.bindBuffer(gl.ARRAY_BUFFER, this.quadBuffer);
 
       // 1. Draw Base Dark Veiled Ambient Background (2% subtle visibility / 98% dark veil)
@@ -552,7 +734,7 @@
       gl.vertexAttribPointer(aTexBg, 2, gl.FLOAT, false, 16, 8);
 
       gl.uniform2f(gl.getUniformLocation(this.bgProg, "uScreenSize"), screenW, screenH);
-      gl.uniform4f(gl.getUniformLocation(this.bgProg, "uDstRect"), this.comicX, this.comicY, this.naturalW * this.comicScale, this.naturalH * this.comicScale);
+      gl.uniform4f(gl.getUniformLocation(this.bgProg, "uDstRect"), fullDstX, fullDstY, fullDstW, fullDstH);
       gl.uniform4f(gl.getUniformLocation(this.bgProg, "uSrcRect"), 0, 0, 1, 1);
       gl.uniform3f(gl.getUniformLocation(this.bgProg, "uTint"), 0.22, 0.08, 0.38);
 
@@ -580,10 +762,7 @@
       this.panels.forEach(p => {
         if (p.progress <= 0.0) return;
 
-        const dstX = this.comicX + p.x * this.comicScale;
-        const dstY = this.comicY + p.y * this.comicScale;
-        const dstW = p.w * this.comicScale;
-        const dstH = p.h * this.comicScale;
+        const [dstX, dstY, dstW, dstH] = this.worldToScreenRect(p.x, p.y, p.w, p.h);
 
         const u0 = p.x / this.naturalW;
         const v0 = p.y / this.naturalH;
@@ -598,13 +777,48 @@
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       });
 
-      // 3. Draw Active Panel Neon Border Frame
+      // 3. Draw 3px Outer Neon Gradient Border (#00f3ff Cyan -> #ff2a9d Pink Gradient, matching #puz-ring-grad)
+      if (this.outerFrameProg) {
+        gl.useProgram(this.outerFrameProg);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.quadBuffer);
+        const aPosOF = gl.getAttribLocation(this.outerFrameProg, "aPosition");
+        gl.enableVertexAttribArray(aPosOF);
+        gl.vertexAttribPointer(aPosOF, 2, gl.FLOAT, false, 16, 0);
+
+        gl.uniform2f(gl.getUniformLocation(this.outerFrameProg, "uScreenSize"), screenW, screenH);
+        gl.uniform2f(gl.getUniformLocation(this.outerFrameProg, "uComicOrigin"), fullDstX, fullDstY);
+        gl.uniform2f(gl.getUniformLocation(this.outerFrameProg, "uComicSize"), fullDstW, fullDstH);
+
+        const bW = 3.0; // 3px border
+        const glowPad = 6.0;
+
+        // Outer Glow Halo (Alpha 0.28)
+        gl.uniform1f(gl.getUniformLocation(this.outerFrameProg, "uAlpha"), 0.28);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX - glowPad, fullDstY - glowPad, fullDstW + glowPad * 2.0, glowPad);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX - glowPad, fullDstY + fullDstH, fullDstW + glowPad * 2.0, glowPad);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX - glowPad, fullDstY, glowPad, fullDstH);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX + fullDstW, fullDstY, glowPad, fullDstH);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+        // Core Solid 3px Border Quads (Alpha 1.0)
+        gl.uniform1f(gl.getUniformLocation(this.outerFrameProg, "uAlpha"), 1.0);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX - bW, fullDstY - bW, fullDstW + bW * 2.0, bW);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX - bW, fullDstY + fullDstH, fullDstW + bW * 2.0, bW);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX - bW, fullDstY, bW, fullDstH);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniform4f(gl.getUniformLocation(this.outerFrameProg, "uDstRect"), fullDstX + fullDstW, fullDstY, bW, fullDstH);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+
+      // 4. Draw Active Panel Inner Frame Glow
       if (this.activePanelIdx >= 0 && this.panels[this.activePanelIdx] && this.borderAlpha > 0.01) {
         const p = this.panels[this.activePanelIdx];
-        const dstX = this.comicX + p.x * this.comicScale;
-        const dstY = this.comicY + p.y * this.comicScale;
-        const dstW = p.w * this.comicScale;
-        const dstH = p.h * this.comicScale;
+        const [dstX, dstY, dstW, dstH] = this.worldToScreenRect(p.x, p.y, p.w, p.h);
 
         gl.useProgram(this.borderProg);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.lineBuffer);
@@ -616,7 +830,7 @@
         gl.uniform4f(gl.getUniformLocation(this.borderProg, "uDstRect"), dstX, dstY, dstW, dstH);
         gl.uniform4f(gl.getUniformLocation(this.borderProg, "uBorderColor"), 0.0, 0.95, 1.0, this.borderAlpha);
 
-        gl.lineWidth(2.5 * (window.devicePixelRatio || 1));
+        gl.lineWidth(2.0 * (window.devicePixelRatio || 1));
         gl.drawArrays(gl.LINE_LOOP, 0, 4);
       }
     }
