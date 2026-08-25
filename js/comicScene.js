@@ -4,7 +4,8 @@
    dynamic aspect ratio scaling, custom WebGL Multi-Color Pixel Dissolve Shaders,
    and 100% crisp linear interpolation guarantee (never pixelated).
    Features:
-   - 🎬 Cinematic Smart Focus Zoom & Smooth Pan Camera for mobile/desktop
+   - 🎬 Cinematic Smart Focus Zoom on individual panels
+   - 🌟 Full-Page Zoom Out on final panel to showcase entire completed comic
    - 3px Outer Neon Gradient Border (#00f3ff Cyan -> #ff2a9d Pink) around comic frame
    - Multi-Page comic chapters support
    - 2% subtle ambient visibility (98% dark veil) on unrevealed panels
@@ -225,7 +226,7 @@
       this.camera = {
         x: 768,       // World comic center X (0 to naturalW)
         y: 1375,      // World comic center Y (0 to naturalH)
-        zoom: 1.0     // Current camera magnification
+        zoom: 1.0     // Current camera magnification (1.0 = full page view)
       };
       this.cameraTween = null;
 
@@ -426,12 +427,25 @@
 
     /**
      * 🎬 Computes optimal camera focus (targetX, targetY, targetZoom) for any panel
-     * Ensures active panel fills 78-90% of screen while showing nearby panels in the margins
+     * When active panel is the LAST panel on the page, smoothly zooms out to 1.0x (full page view)!
      * @param {Object} panel
+     * @param {number} panelIdx
      * @returns {{ targetX: number, targetY: number, targetZoom: number }}
      */
-    computeCameraTarget(panel) {
+    computeCameraTarget(panel, panelIdx) {
       if (!panel) {
+        return {
+          targetX: this.naturalW / 2,
+          targetY: this.naturalH / 2,
+          targetZoom: 1.0
+        };
+      }
+
+      // 🌟 Check if this is the final panel on the current page
+      const isLastPanel = (panelIdx >= this.panels.length - 1) || (panel.id >= this.panels.length);
+
+      if (isLastPanel) {
+        // 🌟 Zoom Out to display the FULL COMIC page utilizing maximum available space!
         return {
           targetX: this.naturalW / 2,
           targetY: this.naturalH / 2,
@@ -442,7 +456,7 @@
       const isMobileOrPortrait = (this.viewW <= 680) || (this.viewH > this.viewW * 1.15);
 
       if (!isMobileOrPortrait) {
-        // Desktop / Wide Screen: Subtle 1.25x zoom or gentle centering
+        // Desktop / Wide Screen: Gentle 1.25x panel focus
         const targetZoom = 1.25;
         const effScale = this.baseScale * targetZoom;
         const halfVisibleW = (this.viewW * 0.5) / effScale;
@@ -502,10 +516,11 @@
     /**
      * 🎬 Smoothly glides virtual camera to target panel
      * @param {Object} panel
+     * @param {number} panelIdx
      * @param {boolean} [immediate=false]
      */
-    animateCameraTo(panel, immediate = false) {
-      const { targetX, targetY, targetZoom } = this.computeCameraTarget(panel);
+    animateCameraTo(panel, panelIdx = 0, immediate = false) {
+      const { targetX, targetY, targetZoom } = this.computeCameraTarget(panel, panelIdx);
 
       if (this.cameraTween) {
         this.cameraTween.kill();
@@ -518,17 +533,20 @@
         return;
       }
 
+      const isLastPanel = (panelIdx >= this.panels.length - 1);
+      const duration = isLastPanel ? 1.30 : 1.05;
+
       this.cameraTween = gsap.to(this.camera, {
         x: targetX,
         y: targetY,
         zoom: targetZoom,
-        duration: 1.05,
+        duration: duration,
         ease: "power2.out"
       });
     }
 
     /**
-     * Reveals a panel with smooth multi-color pixel assembly + 🎬 Cinematic Camera Focus Zoom
+     * Reveals a panel with smooth multi-color pixel assembly + 🎬 Cinematic Camera Focus Zoom / Zoom Out
      * @param {number} panelIdx
      * @param {boolean} [immediate=false]
      */
@@ -544,8 +562,8 @@
 
       this.activePanelIdx = idx;
 
-      // 🎬 Trigger Cinematic Focus Zoom & Glide
-      this.animateCameraTo(targetPanel, immediate);
+      // 🎬 Trigger Cinematic Focus Zoom on intermediate panels OR Zoom Out on the final panel
+      this.animateCameraTo(targetPanel, idx, immediate);
 
       if (this.panelTweens[idx]) {
         this.panelTweens[idx].kill();
@@ -624,7 +642,7 @@
      */
     revealAll() {
       this.panels.forEach((_, idx) => this.revealPanel(idx, true));
-      this.animateCameraTo(null, false);
+      this.animateCameraTo(null, this.panels.length - 1, false);
     }
 
     /**
@@ -673,19 +691,19 @@
 
       this.gl.viewport(0, 0, canvasPixelW, canvasPixelH);
 
-      const padding = 6;
+      const padding = 4;
       const availW = Math.max(100, w - padding * 2);
       const availH = Math.max(100, h - padding * 2);
 
       const natW = this.naturalW || 1536;
       const natH = this.naturalH || 2750;
 
-      // Base scaling factor
+      // Base scaling factor (maximizes available container size)
       this.baseScale = Math.min(availW / natW, availH / natH);
 
       // Re-align camera to current active panel
       if (this.activePanelIdx >= 0 && this.panels[this.activePanelIdx]) {
-        this.animateCameraTo(this.panels[this.activePanelIdx], true);
+        this.animateCameraTo(this.panels[this.activePanelIdx], this.activePanelIdx, true);
       }
     }
 
