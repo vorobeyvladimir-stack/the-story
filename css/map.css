@@ -38,14 +38,42 @@
   border-radius: 8px;
 }
 
-.prog-lbl {
+.prog-header-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.prog-neon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-arcade);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ff2a85;
+  background: rgba(255, 42, 133, 0.14);
+  border: 1.8px solid #ff2a85;
+  border-radius: 8px;
+  padding: 5px 14px;
+  letter-spacing: 1.2px;
+  box-shadow: 0 0 14px rgba(255, 42, 133, 0.45), inset 0 0 10px rgba(255, 42, 133, 0.2);
+  text-shadow: 0 0 8px #ff2a85, 0 0 16px rgba(255, 42, 133, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.prog-sub-hint {
+  font-family: var(--font-arcade);
+  font-size: 9px;
   font-weight: 700;
   color: var(--pink-light);
-  margin-top: 4px;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
   text-align: center;
-  letter-spacing: 1px;
 }
 
 .ch-grid {
@@ -62,7 +90,9 @@
   font-family: var(--font-arcade);
   font-size: 11.5px;
   font-weight: 700;
-  padding: 16px 12px;
+  padding: 14px 10px;
+  min-height: 125px;
+  box-sizing: border-box;
   background: var(--panel);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -70,7 +100,7 @@
   border-radius: 12px;
   cursor: pointer;
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.5;
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
   touch-action: manipulation;
@@ -80,6 +110,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .ch-card:hover:not(.coming-soon):not(.locked) {
@@ -108,31 +139,85 @@
   filter: grayscale(0.8);
 }
 
-/* COMING SOON DISABLED CHAPTER CARDS */
+/* COMING SOON DISABLED CHAPTER CARDS (1:1 Cyber Blueprint Concept) */
 .ch-card.coming-soon {
-  background: rgba(28, 25, 38, 0.65);
-  border: 1.5px solid rgba(130, 130, 155, 0.28);
+  background-color: rgba(14, 21, 38, 0.88);
+  background-image: url('../assets/locked_card_bg.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 1.5px solid rgba(75, 115, 175, 0.45);
+  border-radius: 12px;
   cursor: not-allowed;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-  opacity: 0.85;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 0 16px rgba(0, 140, 255, 0.08);
+  opacity: 0.95;
+  padding: 12px 8px;
+  justify-content: center;
 }
 
 .ch-card.coming-soon:hover {
   transform: none !important;
-  border-color: rgba(130, 130, 155, 0.4) !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  border-color: rgba(75, 115, 175, 0.6) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
   color: inherit !important;
 }
 
-.ch-card.coming-soon .ch-title-txt {
-  color: #9a90b0;
+.ch-locked-ico-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.ch-gray-ico {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+  display: block;
+}
+
+.ch-locked-tag {
+  font-family: var(--font-arcade);
+  font-size: 10px;
+  font-weight: 800;
+  color: #e2e8f0;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.25;
+  margin-top: 4px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.35), 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.ch-locked-sub {
+  font-family: var(--font-arcade);
+  font-size: 8px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.2;
+  margin-top: 3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.ch-locked-title {
+  font-family: var(--font-dialog);
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.25;
+  margin-top: 6px;
+  letter-spacing: 0.2px;
 }
 
 .ch-ico-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -141,18 +226,6 @@
   line-height: 1;
   display: inline-block;
   transition: transform 0.2s ease;
-}
-
-.ch-lock-img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  image-rendering: pixelated;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: crisp-edges;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-  flex-shrink: 0;
-  display: inline-block;
 }
 
 .ch-card:hover:not(.coming-soon) .ch-ico {
@@ -176,21 +249,6 @@
   letter-spacing: 0.2px;
 }
 
-.ch-loc.ch-loc-coming-soon {
-  font-family: var(--font-arcade);
-  font-size: 9.5px;
-  font-weight: 700;
-  color: #ffc233;
-  letter-spacing: 1px;
-  margin-top: 6px;
-  text-shadow: 0 0 10px rgba(255, 194, 51, 0.5);
-  background: rgba(255, 194, 51, 0.1);
-  border: 1px solid rgba(255, 194, 51, 0.3);
-  padding: 3px 8px;
-  border-radius: 6px;
-  display: inline-block;
-}
-
 @media (max-width: 600px) {
   .map-title {
     font-size: 13px !important;
@@ -202,14 +260,36 @@
   }
   .ch-card {
     font-size: 11px !important;
-    padding: 14px 10px !important;
+    padding: 12px 8px !important;
+  }
+  .ch-card.coming-soon {
+    padding: 10px 6px !important;
   }
   .ch-ico {
     font-size: 28px !important;
   }
-  .ch-lock-img {
-    width: 28px !important;
-    height: 28px !important;
+  .ch-gray-ico {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .ch-locked-tag {
+    font-size: 8.5px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .ch-locked-sub {
+    font-size: 7px !important;
+    letter-spacing: 0.8px !important;
+  }
+  .ch-locked-title {
+    font-size: 10px !important;
+  }
+  .prog-neon-pill {
+    font-size: 11px !important;
+    padding: 4px 12px !important;
+    letter-spacing: 1px !important;
+  }
+  .prog-sub-hint {
+    font-size: 8px !important;
   }
   .prog-wrap {
     width: 92vw !important;

@@ -132,7 +132,7 @@ const CoreEngine = {
 
     const progLbl = document.getElementById('prog-lbl');
     if (progLbl) {
-      progLbl.textContent = `${done} / ${totalChapters} complete`;
+      progLbl.textContent = `${done} / ${totalChapters} COMPLETE`;
     }
 
     const hudCh = document.getElementById('hud-ch');
@@ -144,12 +144,23 @@ const CoreEngine = {
       const card = document.createElement('div');
       card.className = 'ch-card' + (completed ? ' done' : '') + (isComingSoon ? ' coming-soon' : '');
       
-      const lockHtml = isComingSoon ? `<img src="assets/lock_pixel.png" class="ch-lock-img" alt="Locked">` : '';
-      const locHtml = isComingSoon 
-        ? `<span class="ch-loc ch-loc-coming-soon">COMING SOON !</span>` 
-        : `<span class="ch-loc">${ch.loc}</span>`;
-
-      card.innerHTML = `<div class="ch-ico-wrap"><span class="ch-ico">${ch.ico}</span>${lockHtml}</div><div class="ch-title-txt">${ch.title}</div>${locHtml}`;
+      if (isComingSoon) {
+        const grayImg = ch.grayIco
+          ? `<img src="${ch.grayIco}" class="ch-gray-ico" alt="Locked">`
+          : `<span class="ch-ico">${ch.ico}</span>`;
+        card.innerHTML = `
+          <div class="ch-locked-ico-wrap">${grayImg}</div>
+          <div class="ch-locked-tag">CHAPTER LOCKED</div>
+          <div class="ch-locked-sub">COMING SOON</div>
+          <div class="ch-locked-title">${ch.loc || ch.title}</div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="ch-ico-wrap"><span class="ch-ico">${ch.ico}</span></div>
+          <div class="ch-title-txt">${ch.title}</div>
+          <span class="ch-loc">${ch.loc}</span>
+        `;
+      }
 
       card.onclick = () => {
         if (isComingSoon) {
