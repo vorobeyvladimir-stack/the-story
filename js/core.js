@@ -51,15 +51,12 @@ const CoreEngine = {
         hud.classList.add('on');
       }
       const chatBadge = document.getElementById('hud-chat-badge');
-      const hearts = document.getElementById('hud-h');
       const hudCh = document.getElementById('hud-ch');
       if (id === 's-chat') {
         if (chatBadge) chatBadge.style.display = 'inline-flex';
-        if (hearts) hearts.style.display = 'none';
         if (hudCh) hudCh.textContent = '💬 CHAT';
       } else {
         if (chatBadge) chatBadge.style.display = 'none';
-        if (hearts) hearts.style.display = '';
       }
     }
     SoundEngine.updateHudIcon();
@@ -142,11 +139,24 @@ const CoreEngine = {
     if (hudCh) hudCh.textContent = 'Map';
 
     CHAPTERS.forEach(ch => {
+      const isComingSoon = !!(ch.comingSoon || ['stockholm', 'kyiv', 'frankfurt', 'chat'].includes(ch.id));
       const completed = state.completed.has(ch.id);
       const card = document.createElement('div');
-      card.className = 'ch-card' + (completed ? ' done' : '');
-      card.innerHTML = `<span class="ch-ico">${ch.ico}</span>${ch.title}<span class="ch-loc">${ch.loc}</span>`;
+      card.className = 'ch-card' + (completed ? ' done' : '') + (isComingSoon ? ' coming-soon' : '');
+      
+      const lockHtml = isComingSoon ? `<img src="assets/lock_pixel.png" class="ch-lock-img" alt="Locked">` : '';
+      const locHtml = isComingSoon 
+        ? `<span class="ch-loc ch-loc-coming-soon">COMING SOON !</span>` 
+        : `<span class="ch-loc">${ch.loc}</span>`;
+
+      card.innerHTML = `<div class="ch-ico-wrap"><span class="ch-ico">${ch.ico}</span>${lockHtml}</div><div class="ch-title-txt">${ch.title}</div>${locHtml}`;
+
       card.onclick = () => {
+        if (isComingSoon) {
+          SoundEngine.playWrong();
+          Core.notify('🔒 Chapter coming soon!');
+          return;
+        }
         SoundEngine.playClick();
         if (ch.type === 'puzzle') {
           if (window.Game && window.Game.puzzle) {
@@ -211,7 +221,7 @@ const CoreEngine = {
     const eStats = document.getElementById('e-stats');
     if (eStats) {
       eStats.innerHTML =
-        `Chat accuracy: ${pct}%<br>Chapters completed: ${state.completed.size} / ${CHAPTERS.length}<br>Hearts collected: ❤️❤️❤️`;
+        `Chat accuracy: ${pct}%<br>Chapters completed: ${state.completed.size} / ${CHAPTERS.length}`;
     }
 
     this.show('s-end');

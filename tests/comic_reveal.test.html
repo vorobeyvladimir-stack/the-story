@@ -75,23 +75,38 @@ window.addEventListener('load', async () => {
     if (report.panelCount === 9) {
       log('All 9 panels for Page 1 properly created');
       
-      // Step through dialogue lines to trigger Page 2 transition (skip typing + advance)
-      for (let i = 0; i < 24; i++) {
+      // Step through dialogue lines of Page 1 (10 lines total) to trigger Page 2 transition
+      for (let i = 0; i < 10; i++) {
         nextLine();
-        await new Promise(r => setTimeout(r, 40));
+        await new Promise(r => setTimeout(r, 60));
       }
 
       // Wait for page 2 to load (8 panels)
-      for (let retry = 0; retry < 20; retry++) {
+      for (let retry = 0; retry < 25; retry++) {
         if (ComicEngine.panels && ComicEngine.panels.length === 8) break;
         await new Promise(r => setTimeout(r, 100));
       }
 
       report.page2PanelCount = ComicEngine.panels ? ComicEngine.panels.length : 0;
       log('Page 2 Panel Count: ' + report.page2PanelCount);
-      report.revealSuccess = (report.page2PanelCount === 8);
+
+      // Step through dialogue lines of Page 2 (9 lines total) to trigger Page 3 transition
+      for (let i = 0; i < 9; i++) {
+        nextLine();
+        await new Promise(r => setTimeout(r, 60));
+      }
+
+      // Wait for page 3 to load (14 panels)
+      for (let retry = 0; retry < 25; retry++) {
+        if (ComicEngine.panels && ComicEngine.panels.length === 14) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+
+      report.page3PanelCount = ComicEngine.panels ? ComicEngine.panels.length : 0;
+      log('Page 3 Panel Count: ' + report.page3PanelCount);
+      report.revealSuccess = (report.page3PanelCount === 14);
       
-      report.allPassed = (report.panelCount === 9) && (report.page2PanelCount === 8);
+      report.allPassed = (report.panelCount === 9) && (report.page2PanelCount === 8) && (report.page3PanelCount === 14);
     } else {
       log('Unexpected panel count: ' + report.panelCount, 'error');
       report.allPassed = false;

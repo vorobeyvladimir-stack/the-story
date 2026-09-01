@@ -116,13 +116,7 @@ const CHAPTERS = [
     ],
     chat: true,
     chatLines: [
-      { who: 'lydia', text: 'I thought I was ready for Heidelberg... I wasn’t ready for her. 😏', hidden: true, answer: 'lydia' },
-      { who: 'gala', text: 'She asked whether I was sure. I told her I was... then I waited for her answer. 😉', hidden: true, answer: 'gala' },
-      { who: 'lydia', text: 'I think I left my last bit of hesitation somewhere between the hotel door and the shower. 🙈❤️', hidden: true, answer: 'lydia' },
-      { who: 'gala', text: 'Some memories belong to the city. Others belong behind a closed door. 😏', hidden: true, answer: 'gala' },
-      { who: 'gala', text: 'By the time the coffee arrived, neither of us was thinking about coffee anymore. ☕😉', hidden: true, answer: 'gala' },
-      { who: 'lydia', text: 'I thought undressing in front of a girl would be easier... but taking off my underwear was a whole different story. 🙈', hidden: true, answer: 'lydia' },
-      { who: 'lydia', text: 'Let’s just say the shower was much warmer than the coffee. 🔥', hidden: true, answer: 'lydia' }
+      { who: 'gala', text: 'Тест', hidden: true, answer: 'gala', options: ['gala', 'lydia'] }
     ]
   },
   {
@@ -146,28 +140,47 @@ const CHAPTERS = [
       {
         comic: 'assets/comic_heidelberg.jpg',
         panels: [
-          { id: 1, x: 0, y: 0, w: 1014, h: 696, title: "Arrival in Heidelberg" },
-          { id: 2, x: 1014, y: 0, w: 522, h: 696, title: "City Center Meeting" },
-          { id: 3, x: 0, y: 696, w: 516, h: 672, title: "Gala: So... you really came" },
-          { id: 4, x: 516, y: 696, w: 499, h: 672, title: "Lydia: I told you I might" },
-          { id: 5, x: 1015, y: 696, w: 521, h: 672, title: "Discover a new side of myself" },
-          { id: 6, x: 0, y: 1368, w: 908, h: 674, title: "Immediate Attraction" },
-          { id: 7, x: 908, y: 1368, w: 628, h: 674, title: "Gala: Coffee first?" },
-          { id: 8, x: 0, y: 2042, w: 697, h: 710, title: "Lydia: Coffee. Definitely coffee." },
-          { id: 9, x: 697, y: 2042, w: 839, h: 710, title: "Entering the Restaurant" }
+          { id: 1, x: 0, y: 0, w: 941, h: 789, title: "Arrival in Heidelberg" },
+          { id: 2, x: 941, y: 0, w: 624, h: 789, title: "City Center Meeting" },
+          { id: 3, x: 0, y: 789, w: 507, h: 674, title: "Gala: So... you really came" },
+          { id: 4, x: 507, y: 789, w: 498, h: 674, title: "Lydia: I told you I might" },
+          { id: 5, x: 1005, y: 789, w: 560, h: 674, title: "Discover a new side of myself" },
+          { id: 6, x: 0, y: 1463, w: 871, h: 648, title: "Immediate Attraction" },
+          { id: 7, x: 871, y: 1463, w: 694, h: 648, title: "Gala: Coffee first?" },
+          { id: 8, x: 0, y: 2111, w: 696, h: 641, title: "Lydia: Coffee. Definitely coffee." },
+          { id: 9, x: 696, y: 2111, w: 869, h: 641, title: "Entering the Restaurant" }
         ]
       },
       {
         comic: 'assets/comic_heidelberg2.jpg',
         panels: [
-          { id: 1, x: 0, y: 0, w: 768, h: 685, title: "Coffee Conversation" },
-          { id: 2, x: 768, y: 0, w: 768, h: 685, title: "Walking to Hotel" },
-          { id: 3, x: 0, y: 685, w: 768, h: 691, title: "Are you always this confident?" },
-          { id: 4, x: 768, y: 685, w: 768, h: 691, title: "Only when I'm absolutely sure" },
-          { id: 5, x: 0, y: 1376, w: 911, h: 674, title: "What are you sure about?" },
-          { id: 6, x: 911, y: 1376, w: 625, h: 674, title: "That you want me here" },
-          { id: 7, x: 0, y: 2050, w: 701, h: 702, title: "I do" },
-          { id: 8, x: 701, y: 2050, w: 835, h: 702, title: "Entering the Room" }
+          { id: 1, x: 0, y: 0, w: 772, h: 780, title: "Coffee Conversation" },
+          { id: 2, x: 772, y: 0, w: 777, h: 780, title: "Walking to Hotel" },
+          { id: 3, x: 0, y: 780, w: 772, h: 690, title: "Are you always this confident?" },
+          { id: 4, x: 772, y: 780, w: 777, h: 690, title: "Only when I'm absolutely sure" },
+          { id: 5, x: 0, y: 1470, w: 791, h: 634, title: "What are you sure about?" },
+          { id: 6, x: 791, y: 1470, w: 758, h: 634, title: "That you want me here" },
+          { id: 7, x: 0, y: 2104, w: 734, h: 648, title: "I do" },
+          { id: 8, x: 734, y: 2104, w: 815, h: 648, title: "Entering the Room" }
+        ]
+      },
+      {
+        comic: 'assets/comic_heidelberg3.jpg',
+        panels: [
+          { id: 1, x: 0, y: 0, w: 722, h: 722, title: "Laughter and lingering kisses" },
+          { id: 2, x: 722, y: 0, w: 387, h: 722, title: "Lydia: You planned this, didn't you?" },
+          { id: 3, x: 1109, y: 0, w: 438, h: 722, title: "Gala: I planned the coffee" },
+          { id: 4, x: 0, y: 722, w: 402, h: 699, title: "Lydia: My fault?" },
+          { id: 5, x: 402, y: 722, w: 372, h: 699, title: "Gala: You looked at me first" },
+          { id: 6, x: 774, y: 722, w: 773, h: 699, title: "Toward the shower" },
+          { id: 7, x: 0, y: 1421, w: 402, h: 662, title: "Lydia: Never done anything like this" },
+          { id: 8, x: 402, y: 1421, w: 395, h: 662, title: "Gala: Then we'll take it slowly" },
+          { id: 9, x: 797, y: 1421, w: 345, h: 662, title: "Lydia: Slowly?" },
+          { id: 10, x: 1142, y: 1421, w: 405, h: 662, title: "Gala: Unless you ask for something else" },
+          { id: 11, x: 0, y: 2083, w: 376, h: 669, title: "Lydia: I might" },
+          { id: 12, x: 376, y: 2083, w: 389, h: 669, title: "Behind the steamed-up glass" },
+          { id: 13, x: 765, y: 2083, w: 357, h: 669, title: "No intention of forgetting it" },
+          { id: 14, x: 1122, y: 2083, w: 425, h: 669, title: "Something far more interesting" }
         ]
       }
     ],
@@ -187,7 +200,7 @@ const CHAPTERS = [
       { who: '', text: '...... ...... ......', page: 0, overview: true },
 
       // Page 2 (comic_heidelberg2.jpeg)
-      { who: 'NARRATOR', text: 'Over warm coffee, the playful banter turned into an intense, quiet curiosity about each other.', page: 1, panel: 0 },
+      { who: 'NARRATOR', text: 'The coffee disappeared quickly. Their excuses disappeared even faster.', page: 1, panel: 0 },
       { who: 'NARRATOR', text: "Soon, they were walking toward Lydia's hotel room...", page: 1, panel: 1 },
       { who: 'LYDIA', text: 'Are you always this confident?', page: 1, panel: 2 },
       { who: 'GALA', text: "Only when I'm absolutely sure.", page: 1, panel: 3 },
@@ -195,14 +208,34 @@ const CHAPTERS = [
       { who: 'GALA', text: 'That you want me here.', page: 1, panel: 5 },
       { who: 'LYDIA', text: '*after a pause* I do.', page: 1, panel: 6 },
       { who: 'NARRATOR', text: 'The moment the door closed behind them, the city was left outside.', page: 1, panel: 7 },
-      { who: '', text: '...... ...... ......', page: 1, overview: true }
+      { who: '', text: '...... ...... ......', page: 1, overview: true },
+
+      // Page 3 (comic_heidelberg3.jpg)
+      { who: 'NARRATOR', text: 'Laughter, whispered promises and lingering kisses filled the room...', page: 2, panel: 0 },
+      { who: 'LYDIA', text: '*breathless* You planned this, didn’t you?', page: 2, panel: 1 },
+      { who: 'GALA', text: 'I planned the coffee. The rest is your fault.', page: 2, panel: 2 },
+      { who: 'LYDIA', text: 'My fault?', page: 2, panel: 3 },
+      { who: 'GALA', text: 'You looked at me first.', page: 2, panel: 4 },
+      { who: 'NARRATOR', text: 'Later, they moved toward the shower no longer interested in keeping their distance.', page: 2, panel: 5 },
+      { who: 'LYDIA', text: 'I’ve never done anything like this before.', page: 2, panel: 6 },
+      { who: 'GALA', text: 'Then we’ll take it slowly.', page: 2, panel: 7 },
+      { who: 'LYDIA', text: 'Slowly?', page: 2, panel: 8 },
+      { who: 'GALA', text: 'Unless you ask for something else.', page: 2, panel: 9 },
+      { who: 'LYDIA', text: '*smiles* I might.', page: 2, panel: 10 },
+      { who: 'NARRATOR', text: 'Behind the steamed-up glass, Lydia discovered a side of herself she had never dared to explore.', page: 2, panel: 11 },
+      { who: 'NARRATOR', text: 'And judging by the smile on her face, she had no intention of forgetting it.', page: 2, panel: 12 },
+      { who: 'NARRATOR', text: 'What happened next stayed between them, the warm water... and something far more interesting.', page: 2, panel: 13 },
+      { who: '', text: '...... ...... ......', page: 2, overview: true }
     ],
     chat: true,
     chatLines: [
-      { who: 'gala', text: "She's even better in real life 😍", hidden: true, answer: 'gala' },
-      { who: 'lydia', text: 'Heidelberg castle at night... magical ✨', hidden: true, answer: 'lydia' },
-      { who: 'gala', text: 'Already miss her and she just left 🥺', hidden: true, answer: 'gala' },
-      { who: 'lydia', text: 'I left my sunglasses in the hotel lobby lol', hidden: false, answer: 'lydia' }
+      { who: 'lydia', text: 'I thought I was ready for Heidelberg... I wasn’t ready for her. 😏', hidden: true, answer: 'lydia' },
+      { who: 'gala', text: 'She asked whether I was sure. I told her I was... then I waited for her answer. 😉', hidden: true, answer: 'gala' },
+      { who: 'lydia', text: 'I think I left my last bit of hesitation somewhere between the hotel door and the shower. 🙈❤️', hidden: true, answer: 'lydia' },
+      { who: 'gala', text: 'Some memories belong to the city. Others belong behind a closed door. 😏', hidden: true, answer: 'gala' },
+      { who: 'gala', text: 'By the time the coffee arrived, neither of us was thinking about coffee anymore. ☕😉', hidden: true, answer: 'gala' },
+      { who: 'lydia', text: 'I thought undressing in front of a girl would be easier... but taking off my underwear was a whole different story. 🙈', hidden: true, answer: 'lydia' },
+      { who: 'lydia', text: 'Let’s just say the shower was much warmer than the coffee. 🔥', hidden: true, answer: 'lydia' }
     ]
   },
   {
@@ -211,6 +244,7 @@ const CHAPTERS = [
     title: 'Stockholm Surprise',
     ico: '🇸🇪',
     loc: 'Stockholm',
+    comingSoon: true,
     chars: ['gala', 'lydia'],
     bg: 'stockholm',
     lines: [
@@ -243,6 +277,7 @@ const CHAPTERS = [
     title: 'Home in Kyiv',
     ico: '🇺🇦',
     loc: 'Kyiv',
+    comingSoon: true,
     chars: ['gala', 'lydia'],
     bg: 'kyiv',
     lines: [
@@ -273,6 +308,7 @@ const CHAPTERS = [
     title: 'All Three Together',
     ico: '🌉',
     loc: 'Frankfurt & Stuttgart',
+    comingSoon: true,
     chars: ['vvv', 'gala', 'lydia'],
     bg: 'frankfurt',
     lines: [
@@ -300,6 +336,7 @@ const CHAPTERS = [
     title: 'Daily Magic',
     ico: '💬',
     loc: 'The Group Chat',
+    comingSoon: true,
     chars: ['vvv', 'gala', 'lydia'],
     bg: 'chat',
     lines: [

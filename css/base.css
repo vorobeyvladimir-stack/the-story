@@ -477,12 +477,6 @@ body.puzzle-mode .aurora-orb {
   box-shadow: 0 0 14px var(--gold-glow);
 }
 
-.hud-h {
-  font-size: 15px;
-  letter-spacing: 2px;
-  filter: drop-shadow(0 0 6px rgba(255, 42, 133, 0.6));
-}
-
 /* NEON TOAST NOTIFIER */
 #notif {
   position: fixed;
