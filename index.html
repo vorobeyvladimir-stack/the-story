@@ -88,7 +88,7 @@
 <div id="hud">
   <div class="hud-left-group">
     <img src="assets/hud_emblem.png" class="hud-mini-emblem" alt="Home" onclick="showTitle()" title="Title Screen">
-    <span class="hud-back" onclick="goMap()" role="button" tabindex="0">◀ MAP</span>
+    <span class="hud-back" id="hud-back" onclick="goMap()" role="button" tabindex="0">◀ MAP</span>
   </div>
   <span class="hud-ch" id="hud-ch">Ch.1</span>
   <div class="hud-chat-badge" id="hud-chat-badge" style="display:none">SCORE: <span id="c-score">0</span> / <span id="c-tot">0</span></div>
@@ -123,10 +123,9 @@
 <!-- MAP SCREEN -->
 <div class="screen" id="s-map">
   <div class="map-title">✦ CHAPTER SELECT ✦</div>
-  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
-  <div class="prog-header-row">
-    <div class="prog-neon-pill" id="prog-lbl">0 / 7 COMPLETE</div>
-    <div class="prog-sub-hint">complete chapters in order to unlock next</div>
+  <div class="cyber-capsule" id="cyber-capsule">
+    <div class="cyber-capsule-fill" id="prog" style="width:0%"></div>
+    <div class="cyber-capsule-txt" id="prog-lbl">0 / 7 COMPLETE</div>
   </div>
   <div class="ch-grid" id="ch-grid"></div>
 </div>

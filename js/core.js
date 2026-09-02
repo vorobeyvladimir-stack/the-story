@@ -52,6 +52,10 @@ const CoreEngine = {
       }
       const chatBadge = document.getElementById('hud-chat-badge');
       const hudCh = document.getElementById('hud-ch');
+      const hudBack = document.getElementById('hud-back');
+      if (hudBack) {
+        hudBack.style.display = (id === 's-map') ? 'none' : '';
+      }
       if (id === 's-chat') {
         if (chatBadge) chatBadge.style.display = 'inline-flex';
         if (hudCh) hudCh.textContent = '💬 CHAT';
