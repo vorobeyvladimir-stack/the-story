@@ -364,7 +364,7 @@
         this.resizeObserver.observe(this.containerEl);
       }
 
-      this.startRenderLoop();
+      this.render();
       this.isInitialized = true;
     }
 
@@ -541,9 +541,11 @@
         this.camera.x = targetX;
         this.camera.y = targetY;
         this.camera.zoom = targetZoom;
+        this.render();
         return;
       }
 
+      this.wakeRenderLoop(1.2);
       this.cameraTween = gsap.to(this.camera, {
         x: targetX,
         y: targetY,
@@ -576,6 +578,7 @@
       const targetZoom = 1.0;
 
       if (window.gsap) {
+        this.wakeRenderLoop(1.4);
         this.cameraTween = gsap.to(this.camera, {
           x: targetX,
           y: targetY,
@@ -587,6 +590,7 @@
         this.camera.x = targetX;
         this.camera.y = targetY;
         this.camera.zoom = targetZoom;
+        this.render();
       }
     }
 
@@ -618,6 +622,7 @@
         targetPanel.progress = 1.0;
         targetPanel.revealed = true;
         this.highlightActivePanel(idx, true);
+        this.render();
         return;
       }
 
@@ -625,6 +630,7 @@
 
       if (window.gsap) {
         this.highlightActivePanel(idx);
+        this.wakeRenderLoop(DURATION + 0.3);
 
         const tween = gsap.to(targetPanel, {
           progress: 1.0,
@@ -633,12 +639,14 @@
           onComplete: () => {
             targetPanel.revealed = true;
             targetPanel.progress = 1.0;
+            this.render();
           }
         });
         this.panelTweens[idx] = tween;
       } else {
         let start = null;
         const durationMs = 1200;
+        this.wakeRenderLoop(1.4);
         const animate = (timestamp) => {
           if (!start) start = timestamp;
           const elapsed = timestamp - start;
@@ -648,6 +656,7 @@
             requestAnimationFrame(animate);
           } else {
             targetPanel.revealed = true;
+            this.render();
           }
         };
         requestAnimationFrame(animate);
@@ -665,11 +674,14 @@
       }
       this.borderAlpha = 0.95;
       if (!skipAnim && window.gsap) {
+        this.wakeRenderLoop(1.5);
         this.borderTween = gsap.to(this, {
           borderAlpha: 0.35,
           duration: 1.4,
           ease: "power1.out"
         });
+      } else {
+        this.render();
       }
     }
 
@@ -679,6 +691,7 @@
     skipCurrentReveal() {
       if (this.activePanelIdx >= 0 && this.panels[this.activePanelIdx]) {
         this.revealPanel(this.activePanelIdx, true);
+        this.render();
       }
     }
 
@@ -688,12 +701,14 @@
     revealAll() {
       this.panels.forEach((_, idx) => this.revealPanel(idx, true));
       this.showFullOverview();
+      this.render();
     }
 
     /**
      * Resets all panels to unrevealed
      */
     reset() {
+      this.stopRenderLoop();
       this.panelTweens.forEach(t => t && t.kill());
       this.panelTweens = [];
       if (this.borderTween) this.borderTween.kill();
@@ -708,6 +723,7 @@
         p.progress = 0.0;
         p.revealed = false;
       });
+      this.render();
     }
 
     /**
@@ -717,9 +733,10 @@
       if (!this.canvas || !this.containerEl || !this.gl) return;
 
       const rect = this.containerEl.getBoundingClientRect();
-      const dpr = Math.max(window.devicePixelRatio || 1, 2);
-      const w = rect.width || window.innerWidth || 400;
-      const h = rect.height || (window.innerHeight - 200) || 500;
+      const rawDpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(Math.max(rawDpr, 1.25), 2.0);
+      const w = Math.round(rect.width) || window.innerWidth || 400;
+      const h = Math.round(rect.height) || (window.innerHeight - 200) || 500;
 
       this.viewW = w;
       this.viewH = h;
@@ -749,6 +766,8 @@
       // Re-align camera to current active panel
       if (this.activePanelIdx >= 0 && this.panels[this.activePanelIdx]) {
         this.animateCameraTo(this.panels[this.activePanelIdx], true);
+      } else {
+        this.render();
       }
     }
 
@@ -899,10 +918,21 @@
     }
 
     startRenderLoop() {
+      this.wakeRenderLoop(1.2);
+    }
+
+    wakeRenderLoop(durationSeconds = 1.5) {
+      this._renderUntilTime = Math.max(this._renderUntilTime || 0, performance.now() + durationSeconds * 1000);
       if (this.renderLoopId) return;
+
       const loop = () => {
         this.render();
-        this.renderLoopId = requestAnimationFrame(loop);
+        if (performance.now() < this._renderUntilTime) {
+          this.renderLoopId = requestAnimationFrame(loop);
+        } else {
+          this.renderLoopId = null;
+          this.render(); // one final crisp frame
+        }
       };
       this.renderLoopId = requestAnimationFrame(loop);
     }
@@ -912,6 +942,7 @@
         cancelAnimationFrame(this.renderLoopId);
         this.renderLoopId = null;
       }
+      this._renderUntilTime = 0;
     }
 
     /**

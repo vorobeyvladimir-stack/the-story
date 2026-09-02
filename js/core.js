@@ -75,10 +75,11 @@ const CoreEngine = {
       }
     }
 
-    // Battery & CPU Optimization: Freeze particle spawning & GPU blur during puzzle gameplay
+    // Battery & CPU Optimization: Freeze particle spawning & GPU blur during puzzle & comic gameplay
     document.body.classList.toggle('puzzle-mode', id === 's-puzzle');
+    document.body.classList.toggle('comic-mode', id === 's-scene');
     if (window.RomanceFx) {
-      if (id === 's-puzzle') {
+      if (id === 's-puzzle' || id === 's-scene') {
         window.RomanceFx.pause();
       } else {
         window.RomanceFx.resume();

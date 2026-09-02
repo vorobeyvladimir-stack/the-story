@@ -85,7 +85,8 @@
 
   // 2. Spawner for floating upwards spicy elements & bitten lips (10% slower, perfectly balanced)
   function createFloatParticle() {
-    if (!container) return;
+    if (!container || isPaused) return;
+    if (document.body.classList.contains('comic-mode') || document.body.classList.contains('puzzle-mode')) return;
     const currentFloats = container.querySelectorAll('.romance-particle').length;
     if (currentFloats >= MAX_FLOAT_PARTICLES) return;
 

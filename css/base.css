@@ -100,10 +100,16 @@ html, body {
   pointer-events: none !important;
 }
 
-body.puzzle-mode .aurora-orb {
+body.puzzle-mode .aurora-orb,
+body.comic-mode .aurora-orb {
   filter: none !important;
   -webkit-filter: none !important;
-  opacity: 0.45;
+  opacity: 0.35;
+}
+
+body.comic-mode .romance-particle {
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* 6 Distinct Glowing Purple/Violet Spheres (1:1 Framer Mode 3 Reference) */
