@@ -4,19 +4,22 @@
 ═══════════════════════════════════════ */
 
 #s-map {
-  gap: 20px;
-  padding: 60px 16px 20px;
+  gap: 16px;
+  padding: max(calc(env(safe-area-inset-top, 0px) + 56px), 64px) 16px 24px;
   overflow-y: auto;
   justify-content: flex-start;
 }
 
 .map-title {
   font-family: var(--font-arcade);
-  font-size: clamp(13px, 2.4vw, 18px);
+  font-size: clamp(12px, 2.4vw, 16px);
   font-weight: 700;
   color: var(--gold);
   text-shadow: 0 0 12px var(--gold-glow), 2px 2px 0 #6e4b00;
-  letter-spacing: 3px;
+  letter-spacing: 2.5px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  z-index: 2;
 }
 
 /* CYBER GLASS PROGRESS CAPSULE */
@@ -284,8 +287,8 @@
     letter-spacing: 0.8px !important;
   }
   #s-map {
-    gap: 14px !important;
-    padding-top: 50px !important;
+    gap: 12px !important;
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 56px), 62px) !important;
   }
 }
 
@@ -296,6 +299,6 @@
 }
 
 .is-telegram-webapp #s-map {
-  padding-top: max(calc(env(safe-area-inset-top, 0px) + 54px), 64px) !important;
+  padding-top: max(calc(env(safe-area-inset-top, 0px) + 58px), 68px) !important;
 }
 
